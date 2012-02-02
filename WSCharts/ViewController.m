@@ -33,7 +33,7 @@
     pieChart.colors = colors;
     pieChart.touchEnabled = YES;
     pieChart.showIndicator = YES;
-    //pieChart.openEnabled = YES;
+    pieChart.openEnabled = YES;
     [self.view addSubview:pieChart];
     
     self.view.backgroundColor = [UIColor clearColor];

@@ -55,7 +55,7 @@ static float pieRadius = 150.0;
 @property (nonatomic, strong) NSMutableArray *percents;
 @property (nonatomic) int currentPressedNum;
 @property (nonatomic) BOOL isOpened;
-@property (nonatomic, strong) CALayer *pieLayer;
+@property (nonatomic, strong) CALayer *pieAreaLayer;
 
 
 - (CGPoint)calculateOpenedPotions:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
@@ -79,7 +79,7 @@ static float pieRadius = 150.0;
 @synthesize showIndicator = _showIndicator;
 @synthesize currentPressedNum = _currentPressedNum;
 @synthesize isOpened = _isOpened;
-@synthesize pieLayer = _pieLayer;
+@synthesize pieAreaLayer = _pieAreaLayer;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -88,6 +88,9 @@ static float pieRadius = 150.0;
         _paths = [[NSMutableArray alloc] init];
         _percents = [[NSMutableArray alloc] init];
         self.clearsContextBeforeDrawing = YES;
+        _pieAreaLayer = [CALayer layer];
+        [self.layer addSublayer:_pieAreaLayer];
+        //self.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -190,8 +193,13 @@ static float pieRadius = 150.0;
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSaveGState(context);
+    /*
+     TODO: why
+     1.why commenting below line. can set background color in method of initWithFrame: as self.backgroundColor = [UIColor whiteColor];
+     but the pie chart drawing confused when openedEnabled.
+     2. using below code, but can't use self.backgroundColor to set the color.
+     */
     CGContextClearRect(context, rect);
-    
     //set the background color of pie chart
     CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
     CGContextFillRect(context, rect);
