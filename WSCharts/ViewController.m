@@ -36,7 +36,7 @@
     pieChart.openEnabled = YES;
     [self.view addSubview:pieChart];
     
-    
+    self.view.backgroundColor = [UIColor clearColor];
 }
 
 - (void)viewDidUnload

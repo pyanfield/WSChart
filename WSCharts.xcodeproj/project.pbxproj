@@ -84,13 +84,11 @@
 		901EAE6B14DA1EE7001BD2D0 /* WSCharts */ = {
 			isa = PBXGroup;
 			children = (
-				901EAE8414DA2043001BD2D0 /* WSPieChartView.h */,
-				901EAE8514DA2043001BD2D0 /* WSPieChartView.m */,
+				90CAF43A14DA7B6C00928735 /* charts */,
 				901EAE7414DA1EE7001BD2D0 /* AppDelegate.h */,
 				901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */,
 				901EAE7714DA1EE7001BD2D0 /* ViewController.h */,
 				901EAE7814DA1EE7001BD2D0 /* ViewController.m */,
-				901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */,
 				901EAE6C14DA1EE7001BD2D0 /* Supporting Files */,
 			);
 			path = WSCharts;
@@ -99,12 +97,22 @@
 		901EAE6C14DA1EE7001BD2D0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */,
 				901EAE6D14DA1EE7001BD2D0 /* WSCharts-Info.plist */,
 				901EAE6E14DA1EE7001BD2D0 /* InfoPlist.strings */,
 				901EAE7114DA1EE7001BD2D0 /* main.m */,
 				901EAE7314DA1EE7001BD2D0 /* WSCharts-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		90CAF43A14DA7B6C00928735 /* charts */ = {
+			isa = PBXGroup;
+			children = (
+				901EAE8414DA2043001BD2D0 /* WSPieChartView.h */,
+				901EAE8514DA2043001BD2D0 /* WSPieChartView.m */,
+			);
+			name = charts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -287,6 +295,7 @@
 				901EAE8114DA1EE7001BD2D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

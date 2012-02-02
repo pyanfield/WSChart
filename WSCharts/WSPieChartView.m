@@ -46,7 +46,7 @@ static float pieRadius = 150.0;
 
 @end
 
-#pragma mark - CNPieChartView
+#pragma mark - WSPieChartView
 
 @interface WSPieChartView()
 
@@ -55,10 +55,11 @@ static float pieRadius = 150.0;
 @property (nonatomic, strong) NSMutableArray *percents;
 @property (nonatomic) int currentPressedNum;
 @property (nonatomic) BOOL isOpened;
+@property (nonatomic, strong) CALayer *pieLayer;
 
 
 - (CGPoint)calculateOpenedPotions:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
-- (CGMutablePathRef)createPiePath:(CGPoint)center :(CGPoint)startPoint :(CGFloat)startAngle :(CGFloat)pieAngle :(CGAffineTransform)transform;
+- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c fromStartPoint:(CGPoint)sp startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t;
 - (void)closeAllPieDataIsOpenedAsNO:(int)openedPieNum;
 - (void)createIndicators:(int)num;
 - (void)createShadow:(BOOL)opened openedPieNum:(int)i;
@@ -78,6 +79,7 @@ static float pieRadius = 150.0;
 @synthesize showIndicator = _showIndicator;
 @synthesize currentPressedNum = _currentPressedNum;
 @synthesize isOpened = _isOpened;
+@synthesize pieLayer = _pieLayer;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -85,6 +87,7 @@ static float pieRadius = 150.0;
         _pies = [[NSMutableArray alloc] init];
         _paths = [[NSMutableArray alloc] init];
         _percents = [[NSMutableArray alloc] init];
+        self.clearsContextBeforeDrawing = YES;
     }
     return self;
 }
@@ -181,10 +184,6 @@ static float pieRadius = 150.0;
     }
 }
 
-- (void)layoutSubviews
-{
-}
-
 - (void)drawRect:(CGRect)rect
 {
     [self.paths removeAllObjects];
@@ -193,31 +192,29 @@ static float pieRadius = 150.0;
     CGContextSaveGState(context);
     CGContextClearRect(context, rect);
     
+    //set the background color of pie chart
+    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
+    CGContextFillRect(context, rect);
+    
+    //set the shadow for pie chart
     //[self createShadow:self.isOpened openedPieNum:self.currentPressedNum];
-    UIColor *shadowColor = [UIColor colorWithWhite:.8f alpha:.5f];
+    UIColor *shadowColor = [UIColor colorWithWhite:.5f alpha:.5f];
     CGContextSetShadowWithColor(context, CGSizeMake(5.0f, 3.0f), 7.0f, [shadowColor CGColor]);
     CGContextBeginTransparencyLayer (context, NULL);
     
     CGPoint center = self.center;
     int length = [self.pies count];
     for (int i=0; i<length; i++) {
-        
         WSPieData *pie = [self.pies objectAtIndex:i];
         CGAffineTransform transform =  CGAffineTransformMakeTranslation(0.0, 0.0);
-        
         if (pie.isOpened) {
             transform = CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
         }
-/*        
-        CGMutablePathRef path = CGPathCreateMutable();
-        CGPathMoveToPoint(path, &transform, center.x, center.y);
-        CGPathAddLineToPoint(path, &transform,pie.startPoint.x,pie.startPoint.y);
-        CGPathAddRelativeArc(path, &transform, center.x, center.y, pieRadius, startAngle, 2.0*M_PI*pie.percent);
-        //startArcPoint = CGPathGetCurrentPoint(path);
-        CGPathAddLineToPoint(path, &transform, center.x, center.y);
- */
-        
-        CGMutablePathRef path = [self createPiePath:center :pie.startPoint :pie.startAngle :2.0*M_PI*pie.percent :transform];
+        CGMutablePathRef path = [self createPiePathWithCenter:center 
+                                               fromStartPoint:pie.startPoint 
+                                                   startAngle:pie.startAngle 
+                                                    withAngle:2.0*M_PI*pie.percent 
+                                                    transform:transform];
         [pie.color setFill];
         //[pie.color setStroke];
         CGContextAddPath(context, path);
@@ -235,6 +232,7 @@ static float pieRadius = 150.0;
     CGContextEndTransparencyLayer(context);
     CGContextRestoreGState(context);
     //test the gradient
+    /*
     CGGradientRef gradient = [self convertColorToGradient:[UIColor whiteColor]];
     CGPoint sp,ep;
     CGFloat sr,er;
@@ -246,6 +244,7 @@ static float pieRadius = 150.0;
     er = 60;
     CGContextDrawRadialGradient(context, gradient, sp, sr, ep, er, kCGGradientDrawsBeforeStartLocation);
     CGGradientRelease(gradient);
+     */
 }
 #pragma mark - Private Methods
 
@@ -255,7 +254,7 @@ static float pieRadius = 150.0;
     CGColorSpaceRef colorSpace;
     size_t num_locations = 2;
     CGFloat locations[2] = {0.0,1.0};
-    CGFloat components[8] = {1.0,1.0,1.0,1.0,
+    CGFloat components[8] = {1.0,0.8,0.3,1.0,
                              1.0,0.8,0.3,0.3 };
     colorSpace = CGColorSpaceCreateDeviceRGB();
     gradient = CGGradientCreateWithColorComponents(colorSpace, components, locations, num_locations);
@@ -287,7 +286,11 @@ static float pieRadius = 150.0;
         //draw opened sector shadow
         WSPieData *pie = [self.pies objectAtIndex:i];
         CGAffineTransform transform =  CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
-        CGMutablePathRef sector = [self createPiePath:self.center :pie.startPoint :pie.startAngle :2.0*M_PI*pie.percent :transform];
+        CGMutablePathRef sector = [self createPiePathWithCenter:self.center 
+                                                 fromStartPoint:pie.startPoint 
+                                                     startAngle:pie.startAngle 
+                                                      withAngle:2.0*M_PI*pie.percent 
+                                                      transform:transform];
         CGContextAddPath(context, sector);
         CGPathRelease(sector);
         CGPoint startPoint = CGPointMake(self.center.x,self.center.y);
@@ -295,7 +298,11 @@ static float pieRadius = 150.0;
             startPoint = ((WSPieData*)[self.pies objectAtIndex:i+1]).startPoint;
         }
         CGAffineTransform transform2 =  CGAffineTransformMakeTranslation(0.0, 0.0);
-        CGMutablePathRef sector2 = [self createPiePath:self.center :startPoint :pie.startAngle+2.0*M_PI*pie.percent:2.0*M_PI*(1.0f-pie.percent) :transform2];
+        CGMutablePathRef sector2 = [self createPiePathWithCenter:self.center 
+                                                  fromStartPoint:startPoint 
+                                                      startAngle:pie.startAngle+2.0*M_PI*pie.percent
+                                                       withAngle:2.0*M_PI*(1.0f-pie.percent)
+                                                       transform:transform2];
         CGContextAddPath(context, sector2);
         CGPathRelease(sector2);
     }else
@@ -312,13 +319,14 @@ static float pieRadius = 150.0;
 }
 
 // create the sector path
-- (CGMutablePathRef)createPiePath:(CGPoint)center :(CGPoint)startPoint :(CGFloat)startAngle :(CGFloat)pieAngle :(CGAffineTransform)transform
+- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c fromStartPoint:(CGPoint)sp startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t
 {
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, &transform, center.x, center.y);
-    CGPathAddLineToPoint(path, &transform,startPoint.x,startPoint.y);
-    CGPathAddRelativeArc(path, &transform, center.x, center.y, pieRadius, startAngle, pieAngle);
-    CGPathAddLineToPoint(path, &transform, center.x, center.y);
+    CGPathMoveToPoint(path, &t, c.x, c.y);
+    CGPathAddLineToPoint(path, &t,sp.x,sp.y);
+    CGPathAddRelativeArc(path, &t, c.x, c.y, pieRadius, sa, pa);
+    //CGPathAddLineToPoint(path, &t, c.x, c.y);
+    CGPathCloseSubpath(path);
     return path;
 }
 // calculate the point should be when you open a pie chart

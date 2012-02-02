@@ -10,7 +10,6 @@
 
 @interface WSPieChartView : UIView
 
-
 @property (nonatomic) BOOL touchEnabled;
 @property (nonatomic) BOOL showIndicator;
 @property (nonatomic) BOOL openEnabled;
