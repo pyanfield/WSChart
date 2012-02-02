@@ -216,11 +216,10 @@ static float pieRadius = 150.0;
                                                     withAngle:2.0*M_PI*pie.percent 
                                                     transform:transform];
         [pie.color setFill];
-        //[pie.color setStroke];
+        //[[UIColor grayColor] setStroke];
         CGContextAddPath(context, path);
         CGContextSetLineWidth(context, 1.0);
-        CGContextDrawPath(context, kCGPathFill);
-        //CGContextDrawPath(context, kCGPathStroke);
+        CGContextDrawPath(context,kCGPathFill);//kCGPathFillStroke//kCGPathStroke
         CGContextClip(context);
         [self.paths addObject:(__bridge id)path];
         CGPathRelease(path);
@@ -393,6 +392,10 @@ static float pieRadius = 150.0;
     UIColor *c = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.6f];
     [c setStroke];
     [c setFill];
+    
+    //add shadow
+    UIColor *shadowColor = [UIColor colorWithWhite:.5f alpha:.5f];
+    CGContextSetShadowWithColor(context, CGSizeMake(5.0f, 3.0f), 7.0f, [shadowColor CGColor]);
     
     CGContextAddPath(context, path);
     CGContextSetLineWidth(context, 2.0);
