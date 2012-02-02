@@ -16,6 +16,7 @@
 		901EAE7914DA1EE7001BD2D0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE7814DA1EE7001BD2D0 /* ViewController.m */; };
 		901EAE7C14DA1EE7001BD2D0 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */; };
 		901EAE8314DA1F0A001BD2D0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */; };
+		901EAE8614DA2043001BD2D0 /* WSPieChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE8514DA2043001BD2D0 /* WSPieChartView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,8 @@
 		901EAE7814DA1EE7001BD2D0 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		901EAE7B14DA1EE7001BD2D0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		901EAE8414DA2043001BD2D0 /* WSPieChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSPieChartView.h; sourceTree = "<group>"; };
+		901EAE8514DA2043001BD2D0 /* WSPieChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSPieChartView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +84,8 @@
 		901EAE6B14DA1EE7001BD2D0 /* WSCharts */ = {
 			isa = PBXGroup;
 			children = (
+				901EAE8414DA2043001BD2D0 /* WSPieChartView.h */,
+				901EAE8514DA2043001BD2D0 /* WSPieChartView.m */,
 				901EAE7414DA1EE7001BD2D0 /* AppDelegate.h */,
 				901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */,
 				901EAE7714DA1EE7001BD2D0 /* ViewController.h */,
@@ -168,6 +173,7 @@
 				901EAE7214DA1EE7001BD2D0 /* main.m in Sources */,
 				901EAE7614DA1EE7001BD2D0 /* AppDelegate.m in Sources */,
 				901EAE7914DA1EE7001BD2D0 /* ViewController.m in Sources */,
+				901EAE8614DA2043001BD2D0 /* WSPieChartView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
