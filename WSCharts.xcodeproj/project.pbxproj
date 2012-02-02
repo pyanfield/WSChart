@@ -15,6 +15,7 @@
 		901EAE7614DA1EE7001BD2D0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */; };
 		901EAE7914DA1EE7001BD2D0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE7814DA1EE7001BD2D0 /* ViewController.m */; };
 		901EAE7C14DA1EE7001BD2D0 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */; };
+		901EAE8314DA1F0A001BD2D0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,15 +23,16 @@
 		901EAE6514DA1EE7001BD2D0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		901EAE6714DA1EE7001BD2D0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		901EAE6914DA1EE7001BD2D0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		901EAE6D14DA1EE7001BD2D0 /* WSCharts-Info.plist */ = {isa = PBXFileReference; path = "WSCharts-Info.plist"; sourceTree = "<group>"; };
+		901EAE6D14DA1EE7001BD2D0 /* WSCharts-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WSCharts-Info.plist"; sourceTree = "<group>"; };
 		901EAE6F14DA1EE7001BD2D0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		901EAE7114DA1EE7001BD2D0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		901EAE7314DA1EE7001BD2D0 /* WSCharts-Prefix.pch */ = {isa = PBXFileReference; path = "WSCharts-Prefix.pch"; sourceTree = "<group>"; };
-		901EAE7414DA1EE7001BD2D0 /* AppDelegate.h */ = {isa = PBXFileReference; path = AppDelegate.h; sourceTree = "<group>"; };
+		901EAE7314DA1EE7001BD2D0 /* WSCharts-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WSCharts-Prefix.pch"; sourceTree = "<group>"; };
+		901EAE7414DA1EE7001BD2D0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		901EAE7714DA1EE7001BD2D0 /* ViewController.h */ = {isa = PBXFileReference; path = ViewController.h; sourceTree = "<group>"; };
+		901EAE7714DA1EE7001BD2D0 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		901EAE7814DA1EE7001BD2D0 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		901EAE7B14DA1EE7001BD2D0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
+		901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				901EAE8314DA1F0A001BD2D0 /* QuartzCore.framework in Frameworks */,
 				901EAE6614DA1EE7001BD2D0 /* UIKit.framework in Frameworks */,
 				901EAE6814DA1EE7001BD2D0 /* Foundation.framework in Frameworks */,
 				901EAE6A14DA1EE7001BD2D0 /* CoreGraphics.framework in Frameworks */,
@@ -67,6 +70,7 @@
 		901EAE6414DA1EE7001BD2D0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */,
 				901EAE6514DA1EE7001BD2D0 /* UIKit.framework */,
 				901EAE6714DA1EE7001BD2D0 /* Foundation.framework */,
 				901EAE6914DA1EE7001BD2D0 /* CoreGraphics.framework */,
