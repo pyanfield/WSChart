@@ -75,8 +75,8 @@ documentation in WSChart project is licensed as follows:
 
 Other
 ------------------------
-You can contact me with mail 'pyanfield <at> gmail.com'.
-if you use SinaWeibo, you can follow ![@pyanfield](http://www.weibo.com/pyanfield "pyanfield").
+You can contact me with mail 'pyanfield at gmail.com'.
+if you use SinaWeibo, you can follow @pyanfield.
 
 
 
