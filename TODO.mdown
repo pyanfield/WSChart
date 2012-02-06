@@ -1,0 +1,13 @@
+TODO
+=================
+
+* Pie Chart : ongoing
+* Column Chart
+* Line Chart
+* Area Chart
+* Bar Chart
+* Scatter Chart
+* Candlestick Chart
+* Combo Chart
+* Geo Chart
+* Treemap

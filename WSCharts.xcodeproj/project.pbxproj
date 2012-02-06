@@ -17,6 +17,9 @@
 		901EAE7C14DA1EE7001BD2D0 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */; };
 		901EAE8314DA1F0A001BD2D0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */; };
 		901EAE8614DA2043001BD2D0 /* WSPieChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE8514DA2043001BD2D0 /* WSPieChartView.m */; };
+		906F683E14E0157E00E0D9CF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 906F683C14E0157E00E0D9CF /* LICENSE */; };
+		906F683F14E0157E00E0D9CF /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 906F683D14E0157E00E0D9CF /* Readme.md */; };
+		906F684114E0158A00E0D9CF /* TODO.mdown in Resources */ = {isa = PBXBuildFile; fileRef = 906F684014E0158A00E0D9CF /* TODO.mdown */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +39,9 @@
 		901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		901EAE8414DA2043001BD2D0 /* WSPieChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSPieChartView.h; sourceTree = "<group>"; };
 		901EAE8514DA2043001BD2D0 /* WSPieChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSPieChartView.m; sourceTree = "<group>"; };
+		906F683C14E0157E00E0D9CF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		906F683D14E0157E00E0D9CF /* Readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.md; sourceTree = "<group>"; };
+		906F684014E0158A00E0D9CF /* TODO.mdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.mdown; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +62,7 @@
 		901EAE5614DA1EE7001BD2D0 = {
 			isa = PBXGroup;
 			children = (
+				906F683A14E0156400E0D9CF /* github */,
 				901EAE6B14DA1EE7001BD2D0 /* WSCharts */,
 				901EAE6414DA1EE7001BD2D0 /* Frameworks */,
 				901EAE6214DA1EE7001BD2D0 /* Products */,
@@ -104,6 +111,16 @@
 				901EAE7314DA1EE7001BD2D0 /* WSCharts-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		906F683A14E0156400E0D9CF /* github */ = {
+			isa = PBXGroup;
+			children = (
+				906F684014E0158A00E0D9CF /* TODO.mdown */,
+				906F683C14E0157E00E0D9CF /* LICENSE */,
+				906F683D14E0157E00E0D9CF /* Readme.md */,
+			);
+			name = github;
 			sourceTree = "<group>";
 		};
 		90CAF43A14DA7B6C00928735 /* charts */ = {
@@ -168,6 +185,9 @@
 			files = (
 				901EAE7014DA1EE7001BD2D0 /* InfoPlist.strings in Resources */,
 				901EAE7C14DA1EE7001BD2D0 /* ViewController.xib in Resources */,
+				906F683E14E0157E00E0D9CF /* LICENSE in Resources */,
+				906F683F14E0157E00E0D9CF /* Readme.md in Resources */,
+				906F684114E0158A00E0D9CF /* TODO.mdown in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
