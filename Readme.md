@@ -19,7 +19,7 @@ Usage
 ------------------
 
 You can use the pie chart like this:
-```objc
+
 	NSMutableDictionary *pieData = [[NSMutableDictionary alloc] init];
     NSMutableArray *colors = [[NSMutableArray alloc] init];
     pieData = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:20],@"test1",[[NSNumber alloc] initWithFloat:34],@"test2",[[NSNumber alloc] initWithFloat:55],@"test3",[[NSNumber alloc] initWithFloat:12],@"test4",[[NSNumber alloc] initWithFloat:78],@"test5",[[NSNumber alloc] initWithFloat:110],@"test6",nil];
@@ -31,7 +31,7 @@ You can use the pie chart like this:
     pieChart.touchEnabled = YES;
     pieChart.showIndicator = YES;            //pieChart.openEnabled = YES;
     [self.view addSubview:pieChart];
-```
+
 
 Adding WSChart to your project
 ------------------
