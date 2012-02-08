@@ -58,13 +58,11 @@ static float pieRadius = 150.0;
 @property (nonatomic, strong) CALayer *pieAreaLayer;
 
 
-- (CGPoint)calculateOpenedPotions:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
+- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
 - (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c fromStartPoint:(CGPoint)sp startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t;
 - (void)closeAllPieDataIsOpenedAsNO:(int)openedPieNum;
 - (void)createIndicators:(int)num;
 - (void)createShadow:(BOOL)opened openedPieNum:(int)i;
-- (CGGradientRef)convertColorToGradient:(UIColor*)color;
-- (CAAnimation*)openAnimation:(int)openedPieNum;
 
 @end
 
@@ -127,7 +125,7 @@ static float pieRadius = 150.0;
     float startAngle = -M_PI/2.0f;
     [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
     for (int i=0; i<length-1; i++) {
-        [_startPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPotions:i withRadius:pieRadius isHalfAngle:NO]]];
+        [_startPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:pieRadius isHalfAngle:NO]]];
 
         startAngle += 2.0*M_PI*[[_percents objectAtIndex:i] floatValue];
         [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
@@ -135,8 +133,8 @@ static float pieRadius = 150.0;
     
     //calculate the openedpoints and indicator points
     for (int i = 0; i < length; i++) {
-        [_openedPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPotions:i withRadius:OPEN_GAP isHalfAngle:YES]]];
-        [_indicatorPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPotions:i withRadius:INDICATOR_RADIUS isHalfAngle:YES]]];
+        [_openedPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:OPEN_GAP isHalfAngle:YES]]];
+        [_indicatorPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:INDICATOR_RADIUS isHalfAngle:YES]]];
     }
     
     //using the WSPieData to store the datas
@@ -238,45 +236,8 @@ static float pieRadius = 150.0;
     }
     CGContextEndTransparencyLayer(context);
     CGContextRestoreGState(context);
-    //test the gradient
-    /*
-    CGGradientRef gradient = [self convertColorToGradient:[UIColor whiteColor]];
-    CGPoint sp,ep;
-    CGFloat sr,er;
-    sp.x = 50;
-    sp.y = 50;
-    ep.x = 50;
-    ep.y = 50;
-    sr = 5;
-    er = 60;
-    CGContextDrawRadialGradient(context, gradient, sp, sr, ep, er, kCGGradientDrawsBeforeStartLocation);
-    CGGradientRelease(gradient);
-     */
 }
 #pragma mark - Private Methods
-
-- (CGGradientRef)convertColorToGradient:(UIColor *)color
-{
-    CGGradientRef gradient;
-    CGColorSpaceRef colorSpace;
-    size_t num_locations = 2;
-    CGFloat locations[2] = {0.0,1.0};
-    CGFloat components[8] = {1.0,0.8,0.3,1.0,
-                             1.0,0.8,0.3,0.3 };
-    colorSpace = CGColorSpaceCreateDeviceRGB();
-    gradient = CGGradientCreateWithColorComponents(colorSpace, components, locations, num_locations);
-    CGColorSpaceRelease(colorSpace);
-    return gradient;
-}
-
-- (CAAnimation*)openAnimation:(int)openedPieNum
-{
-    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
-    //[animation setPath:path];
-    [animation setDuration:3.0];
-    //CFRelease(path);
-    return animation;
-}
 //create the shadow just as the API CGContextBeginTransparencyLayer and CGContextEndTransparencyLayer
 - (void)createShadow:(BOOL)opened openedPieNum:(int)i
 {
@@ -337,7 +298,7 @@ static float pieRadius = 150.0;
     return path;
 }
 // calculate the point should be when you open a pie chart
-- (CGPoint)calculateOpenedPotions:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf
+- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf
 {
     float p = 0.0;
     for (int n=0; n<i; n++) {
@@ -379,7 +340,7 @@ static float pieRadius = 150.0;
     NSString *info = [NSString stringWithFormat:@"%@   %@%.1f",pie.name,@"%",pie.percent*100];
     
     CGPoint p1 = pie.indicatorPoint;
-    CGPoint p2 = [self calculateOpenedPotions:num withRadius:(INDICATOR_LENGTH+INDICATOR_RADIUS) isHalfAngle:YES];
+    CGPoint p2 = [self calculateOpenedPoint:num withRadius:(INDICATOR_LENGTH+INDICATOR_RADIUS) isHalfAngle:YES];
     CGPoint p3 = p2;
     if (p1.x>self.center.x) {
         p3 = CGPointMake(p2.x+INDICATOR_H_LENGTH, p2.y);
