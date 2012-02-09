@@ -30,7 +30,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 
 #pragma mark - WSPieData
 
-@interface WSPieData : NSObject 
+@interface WSPieItem : NSObject 
 
 @property (nonatomic) CGPoint startPoint;
 @property (nonatomic) CGPoint openedPoint;
@@ -41,12 +41,14 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 @property (nonatomic) int number;
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) CALayer *layer;
+@property (nonatomic, strong) CAShapeLayer *layer;
 @property (nonatomic) CGMutablePathRef path;
+
+- (void)displayPieLayer;
 
 @end
 
-@implementation WSPieData
+@implementation WSPieItem
 
 @synthesize startPoint = _startPoint;
 @synthesize color = _color;
@@ -64,30 +66,18 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 {
     self = [super init];
     if (self != nil) {
-        self.layer = [[CALayer alloc] init];
-        self.layer.delegate = self;
+        self.layer = [[CAShapeLayer alloc] init];
     }
     return self;
 }
 
-- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
+- (void)displayPieLayer
 {
-    //NSLog(@"draw the layer %f,%f",self.startPoint.x,self.layer.position.x);
-    
     CGPoint c = self.layer.position;
-    CGMutablePathRef path = CreatePiePathWithCenter(c, self.startPoint, self.startAngle, 2.0*M_PI*self.percent, NULL);   
-    CGContextBeginPath(ctx);
-    CGContextAddPath(ctx, path);
-    CGContextSetFillColorWithColor(ctx, self.color.CGColor);
-    CGContextFillPath(ctx);
-//    CGContextSetStrokeColorWithColor(ctx, self.color.CGColor);
-//    CGContextSetLineWidth(ctx, 2.0);
-//    CGContextStrokePath(ctx);
-    self.path = path;
-    //TODO: should release the 'path'
-    //CFRelease(path);
-    //CGPathRelease(path);
-
+    CGMutablePathRef path = CreatePiePathWithCenter(c, self.startPoint, self.startAngle, 2.0*M_PI*self.percent, NULL); 
+    self.layer.path = path;
+    self.layer.fillColor = self.color.CGColor;
+    CFRelease(path);
 }
 
 @end
@@ -105,9 +95,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
-//- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c fromStartPoint:(CGPoint)sp startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t;
 - (void)closeAllPieDataIsOpenedAsNO:(int)openedPieNum;
-- (void)createIndicators:(int)num;
 //- (void)createShadow:(BOOL)opened openedPieNum:(int)i;
 - (void)openAnimation:(int)openedPieNum;
 
@@ -132,10 +120,9 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
         _pies = [[NSMutableArray alloc] init];
         _paths = [[NSMutableArray alloc] init];
         _percents = [[NSMutableArray alloc] init];
-        self.clearsContextBeforeDrawing = YES;
         _pieAreaLayer = [CALayer layer];
         [self.layer addSublayer:_pieAreaLayer];
-        //self.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -186,7 +173,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
     
     //using the WSPieData to store the datas
     for (int i = 0; i < length; i++) {
-        WSPieData *pie = [[WSPieData alloc] init];
+        WSPieItem *pie = [[WSPieItem alloc] init];
         pie.percent = [[_percents objectAtIndex:i] floatValue];
         pie.name = [_names objectAtIndex:i];
         pie.startPoint = [[_startPoints objectAtIndex:i] CGPointValue];
@@ -204,7 +191,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 - (void)setColors:(NSMutableArray *)colors
 {
     for (int i=0; i<[colors count]; i++) {
-        WSPieData *pie = [self.pies objectAtIndex:i];
+        WSPieItem *pie = [self.pies objectAtIndex:i];
         pie.color = [colors objectAtIndex:i];
     }
 }
@@ -234,76 +221,22 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
     }
 }
 
-
-- (void)drawRect:(CGRect)rect
-{
-//    [self.paths removeAllObjects];
-//    
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    /*
-     TODO: why
-     1.why commenting below line. can set background color in method of initWithFrame: as self.backgroundColor = [UIColor whiteColor];
-     but the pie chart drawing confused when openedEnabled.
-     2. using below code, but can't use self.backgroundColor to set the color.
-     */
-    CGContextClearRect(context, rect);
-    //set the background color of pie chart
-    CGContextSetFillColorWithColor(context, [[UIColor whiteColor] CGColor]);
-    CGContextFillRect(context, rect);
-//    
-//    //set the shadow for pie chart
-//    //[self createShadow:self.isOpened openedPieNum:self.currentPressedNum];
-//    UIColor *shadowColor = [UIColor colorWithWhite:.5f alpha:.5f];
-//    CGContextSetShadowWithColor(context, CGSizeMake(5.0f, 3.0f), 7.0f, [shadowColor CGColor]);
-//    CGContextBeginTransparencyLayer (context, NULL);
-//    
-//    CGPoint center = self.center;
-//    int length = [self.pies count];
-//    for (int i=0; i<length; i++) {
-//        WSPieData *pie = [self.pies objectAtIndex:i];
-//        CGAffineTransform transform =  CGAffineTransformMakeTranslation(0.0, 0.0);
-//        if (pie.isOpened) {
-//            transform = CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
-//        }
-//        CGMutablePathRef path = [self createPiePathWithCenter:center 
-//                                               fromStartPoint:pie.startPoint 
-//                                                   startAngle:pie.startAngle 
-//                                                    withAngle:2.0*M_PI*pie.percent 
-//                                                    transform:transform];
-//        [pie.color setFill];
-//        //[[UIColor grayColor] setStroke];
-//        CGContextAddPath(context, path);
-//        CGContextSetLineWidth(context, 1.0);
-//        CGContextDrawPath(context,kCGPathFill);//kCGPathFillStroke//kCGPathStroke
-//        CGContextClip(context);
-//        [self.paths addObject:(__bridge id)path];
-//        CGPathRelease(path);
-//    }
-//    
-//    if (self.showIndicator) {
-//        [self createIndicators:self.currentPressedNum];
-//    }
-//    CGContextEndTransparencyLayer(context);
-    CGContextRestoreGState(context);
-}
-
 - (void)layoutSubviews
 {
     NSLog(@"WSPieChartWithMotionView - layoutSubviews");
     int length = [self.pies count];
     for (int i=0; i<length; i++) {
-        WSPieData *pie = [self.pies objectAtIndex:i];
+        WSPieItem *pie = [self.pies objectAtIndex:i];
         pie.layer.anchorPoint = CGPointMake(0.5, 0.5);
         pie.layer.frame = self.frame;
-        [pie.layer setNeedsDisplay];
+        [pie displayPieLayer];
         [self.pieAreaLayer addSublayer:pie.layer];
     }
 }
 #pragma mark - Private Methods
 - (void)openAnimation:(int)openedPieNum
 {
-    WSPieData *pie = [self.pies objectAtIndex:openedPieNum];
+    WSPieItem *pie = [self.pies objectAtIndex:openedPieNum];
     
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, pie.layer.position.x, pie.layer.position.y);
@@ -363,17 +296,6 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 //    CGContextRestoreGState(context);
 //}
 
-//// create the sector path
-//- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c fromStartPoint:(CGPoint)sp startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t
-//{
-//    CGMutablePathRef path = CGPathCreateMutable();
-//    CGPathMoveToPoint(path, &t, c.x, c.y);
-//    CGPathAddLineToPoint(path, &t,sp.x,sp.y);
-//    CGPathAddRelativeArc(path, &t, c.x, c.y, pieRadius, sa, pa);
-//    //CGPathAddLineToPoint(path, &t, c.x, c.y);
-//    CGPathCloseSubpath(path);
-//    return path;
-//}
 // calculate the point should be when you open a pie chart
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf
 {
@@ -397,58 +319,10 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 {
     for (int n=0; n<[self.pies count]; n++) {
         if (n!=openedPieNum) {
-            WSPieData *pie = [self.pies objectAtIndex:n];
+            WSPieItem *pie = [self.pies objectAtIndex:n];
             pie.isOpened = NO;
         }
     }
-}
-
-- (void)createIndicators:(int)num
-{
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    
-    WSPieData *pie = [self.pies objectAtIndex:num];
-    
-    //set font
-    UIColor *fontColor = [UIColor colorWithRed:0.5 green:0.0 blue:0.5 alpha:1.0];
-    [fontColor set];
-    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14.0];
-    NSString *info = [NSString stringWithFormat:@"%@   %@%.1f",pie.name,@"%",pie.percent*100];
-    
-    CGPoint p1 = pie.indicatorPoint;
-    CGPoint p2 = [self calculateOpenedPoint:num withRadius:(INDICATOR_LENGTH+INDICATOR_RADIUS) isHalfAngle:YES];
-    CGPoint p3 = p2;
-    if (p1.x>self.center.x) {
-        p3 = CGPointMake(p2.x+INDICATOR_H_LENGTH, p2.y);
-        [info drawAtPoint:CGPointMake(p2.x, p2.y-20.0) withFont:helveticated];
-    }else{
-        p3 = CGPointMake(p2.x-INDICATOR_H_LENGTH, p2.y);
-        [info drawAtPoint:CGPointMake(p3.x, p2.y-20.0) withFont:helveticated];
-    }
-    
-    //draw the line
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddEllipseInRect(path, NULL, CGRectMake(p1.x-1.5,p1.y-1.5, 3.0, 3.0));
-    CGPathMoveToPoint(path,NULL, p1.x, p1.y);
-    CGPathAddLineToPoint(path, NULL,p2.x,p2.y);
-    CGPathMoveToPoint(path, NULL,p2.x,+p2.y);
-    CGPathAddLineToPoint(path, NULL,p3.x,p3.y);
-    
-    UIColor *c = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.6f];
-    [c setStroke];
-    [c setFill];
-    
-    //add shadow
-    UIColor *shadowColor = [UIColor colorWithWhite:.5f alpha:.5f];
-    CGContextSetShadowWithColor(context, CGSizeMake(5.0f, 3.0f), 7.0f, [shadowColor CGColor]);
-    
-    CGContextAddPath(context, path);
-    CGContextSetLineWidth(context, 2.0);
-    CGContextDrawPath(context, kCGPathFillStroke);
-    CGPathRelease(path);
-    
-    CGContextRestoreGState(context);
 }
 
 #pragma mark - Touch Event 
@@ -458,31 +332,17 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
     if (!self.touchEnabled) return;
     UITouch *t = [touches anyObject];
 	CGPoint point = [t locationInView:self];
-    
-//    for (int i=0; i < [self.pies count]; i++) {
-//        CGMutablePathRef path = (__bridge CGMutablePathRef)[self.paths objectAtIndex:i];
-//        WSPieData *pie = [self.pies objectAtIndex:i];
-//        if (CGPathContainsPoint(path, nil, point, nil)) {
-//            if (self.openEnabled) {
-//                pie.isOpened = !pie.isOpened;
-//                self.isOpened = pie.isOpened?YES:NO;
-//                [self closeAllPieDataIsOpenedAsNO:i];
-//            }
-//            self.currentPressedNum = i;
-//            [self setNeedsDisplay];
-//        }
-//    }
-    
+    point = [self.layer convertPoint:point toLayer:self.pieAreaLayer];
     for (int i=0; i<[self.pies count]; i++) {
-        WSPieData *pie = [self.pies objectAtIndex:i];
-
-        if (CGPathContainsPoint(pie.path, nil, point, nil))
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        CGPoint p = [self.pieAreaLayer convertPoint:point toLayer:pie.layer];
+        if (CGPathContainsPoint(pie.layer.path, nil, p, nil))
         {
-            NSLog(@"touched - %d",i);
+            
             if (self.openEnabled) {
                 [self openAnimation:i];
                 pie.isOpened = !pie.isOpened;
-                self.isOpened = pie.isOpened?YES:NO;
+                //self.isOpened = pie.isOpened?YES:NO;
                 [self closeAllPieDataIsOpenedAsNO:i];
             }
         }
