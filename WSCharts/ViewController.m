@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-//#import "WSPieChartView.h"
+#import "WSPieChartView.h"
 #import "WSPieChartWithMotionView.h"
 @implementation ViewController
 
@@ -35,6 +35,14 @@
     pieChart.showIndicator = YES;
     pieChart.openEnabled = YES;
     [self.view addSubview:pieChart];
+    
+//    WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
+//    pieChart.data = pieData;
+//    pieChart.colors = colors;
+//    pieChart.touchEnabled = YES;
+//    pieChart.showIndicator = YES;
+//    //pieChart.openEnabled = YES;
+//    [self.view addSubview:pieChart];
     
     self.view.backgroundColor = [UIColor clearColor];
 }

@@ -17,12 +17,11 @@
 static float pieRadius = 150.0;
 
 // create the sector path
-static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoint,CGFloat startAngle, CGFloat angle,CGAffineTransform *transform)
+static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,CGFloat startAngle, CGFloat angle,CGAffineTransform *transform)
 {
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, transform, center.x, center.y);
-    CGPathAddLineToPoint(path, transform,startPoint.x,startPoint.y);
-    CGPathAddRelativeArc(path, transform, center.x, center.y, pieRadius, startAngle, angle);
+    CGPathAddRelativeArc(path, transform, center.x, center.y, radius, startAngle, angle);
     CGPathCloseSubpath(path);
     return path;
 }
@@ -32,7 +31,6 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 
 @interface WSPieItem : NSObject 
 
-@property (nonatomic) CGPoint startPoint;
 @property (nonatomic) CGPoint openedPoint;
 @property (nonatomic) CGPoint indicatorPoint;
 @property (nonatomic) CGFloat startAngle;
@@ -50,7 +48,6 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 
 @implementation WSPieItem
 
-@synthesize startPoint = _startPoint;
 @synthesize color = _color;
 @synthesize percent = _percent;
 @synthesize number = _number;
@@ -74,7 +71,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
 - (void)displayPieLayer
 {
     CGPoint c = self.layer.position;
-    CGMutablePathRef path = CreatePiePathWithCenter(c, self.startPoint, self.startAngle, 2.0*M_PI*self.percent, NULL); 
+    CGMutablePathRef path = CreatePiePathWithCenter(c,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
     self.layer.path = path;
     self.layer.fillColor = self.color.CGColor;
     CFRelease(path);
@@ -132,7 +129,6 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
     NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _names = [[NSMutableArray alloc] init];
-    NSMutableArray* _startPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _startAngles = [[NSMutableArray alloc] init];
     
     NSArray *values = [dict allValues];
@@ -152,15 +148,10 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
     //get the labels text
     _names = [[NSMutableArray alloc] initWithArray:keys];
     
-    //calculate the startpoints and startAngle
-    CGPoint startArcPoint = CGPointMake(self.center.x,self.center.y);
-    NSValue *startArcPointValue = [NSValue valueWithCGPoint:startArcPoint];
-    [_startPoints addObject:startArcPointValue];
+    //calculate the startAngle
     float startAngle = -M_PI/2.0f;
     [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
     for (int i=0; i<length-1; i++) {
-        [_startPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:pieRadius isHalfAngle:NO]]];
-
         startAngle += 2.0*M_PI*[[_percents objectAtIndex:i] floatValue];
         [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
     }
@@ -176,7 +167,6 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGPoint startPoi
         WSPieItem *pie = [[WSPieItem alloc] init];
         pie.percent = [[_percents objectAtIndex:i] floatValue];
         pie.name = [_names objectAtIndex:i];
-        pie.startPoint = [[_startPoints objectAtIndex:i] CGPointValue];
         pie.indicatorPoint = [[_indicatorPoints objectAtIndex:i] CGPointValue];
         pie.openedPoint = [[_openedPoints objectAtIndex:i] CGPointValue];
         pie.number = [[values objectAtIndex:i] floatValue];

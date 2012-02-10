@@ -20,7 +20,6 @@ static float pieRadius = 150.0;
 
 @interface WSPieData : NSObject 
 
-@property (nonatomic) CGPoint startPoint;
 @property (nonatomic) CGPoint openedPoint;
 @property (nonatomic) CGPoint indicatorPoint;
 @property (nonatomic) CGFloat startAngle;
@@ -34,7 +33,6 @@ static float pieRadius = 150.0;
 
 @implementation WSPieData
 
-@synthesize startPoint = _startPoint;
 @synthesize color = _color;
 @synthesize percent = _percent;
 @synthesize number = _number;
@@ -59,7 +57,7 @@ static float pieRadius = 150.0;
 
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
-- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c fromStartPoint:(CGPoint)sp startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t;
+- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c withRadius:(CGFloat)r startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t;
 - (void)closeAllPieDataIsOpenedAsNO:(int)openedPieNum;
 - (void)createIndicators:(int)num;
 - (void)createShadow:(BOOL)opened openedPieNum:(int)i;
@@ -98,7 +96,6 @@ static float pieRadius = 150.0;
     NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _names = [[NSMutableArray alloc] init];
-    NSMutableArray* _startPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _startAngles = [[NSMutableArray alloc] init];
     
     NSArray *values = [dict allValues];
@@ -119,14 +116,9 @@ static float pieRadius = 150.0;
     _names = [[NSMutableArray alloc] initWithArray:keys];
     
     //calculate the startpoints and startAngle
-    CGPoint startArcPoint = CGPointMake(self.center.x,self.center.y);
-    NSValue *startArcPointValue = [NSValue valueWithCGPoint:startArcPoint];
-    [_startPoints addObject:startArcPointValue];
     float startAngle = -M_PI/2.0f;
     [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
     for (int i=0; i<length-1; i++) {
-        [_startPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:pieRadius isHalfAngle:NO]]];
-
         startAngle += 2.0*M_PI*[[_percents objectAtIndex:i] floatValue];
         [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
     }
@@ -142,7 +134,6 @@ static float pieRadius = 150.0;
         WSPieData *pie = [[WSPieData alloc] init];
         pie.percent = [[_percents objectAtIndex:i] floatValue];
         pie.name = [_names objectAtIndex:i];
-        pie.startPoint = [[_startPoints objectAtIndex:i] CGPointValue];
         pie.indicatorPoint = [[_indicatorPoints objectAtIndex:i] CGPointValue];
         pie.openedPoint = [[_openedPoints objectAtIndex:i] CGPointValue];
         pie.number = [[values objectAtIndex:i] floatValue];
@@ -217,7 +208,7 @@ static float pieRadius = 150.0;
             transform = CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
         }
         CGMutablePathRef path = [self createPiePathWithCenter:center 
-                                               fromStartPoint:pie.startPoint 
+                                                   withRadius:pieRadius 
                                                    startAngle:pie.startAngle 
                                                     withAngle:2.0*M_PI*pie.percent 
                                                     transform:transform];
@@ -255,19 +246,15 @@ static float pieRadius = 150.0;
         WSPieData *pie = [self.pies objectAtIndex:i];
         CGAffineTransform transform =  CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
         CGMutablePathRef sector = [self createPiePathWithCenter:self.center 
-                                                 fromStartPoint:pie.startPoint 
+                                                     withRadius:pieRadius
                                                      startAngle:pie.startAngle 
                                                       withAngle:2.0*M_PI*pie.percent 
                                                       transform:transform];
         CGContextAddPath(context, sector);
         CGPathRelease(sector);
-        CGPoint startPoint = CGPointMake(self.center.x,self.center.y);
-        if (i != ([self.pies count]-1)) {
-            startPoint = ((WSPieData*)[self.pies objectAtIndex:i+1]).startPoint;
-        }
         CGAffineTransform transform2 =  CGAffineTransformMakeTranslation(0.0, 0.0);
         CGMutablePathRef sector2 = [self createPiePathWithCenter:self.center 
-                                                  fromStartPoint:startPoint 
+                                                      withRadius:pieRadius
                                                       startAngle:pie.startAngle+2.0*M_PI*pie.percent
                                                        withAngle:2.0*M_PI*(1.0f-pie.percent)
                                                        transform:transform2];
@@ -287,13 +274,11 @@ static float pieRadius = 150.0;
 }
 
 // create the sector path
-- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c fromStartPoint:(CGPoint)sp startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t
+- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c withRadius:(CGFloat)r startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t
 {
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, &t, c.x, c.y);
-    CGPathAddLineToPoint(path, &t,sp.x,sp.y);
-    CGPathAddRelativeArc(path, &t, c.x, c.y, pieRadius, sa, pa);
-    //CGPathAddLineToPoint(path, &t, c.x, c.y);
+    CGPathAddRelativeArc(path, &t, c.x, c.y, r, sa, pa);
     CGPathCloseSubpath(path);
     return path;
 }
