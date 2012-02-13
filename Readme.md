@@ -3,15 +3,11 @@ Read Me
 
 **WSChart's target is using simple code to create charts.**
 
-PieChart's screenshots as below:
+PieChart's screenshots are under the folder /screenshots:
 
-'pieChart.showIndicator = YES'
+'pieChart.showIndicator = YES' is /screenshots/PieChart-showIndicator.png
 
-![showIndicator style](http://wwww.flickr.com/photos/pyanfield/6810927299/ "showIndicator style")
-
-'pieChart.openEnabled = YES'
-
-![showIndicator style](http://wwww.flickr.com/photos/pyanfield/6810927259/ "showIndicator style")
+'pieChart.openEnabled = YES' is /screenshots/PieChart-openEnabled.png
 
 I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, Line Chart, Comno Chart, Column Chart, Area Chart and Candlestick Chart.
 

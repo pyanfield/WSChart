@@ -2,18 +2,6 @@ TODO
 =================
 
 * Pie Chart : ongoing
--------------------------
-
-PieChart's screenshots as below:
-
-'pieChart.showIndicator = YES'
-
-![showIndicator style](http://wwww.flickr.com/photos/pyanfield/6810927299/ "showIndicator style")
-
-'pieChart.openEnabled = YES'
-
-![showIndicator style](http://wwww.flickr.com/photos/pyanfield/6810927259/ "showIndicator style")
-
 * Column Chart
 * Line Chart
 * Area Chart
