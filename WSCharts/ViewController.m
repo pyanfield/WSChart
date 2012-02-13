@@ -34,6 +34,7 @@
     pieChart.touchEnabled = YES;
     pieChart.showIndicator = YES;
     pieChart.openEnabled = YES;
+    pieChart.showShadow = YES;
     [self.view addSubview:pieChart];
     
 //    WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];

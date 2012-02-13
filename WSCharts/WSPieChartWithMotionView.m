@@ -139,6 +139,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic) int currentPressedNum;
 @property (nonatomic) BOOL isOpened;
 @property (nonatomic, strong) CALayer *pieAreaLayer;
+@property (nonatomic, strong) CALayer *legendAreaLayer;
 @property (nonatomic, strong) CAShapeLayer *currentTouchedLayer;
 
 
@@ -147,6 +148,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 - (void)createShadowForClosedPies;
 - (void)openAnimation:(int)openedPieNum;
 - (void)closeAnimation:(int)openedPieNum;
+- (void)showLegends;
 
 @end
 
@@ -164,6 +166,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize pieAreaLayer = _pieAreaLayer;
 @synthesize currentTouchedLayer = _currentTouchedLayer;
 @synthesize showShadow = _showShadow;
+@synthesize legendAreaLayer = _legendAreaLayer;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -178,6 +181,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     return self;
 }
 
+#pragma mark - WSPieChartWithMotionView's Property
 - (void)setData:(NSMutableDictionary *)dict
 {
     NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
@@ -266,6 +270,16 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
 }
 
+- (CALayer*)legendAreaLayer
+{
+    if (_legendAreaLayer!=nil) {
+        return _legendAreaLayer;
+    }
+    _legendAreaLayer = [[CALayer alloc] init];
+    return _legendAreaLayer;
+}
+#pragma mark - Render UI 
+
 - (void)layoutSubviews
 {
     int length = [self.pies count];
@@ -277,6 +291,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         [pie displayPieLayer];
         [self.pieAreaLayer addSublayer:pie.layer];
     }
+    
+    //test legends
+    [self showLegends];
 }
 - (void)drawRect:(CGRect)rect
 {
@@ -308,6 +325,25 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
     CGContextEndTransparencyLayer(context);
     CGContextRestoreGState(context);
+}
+
+- (void)showLegends
+{
+    int length = [self.pies count];
+    for (int i=0; i<length; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        
+        CAShapeLayer *rect = [[CAShapeLayer alloc] init];
+        rect.bounds = CGRectMake(0.0, 0.0, 15.0, 15.0);
+        rect.anchorPoint = CGPointMake(0.0, 0.0);
+        rect.position = CGPointMake(10.0, 20.0*i+20.0);
+        rect.path = CGPathCreateWithRect(rect.bounds, NULL);
+        rect.fillColor = pie.color.CGColor;
+        
+        [self.legendAreaLayer addSublayer:rect];
+    }
+    
+    [self.layer addSublayer:self.legendAreaLayer];
 }
 
 #pragma mark - Animation Methods
