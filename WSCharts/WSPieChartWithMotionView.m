@@ -16,6 +16,14 @@
 
 static float pieRadius = 150.0;
 
+// def the pie's status for the animation
+typedef enum{
+    Opened,
+    OpenOngoing,
+    Closed,
+    CloseOngoing,
+} PieStatus;
+
 // create the sector path
 static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,CGFloat startAngle, CGFloat angle,CGAffineTransform *transform)
 {
@@ -33,8 +41,9 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 
 @property (nonatomic) CGPoint openedPoint;
 @property (nonatomic) CGPoint indicatorPoint;
+@property (nonatomic) CGPoint center;
 @property (nonatomic) CGFloat startAngle;
-@property (nonatomic) BOOL isOpened;
+@property (nonatomic) PieStatus pieStatus;
 @property (nonatomic) float percent;
 @property (nonatomic) int number;
 @property (nonatomic, strong) UIColor *color;
@@ -54,7 +63,8 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 @synthesize name = _name;
 @synthesize indicatorPoint = _indicatorPoint;
 @synthesize openedPoint = _openedPoint;
-@synthesize isOpened = _isOpened;
+@synthesize center = _center;
+@synthesize pieStatus = _pieStatus;
 @synthesize startAngle = _startAngle;
 @synthesize layer = _layer;
 @synthesize path = _path;
@@ -70,8 +80,8 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 
 - (void)displayPieLayer
 {
-    CGPoint c = self.layer.position;
-    CGMutablePathRef path = CreatePiePathWithCenter(c,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
+    //CGPoint c = self.layer.position;
+    CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
     self.layer.path = path;
     self.layer.fillColor = self.color.CGColor;
     CFRelease(path);
@@ -89,12 +99,14 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 @property (nonatomic) int currentPressedNum;
 @property (nonatomic) BOOL isOpened;
 @property (nonatomic, strong) CALayer *pieAreaLayer;
+@property (nonatomic, strong) CAShapeLayer *currentTouchedLayer;
 
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
-- (void)closeAllPieDataIsOpenedAsNO:(int)openedPieNum;
+- (void)closeOtherPiesExcept:(int)openedPieNum;
 //- (void)createShadow:(BOOL)opened openedPieNum:(int)i;
 - (void)openAnimation:(int)openedPieNum;
+- (void)closeAnimation:(int)openedPieNum;
 
 @end
 
@@ -110,6 +122,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 @synthesize currentPressedNum = _currentPressedNum;
 @synthesize isOpened = _isOpened;
 @synthesize pieAreaLayer = _pieAreaLayer;
+@synthesize currentTouchedLayer = _currentTouchedLayer;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -171,7 +184,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
         pie.openedPoint = [[_openedPoints objectAtIndex:i] CGPointValue];
         pie.number = [[values objectAtIndex:i] floatValue];
         pie.startAngle = [[_startAngles objectAtIndex:i] floatValue];
-        pie.isOpened = NO;
+        pie.pieStatus = Closed;
         [self.pies addObject:pie];
     }
     
@@ -213,31 +226,190 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 
 - (void)layoutSubviews
 {
-    NSLog(@"WSPieChartWithMotionView - layoutSubviews");
+    //NSLog(@"WSPieChartWithMotionView - layoutSubviews");
     int length = [self.pies count];
     for (int i=0; i<length; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
         pie.layer.anchorPoint = CGPointMake(0.5, 0.5);
         pie.layer.frame = self.frame;
+        pie.center = pie.layer.position;
         [pie displayPieLayer];
         [self.pieAreaLayer addSublayer:pie.layer];
     }
 }
-#pragma mark - Private Methods
+#pragma mark - Animation Methods
 - (void)openAnimation:(int)openedPieNum
 {
     WSPieItem *pie = [self.pies objectAtIndex:openedPieNum];
-    
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, pie.layer.position.x, pie.layer.position.y);
     CGPathAddLineToPoint(path, NULL, pie.openedPoint.x, pie.openedPoint.y);
 	CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
 	animation.path = path;
-	animation.duration = 0.5f;
-    animation.autoreverses = NO;
+	animation.duration = 0.3f;
+    animation.delegate = self;
+    [animation setValue:[NSNumber numberWithInt:openedPieNum] forKey:@"openedPieNum"];
+    animation.removedOnCompletion = NO;
+    //if need to stop at complete position ,must set that position before add animation to the layer.
+    pie.layer.position = pie.openedPoint;
 	[pie.layer addAnimation:animation forKey:@"open"];
     CGPathRelease(path);
 }
+
+- (void)closeAnimation:(int)openedPieNum
+{
+    WSPieItem *pie = [self.pies objectAtIndex:openedPieNum];
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, pie.layer.position.x, pie.layer.position.y);
+    CGPathAddLineToPoint(path, NULL, pie.center.x, pie.center.y);
+	CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+	animation.path = path;
+	animation.duration = 0.3f;
+    animation.delegate = self;
+    animation.removedOnCompletion = NO;
+    [animation setValue:[NSNumber numberWithInt:openedPieNum] forKey:@"closePieNum"];
+    pie.layer.position = pie.center;
+	[pie.layer addAnimation:animation forKey:@"close"];
+    CGPathRelease(path);
+}
+- (void)animationDidStart:(CAAnimation *)anim
+{
+    WSPieItem *pie = [self.pies objectAtIndex:[[anim valueForKey:@"openedPieNum"] intValue]];
+    CAShapeLayer *layer = pie.layer;
+    //if animation.removeOnCompletion = YES. the [layer animationForKey:@"open"] will return null
+    if ([anim isEqual:[layer animationForKey:@"open"]]) {
+        NSLog(@"start > open animation");
+        pie.pieStatus = OpenOngoing;
+    }
+    
+    pie = [self.pies objectAtIndex:[[anim valueForKey:@"closePieNum"] intValue]];
+    layer = pie.layer;
+    if ([anim isEqual:[layer animationForKey:@"close"]]) {
+        NSLog(@"start > close animation");
+        pie.pieStatus = CloseOngoing;
+    }
+}
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
+{
+    if (flag) {
+        WSPieItem *pie = [self.pies objectAtIndex:[[anim valueForKey:@"openedPieNum"] intValue]];
+        CAShapeLayer *layer = pie.layer;
+        //if animation.removeOnCompletion = YES. the [layer animationForKey:@"open"] will return null
+        if ([anim isEqual:[layer animationForKey:@"open"]]) {
+            NSLog(@"stop < open animation");
+            pie.pieStatus = Opened;
+            [layer removeAnimationForKey:@"open"];
+        }
+        
+        pie = [self.pies objectAtIndex:[[anim valueForKey:@"closePieNum"] intValue]];
+        layer = pie.layer;
+        if ([anim isEqual:[layer animationForKey:@"close"]]) {
+            NSLog(@"stop < close animation");
+            pie.pieStatus = Closed;
+            [layer removeAnimationForKey:@"close"];
+        }
+    }else
+    {
+        NSLog(@"removed animation");
+    }
+    
+}
+
+// check other pie, if its status is opened or openongoing, then need to close it.
+- (void)closeOtherPiesExcept:(int)openedPieNum
+{
+    for (int i=0; i<[self.pies count]; i++) {
+        if (i!=openedPieNum) {
+            WSPieItem *pie = [self.pies objectAtIndex:i];
+            switch (pie.pieStatus) {
+                case Opened:
+                    [self closeAnimation:i];
+                    break;
+                case OpenOngoing:
+                    [pie.layer removeAllAnimations];
+                    [self closeAnimation:i];
+                    break;
+                case CloseOngoing:
+                    break;
+                case Closed:
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+// calculate the point should be when you open a pie chart
+- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf
+{
+    float p = 0.0;
+    for (int n=0; n<i; n++) {
+        p += [[self.percents objectAtIndex:n] floatValue];
+    }
+    if (isHalf) {
+        p += [[self.percents objectAtIndex:i] floatValue]/2.0;
+    }else
+    {
+        p += [[self.percents objectAtIndex:i] floatValue];
+    }
+    float x = radius*sinf(p*2*M_PI);
+    float y = radius*cosf(p*2*M_PI);
+    CGPoint point = CGPointMake(self.center.x+x,self.center.y-y);
+    return point;
+}
+
+#pragma mark - Touch Event 
+/*
+ clicking one
+     if [close]         then [open it]
+     if [open]          then [close it]
+     if [close ongoing] then [stop it][open it]
+     if [open ongoing]  then [stop it][close it]
+ others
+     if [open]          then [close it]
+     if [open ongoing]  then [stop][close it]
+     if [close]         then ignore
+     if [close ongoing] then ignore
+ */
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (!self.touchEnabled) return;
+    UITouch *t = [touches anyObject];
+	CGPoint point = [t locationInView:self];
+    point = [self.layer convertPoint:point toLayer:self.pieAreaLayer];
+    for (int i=0; i<[self.pies count]; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        CGPoint p = [self.pieAreaLayer convertPoint:point toLayer:pie.layer];
+        if (CGPathContainsPoint(pie.layer.path, nil, p, nil))
+        {
+            if (self.openEnabled) {
+                switch (pie.pieStatus) {
+                    case Closed:
+                        [self openAnimation:i];
+                        break;
+                    case Opened:
+                        [self closeAnimation:i];
+                        break;
+                    case CloseOngoing:
+                        [pie.layer removeAllAnimations];
+                        [self openAnimation:i];
+                        break;
+                    case OpenOngoing:
+                        [pie.layer removeAllAnimations];
+                        [self closeAnimation:i];
+                        break;
+                    default:
+                        break;
+                }
+            
+            }
+            [self closeOtherPiesExcept:i];
+        }
+    }
+}
+
+
 //create the shadow just as the API CGContextBeginTransparencyLayer and CGContextEndTransparencyLayer
 //- (void)createShadow:(BOOL)opened openedPieNum:(int)i
 //{
@@ -285,59 +457,5 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 //    CGContextDrawPath(context, kCGPathFill);
 //    CGContextRestoreGState(context);
 //}
-
-// calculate the point should be when you open a pie chart
-- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf
-{
-    float p = 0.0;
-    for (int n=0; n<i; n++) {
-        p += [[self.percents objectAtIndex:n] floatValue];
-    }
-    if (isHalf) {
-        p += [[self.percents objectAtIndex:i] floatValue]/2.0;
-    }else
-    {
-        p += [[self.percents objectAtIndex:i] floatValue];
-    }
-    float x = radius*sinf(p*2*M_PI);
-    float y = radius*cosf(p*2*M_PI);
-    CGPoint point = CGPointMake(self.center.x+x,self.center.y-y);
-    return point;
-}
-// close all pieData's isOpened as NO except the pressed one 
-- (void)closeAllPieDataIsOpenedAsNO:(int)openedPieNum
-{
-    for (int n=0; n<[self.pies count]; n++) {
-        if (n!=openedPieNum) {
-            WSPieItem *pie = [self.pies objectAtIndex:n];
-            pie.isOpened = NO;
-        }
-    }
-}
-
-#pragma mark - Touch Event 
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    if (!self.touchEnabled) return;
-    UITouch *t = [touches anyObject];
-	CGPoint point = [t locationInView:self];
-    point = [self.layer convertPoint:point toLayer:self.pieAreaLayer];
-    for (int i=0; i<[self.pies count]; i++) {
-        WSPieItem *pie = [self.pies objectAtIndex:i];
-        CGPoint p = [self.pieAreaLayer convertPoint:point toLayer:pie.layer];
-        if (CGPathContainsPoint(pie.layer.path, nil, p, nil))
-        {
-            
-            if (self.openEnabled) {
-                [self openAnimation:i];
-                pie.isOpened = !pie.isOpened;
-                //self.isOpened = pie.isOpened?YES:NO;
-                [self closeAllPieDataIsOpenedAsNO:i];
-            }
-        }
-    }
-}
-
 
 @end
