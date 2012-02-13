@@ -47,6 +47,16 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
     CGPathCloseSubpath(path);
     return path;
 }
+// create shadow for the pie
+static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
+{
+    if (disable) {
+        UIColor *shadowColor = [UIColor colorWithWhite:.8f alpha:.5f];
+        CGContextSetShadowWithColor(ctx, CGSizeMake(5.0f, 3.0f), 7.0f, [shadowColor CGColor]);
+    }else{
+        CGContextSetShadowWithColor(ctx, CGSizeMake(5.0f, 3.0f), 7.0f, NULL);
+    }
+}
 
 
 #pragma mark - WSPieData
@@ -88,6 +98,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
     self = [super init];
     if (self != nil) {
         self.layer = [[CAShapeLayer alloc] init];
+        self.layer.delegate = self;
     }
     return self;
 }
@@ -101,6 +112,21 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
     CFRelease(path);
 }
 
+- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
+{
+    CGContextSaveGState(ctx);
+    if (self.pieStatus == (PieStatus)Closed) {
+        CreateShadowWithContext(ctx, NO);
+    }else
+    {
+        CreateShadowWithContext(ctx, YES);
+    }
+    CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
+    CGContextAddPath(ctx, path);
+    CGContextDrawPath(ctx,kCGPathFill);
+    CFRelease(path);
+    CGContextRestoreGState(ctx);
+}
 @end
 
 #pragma mark - WSPieChartWithMotionView
@@ -118,7 +144,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
 - (void)closeOtherPiesExcept:(int)openedPieNum;
-//- (void)createShadow:(BOOL)opened openedPieNum:(int)i;
+- (void)createShadowForClosedPies;
 - (void)openAnimation:(int)openedPieNum;
 - (void)closeAnimation:(int)openedPieNum;
 
@@ -137,6 +163,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 @synthesize isOpened = _isOpened;
 @synthesize pieAreaLayer = _pieAreaLayer;
 @synthesize currentTouchedLayer = _currentTouchedLayer;
+@synthesize showShadow = _showShadow;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -213,6 +240,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
     }
 }
 
+/*
 - (void)setShowIndicator:(BOOL)showIndicator
 {
     _showIndicator = showIndicator;
@@ -220,7 +248,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
         _openEnabled = NO;
     }
 }
-
+*/
 - (void)setOpenEnabled:(BOOL)openEnabled
 {
     _openEnabled = openEnabled;
@@ -240,7 +268,6 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 
 - (void)layoutSubviews
 {
-    //NSLog(@"WSPieChartWithMotionView - layoutSubviews");
     int length = [self.pies count];
     for (int i=0; i<length; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
@@ -251,7 +278,40 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
         [self.pieAreaLayer addSublayer:pie.layer];
     }
 }
+- (void)drawRect:(CGRect)rect
+{
+    if (self.showShadow) {
+        [self createShadowForClosedPies];
+    }
+}
+
+//create the shadow for the closed pies
+- (void)createShadowForClosedPies
+{
+    UIColor *bgc = self.backgroundColor;
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    CGContextClearRect(context, self.frame);
+    CGContextSetFillColorWithColor(context, bgc.CGColor);
+    CGContextFillRect(context, self.frame);
+    CreateShadowWithContext(context, YES);
+    CGContextBeginTransparencyLayer (context, NULL);
+    CGPoint center = CGPointMake(self.center.x+self.frame.origin.x, self.center.y+self.frame.origin.y);
+    for (int i=0; i<[self.pies count]; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        if (pie.pieStatus == (PieStatus)Closed) {
+            CGMutablePathRef path = CreatePiePathWithCenter(center, pieRadius, pie.startAngle, pie.percent*2.0*M_PI, NULL);
+            CGContextAddPath(context, path);
+            CGContextDrawPath(context, kCGPathFill);
+            CGPathRelease(path);
+        }
+    }
+    CGContextEndTransparencyLayer(context);
+    CGContextRestoreGState(context);
+}
+
 #pragma mark - Animation Methods
+// open the touched pie
 - (void)openAnimation:(int)openedPieNum
 {
     WSPieItem *pie = [self.pies objectAtIndex:openedPieNum];
@@ -269,7 +329,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 	[pie.layer addAnimation:animation forKey:@"open"];
     CGPathRelease(path);
 }
-
+// close the target pie
 - (void)closeAnimation:(int)openedPieNum
 {
     WSPieItem *pie = [self.pies objectAtIndex:openedPieNum];
@@ -292,14 +352,20 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
     CAShapeLayer *layer = pie.layer;
     //if animation.removeOnCompletion = YES. the [layer animationForKey:@"open"] will return null
     if ([anim isEqual:[layer animationForKey:@"open"]]) {
-        NSLog(@"start > open animation");
+        //NSLog(@"start > open animation");
         pie.pieStatus = OpenOngoing;
+        if (self.showShadow) {
+            //redraw the UIView
+            [self setNeedsDisplay];
+            //redraw the layer of WSPieItem
+            [pie.layer setNeedsDisplay];
+        }
     }
     
     pie = [self.pies objectAtIndex:[[anim valueForKey:@"closePieNum"] intValue]];
     layer = pie.layer;
     if ([anim isEqual:[layer animationForKey:@"close"]]) {
-        NSLog(@"start > close animation");
+        //NSLog(@"start > close animation");
         pie.pieStatus = CloseOngoing;
     }
 }
@@ -310,7 +376,7 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
         CAShapeLayer *layer = pie.layer;
         //if animation.removeOnCompletion = YES. the [layer animationForKey:@"open"] will return null
         if ([anim isEqual:[layer animationForKey:@"open"]]) {
-            NSLog(@"stop < open animation");
+            //NSLog(@"stop < open animation");
             pie.pieStatus = Opened;
             [layer removeAnimationForKey:@"open"];
         }
@@ -318,15 +384,18 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
         pie = [self.pies objectAtIndex:[[anim valueForKey:@"closePieNum"] intValue]];
         layer = pie.layer;
         if ([anim isEqual:[layer animationForKey:@"close"]]) {
-            NSLog(@"stop < close animation");
+            //NSLog(@"stop < close animation");
             pie.pieStatus = Closed;
+            if (self.showShadow) {
+                [self setNeedsDisplay];
+                [pie.layer setNeedsDisplay]; 
+            }
             [layer removeAnimationForKey:@"close"];
         }
     }else
     {
-        NSLog(@"removed animation");
+        //NSLog(@"removed animation");
     }
-    
 }
 
 // check other pie, if its status is opened or openongoing, then need to close it.
@@ -422,54 +491,5 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
         }
     }
 }
-
-
-//create the shadow just as the API CGContextBeginTransparencyLayer and CGContextEndTransparencyLayer
-//- (void)createShadow:(BOOL)opened openedPieNum:(int)i
-//{
-//    CGContextRef context = UIGraphicsGetCurrentContext();
-//    CGContextSaveGState(context);
-//
-//    UIColor *shadowColor = [UIColor colorWithWhite:.8f alpha:.5f];
-//    CGContextSetShadowWithColor(context, CGSizeMake(5.0f, 3.0f), 7.0f, [shadowColor CGColor]);
-//    
-//    /*when the pie is opened. draw two sectors. one is opened. another one is the rest part of the circle.
-//     if the pie is opened. just draw a circle.
-//     */
-//    if (opened) {
-//        //draw opened sector shadow
-//        WSPieData *pie = [self.pies objectAtIndex:i];
-//        CGAffineTransform transform =  CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
-//        CGMutablePathRef sector = [self createPiePathWithCenter:self.center 
-//                                                 fromStartPoint:pie.startPoint 
-//                                                     startAngle:pie.startAngle 
-//                                                      withAngle:2.0*M_PI*pie.percent 
-//                                                      transform:transform];
-//        CGContextAddPath(context, sector);
-//        CGPathRelease(sector);
-//        CGPoint startPoint = CGPointMake(self.center.x,self.center.y);
-//        if (i != ([self.pies count]-1)) {
-//            startPoint = ((WSPieData*)[self.pies objectAtIndex:i+1]).startPoint;
-//        }
-//        CGAffineTransform transform2 =  CGAffineTransformMakeTranslation(0.0, 0.0);
-//        CGMutablePathRef sector2 = [self createPiePathWithCenter:self.center 
-//                                                  fromStartPoint:startPoint 
-//                                                      startAngle:pie.startAngle+2.0*M_PI*pie.percent
-//                                                       withAngle:2.0*M_PI*(1.0f-pie.percent)
-//                                                       transform:transform2];
-//        CGContextAddPath(context, sector2);
-//        CGPathRelease(sector2);
-//    }else
-//    {
-//        //draw the circle path
-//        CGMutablePathRef path = CGPathCreateMutable();
-//        CGPathAddEllipseInRect(path, NULL, CGRectMake(self.center.x-pieRadius, self.center.y-pieRadius, 2.0*pieRadius, 2.0*pieRadius));
-//        CGContextAddPath(context, path);
-//        CGPathRelease(path);
-//    }
-//    
-//    CGContextDrawPath(context, kCGPathFill);
-//    CGContextRestoreGState(context);
-//}
 
 @end

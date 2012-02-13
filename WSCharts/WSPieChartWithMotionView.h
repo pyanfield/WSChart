@@ -32,6 +32,15 @@
 @property (nonatomic) BOOL touchEnabled;
 @property (nonatomic) BOOL showIndicator;
 @property (nonatomic) BOOL openEnabled;
+/*
+ Carefully use the showShadow property. This is a fake shadow for the pie. create duplicated sectors for the pies on UIView and CALayer.
+ if the showShadow is true:
+    1.will draw the shadow for the Opened/OpenOngoing/CloseOngoing pie on WSPieItem's layer (drawLayer:inContext:). 
+      so that the shadow can rendered with the open and close animation.
+    2.will draw the shadow for the Closed pies on UIView's drawRect: .In the UIView's drawRect: , we can use the CGContextBeginTransparencyLayer.
+ So when open the showShadow property, maybe will impact your app's performance.
+ */
+@property (nonatomic) BOOL showShadow;
 @property (nonatomic, strong) NSMutableDictionary *data;
 @property (nonatomic, strong) NSMutableArray *colors;
 
