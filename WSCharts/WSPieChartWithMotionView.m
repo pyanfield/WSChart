@@ -27,6 +27,7 @@
 #define INDICATOR_RADIUS 120.0
 #define INDICATOR_LENGTH 50.0
 #define INDICATOR_H_LENGTH 70.0
+#define SHADOW_COLOR [UIColor colorWithWhite:.8f alpha:.5f]
 
 static float pieRadius = 150.0;
 
@@ -51,8 +52,8 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 {
     if (disable) {
-        UIColor *shadowColor = [UIColor colorWithWhite:.8f alpha:.5f];
-        CGContextSetShadowWithColor(ctx, CGSizeMake(5.0f, 3.0f), 7.0f, [shadowColor CGColor]);
+        //UIColor *shadowColor = [UIColor colorWithWhite:.8f alpha:.5f];
+        CGContextSetShadowWithColor(ctx, CGSizeMake(5.0f, 3.0f), 7.0f, [SHADOW_COLOR CGColor]);
     }else{
         CGContextSetShadowWithColor(ctx, CGSizeMake(5.0f, 3.0f), 7.0f, NULL);
     }
@@ -71,7 +72,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic) float percent;
 @property (nonatomic) int number;
 @property (nonatomic, strong) UIColor *color;
-@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) CAShapeLayer *layer;
 @property (nonatomic) CGMutablePathRef path;
 
@@ -84,7 +85,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize color = _color;
 @synthesize percent = _percent;
 @synthesize number = _number;
-@synthesize name = _name;
+@synthesize title = _title;
 @synthesize indicatorPoint = _indicatorPoint;
 @synthesize openedPoint = _openedPoint;
 @synthesize center = _center;
@@ -134,24 +135,24 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @interface WSLegendLayer:CAShapeLayer
 
 @property (nonatomic, strong) UIColor *color;
-@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *title;
 
-- (id)initWithColor:(UIColor*)color andName:(NSString *)name;
+- (id)initWithColor:(UIColor*)color andTitle:(NSString *)title;
 
 @end
 
 @implementation WSLegendLayer
 
 @synthesize color = _color;
-@synthesize name = _name;
+@synthesize title = _title;
 
 
-- (id)initWithColor:(UIColor *)color andName:(NSString *)name
+- (id)initWithColor:(UIColor *)color andTitle:(NSString *)title
 {
     self = [super init];
     if (self != nil) {
         self.color = color;
-        self.name = name;
+        self.title = title;
         self.bounds = CGRectMake(0.0, 0.0, 70.0, 20.0);
         self.anchorPoint = CGPointMake(0.0, 0.0);
         
@@ -169,7 +170,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     //draw the Text to CALayer, or can use CATextLayer 
     UIGraphicsPushContext(ctx);
     UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
-    [self.name drawInRect:CGRectMake(20.0, 0.0, 40.0, 20.0) withFont:helveticated lineBreakMode:UILineBreakModeWordWrap alignment:UITextAlignmentLeft];
+    [self.title drawInRect:CGRectMake(20.0, 0.0, 40.0, 20.0) withFont:helveticated lineBreakMode:UILineBreakModeWordWrap alignment:UITextAlignmentLeft];
     UIGraphicsPopContext();
 }
 
@@ -181,11 +182,8 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic, strong) NSMutableArray *legends;
 @property (nonatomic, strong) NSMutableArray *pies;
 @property (nonatomic, strong) NSMutableArray *percents;
-@property (nonatomic) int currentPressedNum;
 @property (nonatomic, strong) CALayer *pieAreaLayer;
 @property (nonatomic, strong) CALayer *legendAreaLayer;
-
-
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
 - (void)closeOtherPiesExcept:(int)openedPieNum;
@@ -205,7 +203,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize colors = _colors;
 @synthesize openEnabled = _openEnabled;
 @synthesize showIndicator = _showIndicator;
-@synthesize currentPressedNum = _currentPressedNum;
 @synthesize pieAreaLayer = _pieAreaLayer;
 @synthesize showShadow = _showShadow;
 @synthesize legendAreaLayer = _legendAreaLayer;
@@ -229,7 +226,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 {
     NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
-    NSMutableArray* _names = [[NSMutableArray alloc] init];
+    NSMutableArray* _titles = [[NSMutableArray alloc] init];
     NSMutableArray* _startAngles = [[NSMutableArray alloc] init];
     
     NSArray *values = [dict allValues];
@@ -247,7 +244,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
     
     //get the labels text
-    _names = [[NSMutableArray alloc] initWithArray:keys];
+    _titles = [[NSMutableArray alloc] initWithArray:keys];
     
     //calculate the startAngle
     float startAngle = -M_PI/2.0f;
@@ -267,7 +264,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     for (int i = 0; i < length; i++) {
         WSPieItem *pie = [[WSPieItem alloc] init];
         pie.percent = [[_percents objectAtIndex:i] floatValue];
-        pie.name = [_names objectAtIndex:i];
+        pie.title = [_titles objectAtIndex:i];
         pie.indicatorPoint = [[_indicatorPoints objectAtIndex:i] CGPointValue];
         pie.openedPoint = [[_openedPoints objectAtIndex:i] CGPointValue];
         pie.number = [[values objectAtIndex:i] floatValue];
@@ -284,23 +281,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     for (int i=0; i<[colors count]; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
         pie.color = [colors objectAtIndex:i];
-    }
-}
-
-/*
-- (void)setShowIndicator:(BOOL)showIndicator
-{
-    _showIndicator = showIndicator;
-    if (_showIndicator) {
-        _openEnabled = NO;
-    }
-}
-*/
-- (void)setOpenEnabled:(BOOL)openEnabled
-{
-    _openEnabled = openEnabled;
-    if (_openEnabled) {
-        _showIndicator = NO;
     }
 }
 
@@ -384,7 +364,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 //        rect.position = CGPointMake(10.0, 20.0*i+20.0);
 //        rect.path = CGPathCreateWithRect(rect.bounds, NULL);
 //        rect.fillColor = pie.color.CGColor;
-        WSLegendLayer *legend = [[WSLegendLayer alloc] initWithColor:pie.color andName:pie.name];
+        WSLegendLayer *legend = [[WSLegendLayer alloc] initWithColor:pie.color andTitle:pie.title];
         legend.position = CGPointMake(10.0, 20.0*i+20.0);
         [legend setNeedsDisplay];
         [self.legends addObject:legend];
