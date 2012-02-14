@@ -41,6 +41,7 @@
  So when open the showShadow property, maybe will impact your app's performance.
  */
 @property (nonatomic) BOOL showShadow;
+@property (nonatomic) BOOL hasLegends;
 @property (nonatomic, strong) NSMutableDictionary *data;
 @property (nonatomic, strong) NSMutableArray *colors;
 

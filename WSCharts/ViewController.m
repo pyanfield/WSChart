@@ -35,6 +35,8 @@
     pieChart.showIndicator = YES;
     pieChart.openEnabled = YES;
     pieChart.showShadow = YES;
+    pieChart.hasLegends = YES;
+    pieChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:pieChart];
     
 //    WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];

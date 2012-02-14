@@ -129,18 +129,62 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 }
 @end
 
+
+#pragma mark - WSLegendLayer
+@interface WSLegendLayer:CAShapeLayer
+
+@property (nonatomic, strong) UIColor *color;
+@property (nonatomic, strong) NSString *name;
+
+- (id)initWithColor:(UIColor*)color andName:(NSString *)name;
+
+@end
+
+@implementation WSLegendLayer
+
+@synthesize color = _color;
+@synthesize name = _name;
+
+
+- (id)initWithColor:(UIColor *)color andName:(NSString *)name
+{
+    self = [super init];
+    if (self != nil) {
+        self.color = color;
+        self.name = name;
+        self.bounds = CGRectMake(0.0, 0.0, 70.0, 20.0);
+        self.anchorPoint = CGPointMake(0.0, 0.0);
+        
+        CGPathRef path = CGPathCreateWithRect(CGRectMake(0.0, 4.0, 15.0, 15.0), NULL);
+        self.path = path;
+        self.fillColor = self.color.CGColor;
+        CFRelease(path);
+	}
+	return self;
+}
+
+- (void)drawInContext:(CGContextRef)ctx
+{
+    CGContextSetFillColorWithColor(ctx, self.color.CGColor);
+    //draw the Text to CALayer, or can use CATextLayer 
+    UIGraphicsPushContext(ctx);
+    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
+    [self.name drawInRect:CGRectMake(20.0, 0.0, 40.0, 20.0) withFont:helveticated lineBreakMode:UILineBreakModeWordWrap alignment:UITextAlignmentLeft];
+    UIGraphicsPopContext();
+}
+
+@end
 #pragma mark - WSPieChartWithMotionView
 
 @interface WSPieChartWithMotionView()
 
-@property (nonatomic, strong) NSMutableArray *paths;
+@property (nonatomic, strong) NSMutableArray *legends;
 @property (nonatomic, strong) NSMutableArray *pies;
 @property (nonatomic, strong) NSMutableArray *percents;
 @property (nonatomic) int currentPressedNum;
-@property (nonatomic) BOOL isOpened;
 @property (nonatomic, strong) CALayer *pieAreaLayer;
 @property (nonatomic, strong) CALayer *legendAreaLayer;
-@property (nonatomic, strong) CAShapeLayer *currentTouchedLayer;
+
 
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
@@ -153,7 +197,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @end
 
 @implementation WSPieChartWithMotionView
-@synthesize paths = _paths;
+@synthesize legends = _legends;
 @synthesize touchEnabled = _touchEnabled;
 @synthesize pies = _pies;
 @synthesize percents = _percents;
@@ -162,17 +206,16 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize openEnabled = _openEnabled;
 @synthesize showIndicator = _showIndicator;
 @synthesize currentPressedNum = _currentPressedNum;
-@synthesize isOpened = _isOpened;
 @synthesize pieAreaLayer = _pieAreaLayer;
-@synthesize currentTouchedLayer = _currentTouchedLayer;
 @synthesize showShadow = _showShadow;
 @synthesize legendAreaLayer = _legendAreaLayer;
+@synthesize hasLegends = _hasLegends;
 
 - (id)initWithFrame:(CGRect)frame
 {
     if ((self=[super initWithFrame:frame])) {
         _pies = [[NSMutableArray alloc] init];
-        _paths = [[NSMutableArray alloc] init];
+        _legends = [[NSMutableArray alloc] init];
         _percents = [[NSMutableArray alloc] init];
         _pieAreaLayer = [CALayer layer];
         [self.layer addSublayer:_pieAreaLayer];
@@ -293,7 +336,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
     
     //test legends
-    [self showLegends];
+    if (self.hasLegends) {
+        [self showLegends];
+    }
 }
 - (void)drawRect:(CGRect)rect
 {
@@ -333,14 +378,18 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     for (int i=0; i<length; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
         
-        CAShapeLayer *rect = [[CAShapeLayer alloc] init];
-        rect.bounds = CGRectMake(0.0, 0.0, 15.0, 15.0);
-        rect.anchorPoint = CGPointMake(0.0, 0.0);
-        rect.position = CGPointMake(10.0, 20.0*i+20.0);
-        rect.path = CGPathCreateWithRect(rect.bounds, NULL);
-        rect.fillColor = pie.color.CGColor;
+//        CAShapeLayer *rect = [[CAShapeLayer alloc] init];
+//        rect.bounds = CGRectMake(0.0, 0.0, 15.0, 15.0);
+//        rect.anchorPoint = CGPointMake(0.0, 0.0);
+//        rect.position = CGPointMake(10.0, 20.0*i+20.0);
+//        rect.path = CGPathCreateWithRect(rect.bounds, NULL);
+//        rect.fillColor = pie.color.CGColor;
+        WSLegendLayer *legend = [[WSLegendLayer alloc] initWithColor:pie.color andName:pie.name];
+        legend.position = CGPointMake(10.0, 20.0*i+20.0);
+        [legend setNeedsDisplay];
+        [self.legends addObject:legend];
         
-        [self.legendAreaLayer addSublayer:rect];
+        [self.legendAreaLayer addSublayer:legend];
     }
     
     [self.layer addSublayer:self.legendAreaLayer];
@@ -496,11 +545,19 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     if (!self.touchEnabled) return;
     UITouch *t = [touches anyObject];
 	CGPoint point = [t locationInView:self];
-    point = [self.layer convertPoint:point toLayer:self.pieAreaLayer];
+    CGPoint pieAreaPoint = [self.layer convertPoint:point toLayer:self.pieAreaLayer];
+    CGPoint legendAreaPoint = [self.layer convertPoint:point toLayer:self.legendAreaLayer];
     for (int i=0; i<[self.pies count]; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
-        CGPoint p = [self.pieAreaLayer convertPoint:point toLayer:pie.layer];
-        if (CGPathContainsPoint(pie.layer.path, nil, p, nil))
+        CGPoint p = [self.pieAreaLayer convertPoint:pieAreaPoint toLayer:pie.layer];
+        BOOL containedLegend = NO;
+        if (self.hasLegends) {
+            WSLegendLayer *legend = [self.legends objectAtIndex:i];
+            CGPoint l = [self.legendAreaLayer convertPoint:legendAreaPoint toLayer:legend];
+            containedLegend = CGPathContainsPoint(legend.path, nil, l, nil);
+        }
+        
+        if (CGPathContainsPoint(pie.layer.path, nil, p, nil) || containedLegend)
         {
             if (self.openEnabled) {
                 switch (pie.pieStatus) {
