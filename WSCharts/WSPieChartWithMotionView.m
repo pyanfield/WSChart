@@ -52,7 +52,6 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
 static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 {
     if (disable) {
-        //UIColor *shadowColor = [UIColor colorWithWhite:.8f alpha:.5f];
         CGContextSetShadowWithColor(ctx, CGSizeMake(5.0f, 3.0f), 7.0f, [SHADOW_COLOR CGColor]);
     }else{
         CGContextSetShadowWithColor(ctx, CGSizeMake(5.0f, 3.0f), 7.0f, NULL);
@@ -111,27 +110,28 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 
 - (void)displayPieLayer
 {
-    //CGPoint c = self.layer.position;
     CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
     self.layer.path = path;
     self.layer.fillColor = self.color.CGColor;
     CFRelease(path);
 }
-
+// just for drawing shadow
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
 {
     CGContextSaveGState(ctx);
     if (self.pieStatus == (PieStatus)Closed) {
         CreateShadowWithContext(ctx, NO);
+        CGContextClearRect(ctx, layer.frame);
     }else
     {
         CreateShadowWithContext(ctx, YES);
+        CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
+        //CGContextSetFillColorWithColor(ctx, self.color.CGColor);
+        CGContextAddPath(ctx, path);
+        CGContextDrawPath(ctx,kCGPathFill);
+        CFRelease(path);
     }
-    CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
-    CGContextSetFillColorWithColor(ctx, self.color.CGColor);
-    CGContextAddPath(ctx, path);
-    CGContextDrawPath(ctx,kCGPathFill);
-    CFRelease(path);
+    
     CGContextRestoreGState(ctx);
 }
 
@@ -315,8 +315,16 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
     
     //close all pies before update data
-    [self closeOtherPiesExcept:1000];
+    //[self closeOtherPiesExcept:1000];
+    for (int i=0; i<[self.pies count]; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        pie.pieStatus = Closed;
+        pie.layer.position = pie.center;
+        [pie.layer setNeedsDisplay];
+    }
+    [self setNeedsDisplay];
     
+    //kernel of transform
     for (int i=0; i<[self.pies count]; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
         CGFloat offPercent = [[self.percents objectAtIndex:i] floatValue]-pie.percent;
@@ -337,12 +345,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
                     //[pie.layer setNeedsDisplay];
                 });
                 progress += 0.02f;
-                if (progress > 1.0f) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        //[pie.layer setNeedsDisplay];
-                        //[self setNeedsDisplay];
-                    });
-                }
                 usleep(5000);
             }
         });
