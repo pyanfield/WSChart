@@ -137,11 +137,11 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 
 - (id <CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
 {
-    if ([event isEqualToString:@"path"]) {
-        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:event];
-        animation.fromValue = [layer valueForKey:event];
-        return animation;
-    }
+//    if ([event isEqualToString:@"path"]) {
+//        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:event];
+//        animation.fromValue = [layer valueForKey:event];
+//        return animation;
+//    }
     return nil;
 }
 @end
@@ -196,7 +196,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic, strong) CALayer *pieAreaLayer;
 @property (nonatomic, strong) CALayer *legendAreaLayer;
 
-- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
+- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius;
 - (void)closeOtherPiesExcept:(int)openedPieNum;
 - (void)createShadowForClosedPies;
 - (void)openAnimation:(int)openedPieNum;
@@ -235,8 +235,8 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 #pragma mark - WSPieChartWithMotionView's Property
 - (void)setData:(NSMutableDictionary *)dict
 {
-    NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
-    NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
+    //NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
+    //NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _titles = [[NSMutableArray alloc] init];
     NSMutableArray* _startAngles = [[NSMutableArray alloc] init];
     
@@ -266,18 +266,18 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
     
     //calculate the openedpoints and indicator points
-    for (int i = 0; i < length; i++) {
-        [_openedPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:OPEN_GAP isHalfAngle:YES]]];
-        [_indicatorPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:INDICATOR_RADIUS isHalfAngle:YES]]];
-    }
+//    for (int i = 0; i < length; i++) {
+//        [_openedPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:OPEN_GAP]]];
+//        [_indicatorPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:INDICATOR_RADIUS]]];
+//    }
     
     //using the WSPieData to store the datas
     for (int i = 0; i < length; i++) {
         WSPieItem *pie = [[WSPieItem alloc] init];
         pie.percent = [[_percents objectAtIndex:i] floatValue];
         pie.title = [_titles objectAtIndex:i];
-        pie.indicatorPoint = [[_indicatorPoints objectAtIndex:i] CGPointValue];
-        pie.openedPoint = [[_openedPoints objectAtIndex:i] CGPointValue];
+//        pie.indicatorPoint = [[_indicatorPoints objectAtIndex:i] CGPointValue];
+//        pie.openedPoint = [[_openedPoints objectAtIndex:i] CGPointValue];
         pie.number = [[values objectAtIndex:i] floatValue];
         pie.startAngle = [[_startAngles objectAtIndex:i] floatValue];
         pie.pieStatus = Closed;
@@ -296,8 +296,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         return;
     }
     
-    
-    NSMutableArray *newPercents = [[NSMutableArray alloc] init];
+    [self.percents removeAllObjects];
     float total = 0;
     int length = [values count];
     for (int i=0; i<length; i++) {
@@ -305,22 +304,28 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
     for (int i=0; i < length; i++) {
         float percent = [[values objectAtIndex:i] floatValue]/total;
-        [newPercents addObject:[[NSNumber alloc] initWithFloat:percent]];
+        [self.percents addObject:[[NSNumber alloc] initWithFloat:percent]];
     }
     NSMutableArray *newStartAngles = [[NSMutableArray alloc] init];
     float startAngle = -M_PI/2.0f;
     [newStartAngles addObject:[NSNumber numberWithFloat:startAngle]];
     for (int i=0; i<length-1; i++) {
-        startAngle += 2.0*M_PI*[[newPercents objectAtIndex:i] floatValue];
+        startAngle += 2.0*M_PI*[[self.percents objectAtIndex:i] floatValue];
         [newStartAngles addObject:[NSNumber numberWithFloat:startAngle]];
     }
     
+    //close all pies before update data
+    [self closeOtherPiesExcept:1000];
+    
     for (int i=0; i<[self.pies count]; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
-        CGFloat offPercent = [[newPercents objectAtIndex:i] floatValue]-pie.percent;
+        CGFloat offPercent = [[self.percents objectAtIndex:i] floatValue]-pie.percent;
         CGFloat offAngle = [[newStartAngles objectAtIndex:i] floatValue]-pie.startAngle;
+        CGPoint rp = [self calculateOpenedPoint:i withRadius:OPEN_GAP];
+        pie.openedPoint = CGPointMake(rp.x+pie.center.x, rp.y+pie.center.y);
         
-        dispatch_queue_t drawQueue = dispatch_queue_create("draw the pie", NULL);
+        //transform pie from original data to new data.
+        dispatch_queue_t drawQueue = dispatch_queue_create("transform pie", NULL);
         dispatch_async(drawQueue, ^{
             CGFloat progress = 0.0f;
             while (progress <= 1.0f)
@@ -332,6 +337,12 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
                     //[pie.layer setNeedsDisplay];
                 });
                 progress += 0.02f;
+                if (progress > 1.0f) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        //[pie.layer setNeedsDisplay];
+                        //[self setNeedsDisplay];
+                    });
+                }
                 usleep(5000);
             }
         });
@@ -374,6 +385,8 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         pie.layer.anchorPoint = CGPointMake(0.5, 0.5);
         pie.layer.frame = self.frame;
         pie.center = pie.layer.position;
+        CGPoint rp = [self calculateOpenedPoint:i withRadius:OPEN_GAP];
+        pie.openedPoint = CGPointMake(rp.x+pie.center.x, rp.y+pie.center.y);
         [pie displayPieLayer];
         [self.pieAreaLayer addSublayer:pie.layer];
     }
@@ -541,22 +554,17 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         }
     }
 }
-// calculate the point should be when you open a pie chart
-- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf
+// calculate the relative value of open point 
+- (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius
 {
     float p = 0.0;
     for (int n=0; n<i; n++) {
         p += [[self.percents objectAtIndex:n] floatValue];
     }
-    if (isHalf) {
-        p += [[self.percents objectAtIndex:i] floatValue]/2.0;
-    }else
-    {
-        p += [[self.percents objectAtIndex:i] floatValue];
-    }
+    p += [[self.percents objectAtIndex:i] floatValue]/2.0;
     float x = radius*sinf(p*2*M_PI);
     float y = radius*cosf(p*2*M_PI);
-    CGPoint point = CGPointMake(self.center.x+x,self.center.y-y);
+    CGPoint point = CGPointMake(x,-y);
     return point;
 }
 
