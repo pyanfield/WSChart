@@ -45,4 +45,6 @@
 @property (nonatomic, strong) NSMutableDictionary *data;
 @property (nonatomic, strong) NSMutableArray *colors;
 
+- (void)switchData:(NSMutableDictionary*)dict;
+
 @end

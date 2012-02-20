@@ -9,7 +9,20 @@
 #import "ViewController.h"
 #import "WSPieChartView.h"
 #import "WSPieChartWithMotionView.h"
+
+@interface ViewController()
+
+@property (nonatomic, strong) NSMutableDictionary *pieData;
+@property (nonatomic, strong) NSMutableDictionary *pieData2;
+@property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
+@property (nonatomic) BOOL flag;
+
+@end
+
 @implementation ViewController
+
+@synthesize pieData,pieData2,pieChart;
+@synthesize flag;
 
 - (void)didReceiveMemoryWarning
 {
@@ -23,21 +36,24 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    NSMutableDictionary *pieData = [[NSMutableDictionary alloc] init];
+    pieData = [[NSMutableDictionary alloc] init];
     NSMutableArray *colors = [[NSMutableArray alloc] init];
     pieData = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:20],@"test1",[[NSNumber alloc] initWithFloat:34],@"test2",[[NSNumber alloc] initWithFloat:55],@"test3",[[NSNumber alloc] initWithFloat:12],@"test4",[[NSNumber alloc] initWithFloat:78],@"test5",[[NSNumber alloc] initWithFloat:110],@"test6",nil];
     colors = [[NSMutableArray alloc] initWithObjects:[UIColor purpleColor],[UIColor blueColor],[UIColor greenColor],[UIColor redColor],[UIColor yellowColor],[UIColor brownColor], nil]; 
     
-    WSPieChartWithMotionView *pieChart = [[WSPieChartWithMotionView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
+    pieChart = [[WSPieChartWithMotionView alloc] initWithFrame:CGRectMake(0.0, 0.0, 500.0, 500.0)];
     pieChart.data = pieData;
     pieChart.colors = colors;
     pieChart.touchEnabled = YES;
-    pieChart.showIndicator = YES;
+    //pieChart.showIndicator = YES;
     pieChart.openEnabled = YES;
     pieChart.showShadow = YES;
     pieChart.hasLegends = YES;
     pieChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:pieChart];
+    
+    pieData2 = [[NSMutableDictionary alloc] init];
+    pieData2 = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:80],@"test1",[[NSNumber alloc] initWithFloat:5],@"test2",[[NSNumber alloc] initWithFloat:5],@"test3",[[NSNumber alloc] initWithFloat:5],@"test4",[[NSNumber alloc] initWithFloat:5],@"test5",[[NSNumber alloc] initWithFloat:5],@"test6",nil];
     
 //    WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
 //    pieChart.data = pieData;
@@ -46,41 +62,20 @@
 //    pieChart.showIndicator = YES;
 //    //pieChart.openEnabled = YES;
 //    [self.view addSubview:pieChart];
-    
-    self.view.backgroundColor = [UIColor clearColor];
+
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+- (IBAction)switchData:(id)sender {
+    flag?[pieChart switchData:pieData]:[pieChart switchData:pieData2];
+    flag = !flag;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-	[super viewDidDisappear:animated];
-}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
     return YES;
 }
+
 
 @end

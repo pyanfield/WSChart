@@ -10,4 +10,5 @@
 
 @interface ViewController : UIViewController
 
+- (IBAction)switchData:(id)sender;
 @end

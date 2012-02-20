@@ -74,7 +74,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) CAShapeLayer *layer;
-@property (nonatomic) CGMutablePathRef path;
+//@property (nonatomic) CGMutablePathRef path;
 
 - (void)displayPieLayer;
 
@@ -92,16 +92,21 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize pieStatus = _pieStatus;
 @synthesize startAngle = _startAngle;
 @synthesize layer = _layer;
-@synthesize path = _path;
+//@synthesize path = _path;
 
 - (id)init
 {
-    self = [super init];
-    if (self != nil) {
-        self.layer = [[CAShapeLayer alloc] init];
-        self.layer.delegate = self;
+    return [super init];
+}
+
+- (CAShapeLayer*)layer
+{
+    if (_layer != nil) {
+        return _layer;
     }
-    return self;
+    _layer = [CAShapeLayer layer];
+    _layer.delegate = self;
+    return _layer;
 }
 
 - (void)displayPieLayer
@@ -123,29 +128,35 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         CreateShadowWithContext(ctx, YES);
     }
     CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
+    CGContextSetFillColorWithColor(ctx, self.color.CGColor);
     CGContextAddPath(ctx, path);
     CGContextDrawPath(ctx,kCGPathFill);
     CFRelease(path);
     CGContextRestoreGState(ctx);
+}
+
+- (id <CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
+{
+    if ([event isEqualToString:@"path"]) {
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:event];
+        animation.fromValue = [layer valueForKey:event];
+        return animation;
+    }
+    return nil;
 }
 @end
 
 
 #pragma mark - WSLegendLayer
 @interface WSLegendLayer:CAShapeLayer
-
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *title;
-
 - (id)initWithColor:(UIColor*)color andTitle:(NSString *)title;
-
 @end
 
 @implementation WSLegendLayer
-
 @synthesize color = _color;
 @synthesize title = _title;
-
 
 - (id)initWithColor:(UIColor *)color andTitle:(NSString *)title
 {
@@ -276,6 +287,58 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     //[self displayPieChart];
 }
 
+- (void)switchData:(NSMutableDictionary *)dict
+{
+    NSMutableDictionary *data2 = [dict copy];
+    NSArray *values = [data2 allValues];
+    NSArray *keys = [data2 allKeys];
+    if ([self.pies count] != [values count]) {
+        return;
+    }
+    
+    
+    NSMutableArray *newPercents = [[NSMutableArray alloc] init];
+    float total = 0;
+    int length = [values count];
+    for (int i=0; i<length; i++) {
+        total += [[values objectAtIndex:i] floatValue];
+    }
+    for (int i=0; i < length; i++) {
+        float percent = [[values objectAtIndex:i] floatValue]/total;
+        [newPercents addObject:[[NSNumber alloc] initWithFloat:percent]];
+    }
+    NSMutableArray *newStartAngles = [[NSMutableArray alloc] init];
+    float startAngle = -M_PI/2.0f;
+    [newStartAngles addObject:[NSNumber numberWithFloat:startAngle]];
+    for (int i=0; i<length-1; i++) {
+        startAngle += 2.0*M_PI*[[newPercents objectAtIndex:i] floatValue];
+        [newStartAngles addObject:[NSNumber numberWithFloat:startAngle]];
+    }
+    
+    for (int i=0; i<[self.pies count]; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        CGFloat offPercent = [[newPercents objectAtIndex:i] floatValue]-pie.percent;
+        CGFloat offAngle = [[newStartAngles objectAtIndex:i] floatValue]-pie.startAngle;
+        
+        dispatch_queue_t drawQueue = dispatch_queue_create("draw the pie", NULL);
+        dispatch_async(drawQueue, ^{
+            CGFloat progress = 0.0f;
+            while (progress <= 1.0f)
+            {
+                pie.percent +=offPercent*0.02f;
+                pie.startAngle +=offAngle*0.02f;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [pie displayPieLayer];
+                    //[pie.layer setNeedsDisplay];
+                });
+                progress += 0.02f;
+                usleep(5000);
+            }
+        });
+        dispatch_release(drawQueue);
+    }
+}
+
 - (void)setColors:(NSMutableArray *)colors
 {
     for (int i=0; i<[colors count]; i++) {
@@ -357,13 +420,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     int length = [self.pies count];
     for (int i=0; i<length; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
-        
-//        CAShapeLayer *rect = [[CAShapeLayer alloc] init];
-//        rect.bounds = CGRectMake(0.0, 0.0, 15.0, 15.0);
-//        rect.anchorPoint = CGPointMake(0.0, 0.0);
-//        rect.position = CGPointMake(10.0, 20.0*i+20.0);
-//        rect.path = CGPathCreateWithRect(rect.bounds, NULL);
-//        rect.fillColor = pie.color.CGColor;
         WSLegendLayer *legend = [[WSLegendLayer alloc] initWithColor:pie.color andTitle:pie.title];
         legend.position = CGPointMake(10.0, 20.0*i+20.0);
         [legend setNeedsDisplay];
@@ -441,7 +497,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         CAShapeLayer *layer = pie.layer;
         //if animation.removeOnCompletion = YES. the [layer animationForKey:@"open"] will return null
         if ([anim isEqual:[layer animationForKey:@"open"]]) {
-            //NSLog(@"stop < open animation");
             pie.pieStatus = Opened;
             [layer removeAnimationForKey:@"open"];
         }
@@ -449,7 +504,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         pie = [self.pies objectAtIndex:[[anim valueForKey:@"closePieNum"] intValue]];
         layer = pie.layer;
         if ([anim isEqual:[layer animationForKey:@"close"]]) {
-            //NSLog(@"stop < close animation");
             pie.pieStatus = Closed;
             if (self.showShadow) {
                 [self setNeedsDisplay];
