@@ -197,7 +197,10 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic, strong) CALayer *legendAreaLayer;
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius;
+- (NSMutableArray*)calculateStartAngles;
+- (void)transformPies;
 - (void)closeOtherPiesExcept:(int)openedPieNum;
+- (void)closeAllPiesImmediately;
 - (void)createShadowForClosedPies;
 - (void)openAnimation:(int)openedPieNum;
 - (void)closeAnimation:(int)openedPieNum;
@@ -235,16 +238,10 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 #pragma mark - WSPieChartWithMotionView's Property
 - (void)setData:(NSMutableDictionary *)dict
 {
-    //NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
-    //NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
-    NSMutableArray* _titles = [[NSMutableArray alloc] init];
-    NSMutableArray* _startAngles = [[NSMutableArray alloc] init];
-    
     NSArray *values = [dict allValues];
     NSArray *keys = [dict allKeys];
     float total = 0;
     int length = [values count];
-    
     for (int i=0; i<length; i++) {
         total += [[values objectAtIndex:i] floatValue];
     }
@@ -254,46 +251,41 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         [_percents addObject:[[NSNumber alloc] initWithFloat:percent]];
     }
     
-    //get the labels text
-    _titles = [[NSMutableArray alloc] initWithArray:keys];
-    
     //calculate the startAngle
-    float startAngle = -M_PI/2.0f;
-    [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
-    for (int i=0; i<length-1; i++) {
-        startAngle += 2.0*M_PI*[[_percents objectAtIndex:i] floatValue];
-        [_startAngles addObject:[NSNumber numberWithFloat:startAngle]];
-    }
-    
-    //calculate the openedpoints and indicator points
-//    for (int i = 0; i < length; i++) {
-//        [_openedPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:OPEN_GAP]]];
-//        [_indicatorPoints addObject:[NSValue valueWithCGPoint:[self calculateOpenedPoint:i withRadius:INDICATOR_RADIUS]]];
-//    }
+    NSMutableArray* _startAngles = [self calculateStartAngles];
     
     //using the WSPieData to store the datas
     for (int i = 0; i < length; i++) {
         WSPieItem *pie = [[WSPieItem alloc] init];
         pie.percent = [[_percents objectAtIndex:i] floatValue];
-        pie.title = [_titles objectAtIndex:i];
-//        pie.indicatorPoint = [[_indicatorPoints objectAtIndex:i] CGPointValue];
-//        pie.openedPoint = [[_openedPoints objectAtIndex:i] CGPointValue];
+        pie.title = [keys objectAtIndex:i];
         pie.number = [[values objectAtIndex:i] floatValue];
         pie.startAngle = [[_startAngles objectAtIndex:i] floatValue];
         pie.pieStatus = Closed;
         [self.pies addObject:pie];
     }
-    
-    //[self displayPieChart];
 }
 
 - (void)switchData:(NSMutableDictionary *)dict
 {
     NSMutableDictionary *data2 = [dict copy];
-    NSArray *values = [data2 allValues];
-    NSArray *keys = [data2 allKeys];
-    if ([self.pies count] != [values count]) {
+    if ([self.pies count] != [data2 count]) {
+        //the datas' count should be same as original datas.
+        NSLog(@"The new datas' count shoule be same as original datas.");
         return;
+    }
+    NSArray *keys = [data2 allKeys];
+    NSArray *values = [data2 allValues];
+    for (int i=0; i<[self.pies count]; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        NSUInteger index = [keys indexOfObject:(id)pie.title];
+        if (index != NSNotFound) {
+            pie.number = [[values objectAtIndex:index] intValue];
+        }else{
+            // the data's name don't match, so return. can't use the transform.
+            NSLog(@"The datas' keys don't match with original datas. please make sure keys are matched.");
+            return;
+        }
     }
     
     [self.percents removeAllObjects];
@@ -303,27 +295,18 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         total += [[values objectAtIndex:i] floatValue];
     }
     for (int i=0; i < length; i++) {
-        float percent = [[values objectAtIndex:i] floatValue]/total;
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        float percent = pie.number/total;
         [self.percents addObject:[[NSNumber alloc] initWithFloat:percent]];
     }
-    NSMutableArray *newStartAngles = [[NSMutableArray alloc] init];
-    float startAngle = -M_PI/2.0f;
-    [newStartAngles addObject:[NSNumber numberWithFloat:startAngle]];
-    for (int i=0; i<length-1; i++) {
-        startAngle += 2.0*M_PI*[[self.percents objectAtIndex:i] floatValue];
-        [newStartAngles addObject:[NSNumber numberWithFloat:startAngle]];
-    }
-    
-    //close all pies before update data
-    //[self closeOtherPiesExcept:1000];
-    for (int i=0; i<[self.pies count]; i++) {
-        WSPieItem *pie = [self.pies objectAtIndex:i];
-        pie.pieStatus = Closed;
-        pie.layer.position = pie.center;
-        [pie.layer setNeedsDisplay];
-    }
-    [self setNeedsDisplay];
-    
+
+    [self closeAllPiesImmediately];
+    [self transformPies];
+}
+// transform the pies according the datas
+- (void)transformPies
+{
+    NSMutableArray *newStartAngles = [self calculateStartAngles];
     //kernel of transform
     for (int i=0; i<[self.pies count]; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
@@ -342,7 +325,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
                 pie.startAngle +=offAngle*0.02f;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [pie displayPieLayer];
-                    //[pie.layer setNeedsDisplay];
                 });
                 progress += 0.02f;
                 usleep(5000);
@@ -350,6 +332,20 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         });
         dispatch_release(drawQueue);
     }
+}
+
+// set all pie items as closed status.
+- (void)closeAllPiesImmediately
+{
+    //close all pies before update data
+    for (int i=0; i<[self.pies count]; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        pie.pieStatus = Closed;
+        [pie.layer removeAllAnimations];
+        pie.layer.position = pie.center;
+        [pie.layer setNeedsDisplay];
+    }
+    [self setNeedsDisplay]; 
 }
 
 - (void)setColors:(NSMutableArray *)colors
@@ -568,6 +564,19 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     float y = radius*cosf(p*2*M_PI);
     CGPoint point = CGPointMake(x,-y);
     return point;
+}
+// calculate the start angle according to percents data
+- (NSMutableArray*)calculateStartAngles
+{
+    NSMutableArray *angles = [[NSMutableArray alloc] init];
+    int length = [self.percents count];
+    float startAngle = -M_PI/2.0f;
+    [angles addObject:[NSNumber numberWithFloat:startAngle]];
+    for (int i=0; i<length-1; i++) {
+        startAngle += 2.0*M_PI*[[self.percents objectAtIndex:i] floatValue];
+        [angles addObject:[NSNumber numberWithFloat:startAngle]];
+    }
+    return angles;
 }
 
 #pragma mark - Touch Event 
