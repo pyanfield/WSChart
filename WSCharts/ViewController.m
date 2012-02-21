@@ -9,19 +9,23 @@
 #import "ViewController.h"
 #import "WSPieChartView.h"
 #import "WSPieChartWithMotionView.h"
+#import "WSColumnChartView.h"
 
 @interface ViewController()
 
-@property (nonatomic, strong) NSMutableDictionary *pieData;
-@property (nonatomic, strong) NSMutableDictionary *pieData2;
-@property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
+//@property (nonatomic, strong) NSMutableDictionary *pieData;
+//@property (nonatomic, strong) NSMutableDictionary *pieData2;
+//@property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
+
+@property (nonatomic, strong) WSColumnChartView *columnChart;
 @property (nonatomic) BOOL flag;
 
 @end
 
 @implementation ViewController
 
-@synthesize pieData,pieData2,pieChart;
+//@synthesize pieData,pieData2,pieChart;
+@synthesize columnChart;
 @synthesize flag;
 
 - (void)didReceiveMemoryWarning
@@ -36,6 +40,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    /*
+    // demo data for WSPieChartWithMotionView
     pieData = [[NSMutableDictionary alloc] init];
     NSMutableArray *colors = [[NSMutableArray alloc] init];
     pieData = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:20],@"test1",[[NSNumber alloc] initWithFloat:34],@"test2",[[NSNumber alloc] initWithFloat:55],@"test3",[[NSNumber alloc] initWithFloat:12],@"test4",[[NSNumber alloc] initWithFloat:78],@"test5",[[NSNumber alloc] initWithFloat:110],@"test6",nil];
@@ -54,19 +60,25 @@
     
     pieData2 = [[NSMutableDictionary alloc] init];
     pieData2 = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:15],@"test5",[[NSNumber alloc] initWithFloat:80],@"test3",[[NSNumber alloc] initWithFloat:5],@"test2",[[NSNumber alloc] initWithFloat:5],@"test1",[[NSNumber alloc] initWithFloat:5],@"test4",[[NSNumber alloc] initWithFloat:5],@"test6",nil];
+     */
+    /*
+    // demo data for WSPieChartView
+    WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
+    pieChart.data = pieData;
+    pieChart.colors = colors;
+    pieChart.touchEnabled = YES;
+    pieChart.showIndicator = YES;
+    //pieChart.openEnabled = YES;
+    [self.view addSubview:pieChart];
+     */
     
-//    WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
-//    pieChart.data = pieData;
-//    pieChart.colors = colors;
-//    pieChart.touchEnabled = YES;
-//    pieChart.showIndicator = YES;
-//    //pieChart.openEnabled = YES;
-//    [self.view addSubview:pieChart];
-
+    // demo data for WSColumnChartView
+    columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 600.0, 400.0)];
+    [self.view addSubview:columnChart];
 }
 
 - (IBAction)switchData:(id)sender {
-    flag?[pieChart switchData:pieData]:[pieChart switchData:pieData2];
+    //flag?[pieChart switchData:pieData]:[pieChart switchData:pieData2];
     flag = !flag;
 }
 

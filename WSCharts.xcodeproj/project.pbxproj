@@ -21,6 +21,7 @@
 		906F683E14E0157E00E0D9CF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 906F683C14E0157E00E0D9CF /* LICENSE */; };
 		906F683F14E0157E00E0D9CF /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 906F683D14E0157E00E0D9CF /* Readme.md */; };
 		906F684114E0158A00E0D9CF /* TODO.mdown in Resources */ = {isa = PBXBuildFile; fileRef = 906F684014E0158A00E0D9CF /* TODO.mdown */; };
+		90E8318B14F3798600847C48 /* WSColumnChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90E8318A14F3798600847C48 /* WSColumnChartView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,8 @@
 		906F683C14E0157E00E0D9CF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		906F683D14E0157E00E0D9CF /* Readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.md; sourceTree = "<group>"; };
 		906F684014E0158A00E0D9CF /* TODO.mdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.mdown; sourceTree = "<group>"; };
+		90E8318914F3798600847C48 /* WSColumnChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSColumnChartView.h; sourceTree = "<group>"; };
+		90E8318A14F3798600847C48 /* WSColumnChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSColumnChartView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +136,8 @@
 				9026093414E29B13007779D9 /* WSPieChartWithMotionView.m */,
 				901EAE8414DA2043001BD2D0 /* WSPieChartView.h */,
 				901EAE8514DA2043001BD2D0 /* WSPieChartView.m */,
+				90E8318914F3798600847C48 /* WSColumnChartView.h */,
+				90E8318A14F3798600847C48 /* WSColumnChartView.m */,
 			);
 			name = charts;
 			sourceTree = "<group>";
@@ -208,6 +213,7 @@
 				901EAE7914DA1EE7001BD2D0 /* ViewController.m in Sources */,
 				901EAE8614DA2043001BD2D0 /* WSPieChartView.m in Sources */,
 				9026093514E29B13007779D9 /* WSPieChartWithMotionView.m in Sources */,
+				90E8318B14F3798600847C48 /* WSColumnChartView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -38,8 +38,8 @@ Adding WSChart to your project
 
 TODO List
 ----------------------- 
-* PieChart : ongoing
-* Column Chart : next one.
+* PieChart : ok
+* Column Chart : ongoing.
 
 License
 ------------------------
