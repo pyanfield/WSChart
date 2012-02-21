@@ -24,14 +24,13 @@
 #import <QuartzCore/QuartzCore.h>
 
 #define OPEN_GAP 15.0
-#define INDICATOR_RADIUS 120.0
-#define INDICATOR_LENGTH 50.0
-#define INDICATOR_H_LENGTH 70.0
 #define SHADOW_COLOR [UIColor colorWithWhite:.8f alpha:.5f]
 
 static float pieRadius = 150.0;
 
-// def the pie's status for the animation
+/* 
+ Define the pie's status for tha pie's open and close animation. 
+ */
 typedef enum{
     Opened,
     OpenOngoing,
@@ -39,7 +38,9 @@ typedef enum{
     CloseOngoing,
 } PieStatus;
 
-// create the sector path
+/*
+ Create the pie's sector path. Using this path to draw the pie.
+ */
 static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,CGFloat startAngle, CGFloat angle,CGAffineTransform *transform)
 {
     CGMutablePathRef path = CGPathCreateMutable();
@@ -48,7 +49,9 @@ static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,C
     CGPathCloseSubpath(path);
     return path;
 }
-// create shadow for the pie
+/*
+ Create the shadow. 
+ */
 static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 {
     if (disable) {
@@ -60,11 +63,12 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 
 
 #pragma mark - WSPieData
-
+/*
+ Using WSPieItem to store every pie's data.
+ */
 @interface WSPieItem : NSObject 
 
 @property (nonatomic) CGPoint openedPoint;
-@property (nonatomic) CGPoint indicatorPoint;
 @property (nonatomic) CGPoint center;
 @property (nonatomic) CGFloat startAngle;
 @property (nonatomic) PieStatus pieStatus;
@@ -73,7 +77,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) CAShapeLayer *layer;
-//@property (nonatomic) CGMutablePathRef path;
 
 - (void)displayPieLayer;
 
@@ -85,13 +88,11 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize percent = _percent;
 @synthesize number = _number;
 @synthesize title = _title;
-@synthesize indicatorPoint = _indicatorPoint;
 @synthesize openedPoint = _openedPoint;
 @synthesize center = _center;
 @synthesize pieStatus = _pieStatus;
 @synthesize startAngle = _startAngle;
 @synthesize layer = _layer;
-//@synthesize path = _path;
 
 - (id)init
 {
@@ -107,7 +108,10 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     _layer.delegate = self;
     return _layer;
 }
-
+/*
+ Draw the pie sector path in the CAShapeLayer. 
+ The "path" property of layer is used for touched event in the WSPieChartWithMotionView.
+ */
 - (void)displayPieLayer
 {
     CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
@@ -115,7 +119,11 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     self.layer.fillColor = self.color.CGColor;
     CFRelease(path);
 }
-// just for drawing shadow
+/*
+ Add a shadow for the layer when the pie's status is not closed. 
+ That it can be moved with pie's close and open animation.
+ When the status is close, remove the shadow. Using the shadow created by WSPieChartWithMotionView.
+ */
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
 {
     CGContextSaveGState(ctx);
@@ -126,7 +134,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     {
         CreateShadowWithContext(ctx, YES);
         CGMutablePathRef path = CreatePiePathWithCenter(self.center,pieRadius, self.startAngle, 2.0*M_PI*self.percent, NULL); 
-        //CGContextSetFillColorWithColor(ctx, self.color.CGColor);
         CGContextAddPath(ctx, path);
         CGContextDrawPath(ctx,kCGPathFill);
         CFRelease(path);
@@ -134,20 +141,13 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     
     CGContextRestoreGState(ctx);
 }
-
-- (id <CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
-{
-//    if ([event isEqualToString:@"path"]) {
-//        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:event];
-//        animation.fromValue = [layer valueForKey:event];
-//        return animation;
-//    }
-    return nil;
-}
 @end
 
 
 #pragma mark - WSLegendLayer
+/*
+ For the legend view. Storing the legend's data.
+ */
 @interface WSLegendLayer:CAShapeLayer
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *title;
@@ -174,7 +174,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 	}
 	return self;
 }
-
+/*
+ Draw the legend title.
+ */
 - (void)drawInContext:(CGContextRef)ctx
 {
     CGContextSetFillColorWithColor(ctx, self.color.CGColor);
@@ -186,6 +188,8 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 }
 
 @end
+
+
 #pragma mark - WSPieChartWithMotionView
 
 @interface WSPieChartWithMotionView()
@@ -209,6 +213,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @end
 
 @implementation WSPieChartWithMotionView
+
 @synthesize legends = _legends;
 @synthesize touchEnabled = _touchEnabled;
 @synthesize pies = _pies;
@@ -216,7 +221,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize data = _data;
 @synthesize colors = _colors;
 @synthesize openEnabled = _openEnabled;
-@synthesize showIndicator = _showIndicator;
 @synthesize pieAreaLayer = _pieAreaLayer;
 @synthesize showShadow = _showShadow;
 @synthesize legendAreaLayer = _legendAreaLayer;
@@ -236,6 +240,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 }
 
 #pragma mark - WSPieChartWithMotionView's Property
+/*
+ Import the datas, store them as WSPieItem Object.
+ */
 - (void)setData:(NSMutableDictionary *)dict
 {
     NSArray *values = [dict allValues];
@@ -250,8 +257,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         float percent = [[values objectAtIndex:i] floatValue]/total;
         [_percents addObject:[[NSNumber alloc] initWithFloat:percent]];
     }
-    
-    //calculate the startAngle
+
     NSMutableArray* _startAngles = [self calculateStartAngles];
     
     //using the WSPieData to store the datas
@@ -265,7 +271,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         [self.pies addObject:pie];
     }
 }
-
+/*
+ Switch original data to new data. And update the pie figure.
+ */
 - (void)switchData:(NSMutableDictionary *)dict
 {
     NSMutableDictionary *data2 = [dict copy];
@@ -288,6 +296,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         }
     }
     
+    //remove all percents data for store the new data.
     [self.percents removeAllObjects];
     float total = 0;
     int length = [values count];
@@ -299,11 +308,59 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         float percent = pie.number/total;
         [self.percents addObject:[[NSNumber alloc] initWithFloat:percent]];
     }
-
+    
+    //transform 
     [self closeAllPiesImmediately];
     [self transformPies];
 }
-// transform the pies according the datas
+
+- (void)setColors:(NSMutableArray *)colors
+{
+    for (int i=0; i<[colors count]; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        pie.color = [colors objectAtIndex:i];
+    }
+}
+
+- (CALayer*)legendAreaLayer
+{
+    if (_legendAreaLayer!=nil) {
+        return _legendAreaLayer;
+    }
+    _legendAreaLayer = [[CALayer alloc] init];
+    return _legendAreaLayer;
+}
+#pragma mark - Render UI 
+
+- (void)layoutSubviews
+{
+    int length = [self.pies count];
+    for (int i=0; i<length; i++) {
+        WSPieItem *pie = [self.pies objectAtIndex:i];
+        pie.layer.anchorPoint = CGPointMake(0.5, 0.5);
+        pie.layer.frame = self.frame;
+        pie.center = pie.layer.position;
+        CGPoint rp = [self calculateOpenedPoint:i withRadius:OPEN_GAP];
+        pie.openedPoint = CGPointMake(rp.x+pie.center.x, rp.y+pie.center.y);
+        [pie displayPieLayer];
+        [self.pieAreaLayer addSublayer:pie.layer];
+    }
+    
+    //show legends
+    if (self.hasLegends) {
+        [self showLegends];
+    }
+}
+- (void)drawRect:(CGRect)rect
+{
+    if (self.showShadow) {
+        [self createShadowForClosedPies];
+    }
+}
+
+/*
+ Transform the pies according the datas.
+ */
 - (void)transformPies
 {
     NSMutableArray *newStartAngles = [self calculateStartAngles];
@@ -334,10 +391,11 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
 }
 
-// set all pie items as closed status.
+/*
+ Set all pie items as closed status.Skipping the close animation.
+ */
 - (void)closeAllPiesImmediately
 {
-    //close all pies before update data
     for (int i=0; i<[self.pies count]; i++) {
         WSPieItem *pie = [self.pies objectAtIndex:i];
         pie.pieStatus = Closed;
@@ -345,63 +403,13 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         pie.layer.position = pie.center;
         [pie.layer setNeedsDisplay];
     }
+    //redraw for the shadow.
     [self setNeedsDisplay]; 
 }
 
-- (void)setColors:(NSMutableArray *)colors
-{
-    for (int i=0; i<[colors count]; i++) {
-        WSPieItem *pie = [self.pies objectAtIndex:i];
-        pie.color = [colors objectAtIndex:i];
-    }
-}
-
-- (void)setTouchEnabled:(BOOL)touchEnabled
-{
-    _touchEnabled = touchEnabled;
-    if (_touchEnabled) {
-        _showIndicator = NO;
-        _openEnabled = NO;
-    }
-}
-
-- (CALayer*)legendAreaLayer
-{
-    if (_legendAreaLayer!=nil) {
-        return _legendAreaLayer;
-    }
-    _legendAreaLayer = [[CALayer alloc] init];
-    return _legendAreaLayer;
-}
-#pragma mark - Render UI 
-
-- (void)layoutSubviews
-{
-    int length = [self.pies count];
-    for (int i=0; i<length; i++) {
-        WSPieItem *pie = [self.pies objectAtIndex:i];
-        pie.layer.anchorPoint = CGPointMake(0.5, 0.5);
-        pie.layer.frame = self.frame;
-        pie.center = pie.layer.position;
-        CGPoint rp = [self calculateOpenedPoint:i withRadius:OPEN_GAP];
-        pie.openedPoint = CGPointMake(rp.x+pie.center.x, rp.y+pie.center.y);
-        [pie displayPieLayer];
-        [self.pieAreaLayer addSublayer:pie.layer];
-    }
-    
-    //test legends
-    if (self.hasLegends) {
-        [self showLegends];
-    }
-}
-- (void)drawRect:(CGRect)rect
-{
-    if (self.showShadow) {
-        [self createShadowForClosedPies];
-    }
-}
-
-//create the shadow for the closed pies
+/*
+ Create the shadow for the closed pies.
+ */
 - (void)createShadowForClosedPies
 {
     UIColor *bgc = self.backgroundColor;
@@ -425,7 +433,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     CGContextEndTransparencyLayer(context);
     CGContextRestoreGState(context);
 }
-
+/*
+ Create legends for the view.
+ */
 - (void)showLegends
 {
     int length = [self.pies count];
@@ -443,7 +453,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 }
 
 #pragma mark - Animation Methods
-// open the touched pie
+/*
+ The animation of open pie.
+ */
 - (void)openAnimation:(int)openedPieNum
 {
     WSPieItem *pie = [self.pies objectAtIndex:openedPieNum];
@@ -461,7 +473,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 	[pie.layer addAnimation:animation forKey:@"open"];
     CGPathRelease(path);
 }
-// close the target pie
+/*
+ Close the target pie with animation.
+ */
 - (void)closeAnimation:(int)openedPieNum
 {
     WSPieItem *pie = [self.pies objectAtIndex:openedPieNum];
@@ -484,7 +498,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     CAShapeLayer *layer = pie.layer;
     //if animation.removeOnCompletion = YES. the [layer animationForKey:@"open"] will return null
     if ([anim isEqual:[layer animationForKey:@"open"]]) {
-        //NSLog(@"start > open animation");
         pie.pieStatus = OpenOngoing;
         if (self.showShadow) {
             //redraw the UIView
@@ -497,7 +510,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     pie = [self.pies objectAtIndex:[[anim valueForKey:@"closePieNum"] intValue]];
     layer = pie.layer;
     if ([anim isEqual:[layer animationForKey:@"close"]]) {
-        //NSLog(@"start > close animation");
         pie.pieStatus = CloseOngoing;
     }
 }
@@ -528,7 +540,9 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     }
 }
 
-// check other pie, if its status is opened or openongoing, then need to close it.
+/*
+ Check other pie,not the touched pie. if its status is "Opened" or "OpenOngoing",need to close it.
+ */
 - (void)closeOtherPiesExcept:(int)openedPieNum
 {
     for (int i=0; i<[self.pies count]; i++) {
@@ -552,7 +566,10 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         }
     }
 }
-// calculate the relative value of open point 
+
+/*
+ Calculate the relative value of opened point.
+ */
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius
 {
     float p = 0.0;
@@ -565,7 +582,10 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     CGPoint point = CGPointMake(x,-y);
     return point;
 }
-// calculate the start angle according to percents data
+
+/*
+ Calculate the start angle according to percents data.
+ */
 - (NSMutableArray*)calculateStartAngles
 {
     NSMutableArray *angles = [[NSMutableArray alloc] init];

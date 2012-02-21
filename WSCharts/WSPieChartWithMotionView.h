@@ -25,12 +25,13 @@
  The different with WSPieChartView are as below:
  1. moving drawing sector part from UIView to CALayer.
  2. adding animation to the pie when open the pie chart.
+ 3. adding transform pies when switch to new datas.
+ 4. removing indicator of pie data.
  */
 
 @interface WSPieChartWithMotionView : UIView
 
 @property (nonatomic) BOOL touchEnabled;
-@property (nonatomic) BOOL showIndicator;
 @property (nonatomic) BOOL openEnabled;
 /*
  Carefully use the showShadow property. This is a fake shadow for the pie. create duplicated sectors for the pies on UIView and CALayer.
@@ -45,6 +46,9 @@
 @property (nonatomic, strong) NSMutableDictionary *data;
 @property (nonatomic, strong) NSMutableArray *colors;
 
+/*
+ Make sure the datas' titles must match with original datas.It can have different title order.
+ */
 - (void)switchData:(NSMutableDictionary*)dict;
 
 @end
