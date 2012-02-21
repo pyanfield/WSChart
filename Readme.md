@@ -13,8 +13,11 @@ I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, L
 
 Usage
 ------------------
+Adding WSChart to your project by:
+#### First : Add "charts" folder to your project.
+#### Second : Add QuartzCore framework to your project.
 
-You can use the pie chart like this:
+#### Third: Add usage in your code as following sample:
 
 	NSMutableDictionary *pieData = [[NSMutableDictionary alloc] init];
     NSMutableArray *colors = [[NSMutableArray alloc] init];
@@ -29,17 +32,13 @@ You can use the pie chart like this:
     [self.view addSubview:pieChart];
 
 
-Adding WSChart to your project
-------------------
-
-#### First : Add "charts" folder to your project.
-
-#### Second : Add QuartzCore framework to your project.
+History
+----------------------- 
+* PieChart : done
 
 TODO List
 ----------------------- 
-* PieChart : ok
-* Column Chart : ongoing.
+* Column Chart : waiting.
 
 License
 ------------------------
@@ -71,8 +70,7 @@ documentation in WSChart project is licensed as follows:
 
 Other
 ------------------------
-You can contact me with mail 'pyanfield at gmail.com'.
-if you use SinaWeibo, you can follow @pyanfield.
+You can contact me with mail 'pyanfield at gmail.com', or follow @pyanfield on SinaWeibo.
 
 
 
