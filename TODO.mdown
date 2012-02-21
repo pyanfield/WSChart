@@ -1,8 +1,8 @@
 TODO
 =================
 
-* Pie Chart : ongoing
-* Column Chart
+* Pie Chart : ok - 2012.2.21
+* Column Chart : ongoing
 * Line Chart
 * Area Chart
 * Bar Chart
