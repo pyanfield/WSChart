@@ -74,6 +74,17 @@
     
     // demo data for WSColumnChartView
     columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 600.0, 400.0)];
+    NSMutableArray *datas = [[NSMutableArray alloc] init];
+    for (int i=0; i<5; i++) {
+        WSColumnItem *item = [[WSColumnItem alloc] init];
+        item.xValue = [NSString stringWithFormat:@"XVALUE %d",i];
+        int y = arc4random() % 200;
+        item.yValue = (CGFloat)y;
+        item.title = @"Liverpool";
+        [datas addObject:item];
+    }
+    [columnChart chartData:datas];
+    columnChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:columnChart];
 }
 
