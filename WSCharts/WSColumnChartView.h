@@ -21,7 +21,8 @@
 @property (nonatomic) CGFloat yValue;
 @property (nonatomic, strong) NSString *xValue;
 @property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) UIColor *color;
 
-- (void)initColumnItem:(NSString*)title xValue:(NSString*)x yValue:(CGFloat)y;
+- (void)initColumnItem:(NSString*)title xValue:(NSString*)x yValue:(CGFloat)y color:(UIColor*)color;
 
 @end

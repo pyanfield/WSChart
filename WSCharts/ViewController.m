@@ -81,6 +81,7 @@
         int y = arc4random() % 200;
         item.yValue = (CGFloat)y;
         item.title = @"Liverpool";
+        item.color = [UIColor colorWithHue:0.1*i saturation:0.5 brightness:0.6 alpha:1.0];
         [datas addObject:item];
     }
     [columnChart chartData:datas];
