@@ -9,18 +9,6 @@
 #import "WSColumnChartView.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define ANGLE_DEFAULT M_PI/4.0
-#define DISTANCE_DEFAULT 15.0
-
-static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,CGFloat startAngle, CGFloat angle,CGAffineTransform *transform)
-{
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, transform, center.x, center.y);
-    CGPathAddRelativeArc(path, transform, center.x, center.y, radius, startAngle, angle);
-    CGPathCloseSubpath(path);
-    return path;
-}
-
 static CGPoint CreateEndPoint(CGPoint startPoint,CGFloat angle,CGFloat distance)
 {
     float x = distance*sinf(angle);
@@ -45,6 +33,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
         //NSLog(@"hub: %f, saturation: %f, brigntness: %f, alpha: %f",hue,saturation,brightness,alpha);
     }
+    //TODO: else case
     
     UIColor *brightColor = [UIColor colorWithHue:hue saturation:saturation+0.1 brightness:brightness+0.1 alpha:alpha];
     UIColor *darkColor = [UIColor colorWithHue:hue saturation:saturation-0.2 brightness:brightness-0.2 alpha:alpha];
@@ -75,6 +64,9 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @end
 
 #pragma mark - WSColumnLayer
+
+#define ANGLE_DEFAULT M_PI/4.0
+#define DISTANCE_DEFAULT 15.0
 
 @interface WSColumnLayer:CAShapeLayer
 
@@ -155,36 +147,200 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 
 @end
 
+#pragma mark - WSCoordinateLayer
+
+#define Y_MARKS_COUNT 5
+
+@interface WSCoordinateLayer : CAShapeLayer
+
+@property (nonatomic) CGFloat yMaxAxis;
+@property (nonatomic) CGPoint originalPoint;
+@property (nonatomic) CGFloat xMaxAxis;
+
+- (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor*)color;
+- (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor*)color;
+
+@end
+
+@implementation WSCoordinateLayer
+@synthesize yMaxAxis = _yMaxAxis,originalPoint = _originalPoint,xMaxAxis = _xMaxAxis;
+
+- (id)init
+{
+    self = [super init];
+    return self;
+}
+
+- (void)drawInContext:(CGContextRef)ctx
+{
+    // TODO: should change the color according to the background color
+    UIColor *frontLineColor = [UIColor whiteColor];
+    UIColor *backLineColor = [UIColor grayColor];
+    CGPoint backOriginalPoint = CreateEndPoint(self.originalPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+    
+    // draw front y Axis
+    [self drawLine:ctx isXAxis:NO startPoint:self.originalPoint length:self.yMaxAxis isDashLine:NO color:frontLineColor];
+    
+    // draw front x Axis
+    [self drawLine:ctx isXAxis:YES startPoint:self.originalPoint length:self.xMaxAxis isDashLine:NO color:frontLineColor];
+    
+    // draw back y Axis
+    [self drawLine:ctx isXAxis:NO startPoint:backOriginalPoint length:self.yMaxAxis isDashLine:YES color:backLineColor];
+    
+    // draw back x Axis
+    [self drawLine:ctx isXAxis:YES startPoint:backOriginalPoint length:self.xMaxAxis isDashLine:YES color:backLineColor];
+    
+    // draw bridge line between front and back original point
+    [self drawLine:ctx startPoint:self.originalPoint endPoint:backOriginalPoint isDashLine:NO color:backLineColor];
+    CGPoint xMaxPoint = CGPointMake(self.originalPoint.x + self.xMaxAxis, self.originalPoint.y);
+    CGPoint xMaxPoint2 = CreateEndPoint(xMaxPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+    [self drawLine:ctx startPoint:xMaxPoint endPoint:xMaxPoint2 isDashLine:NO color:backLineColor];
+    
+    //draw assit line 
+    CGFloat markLength = self.yMaxAxis/Y_MARKS_COUNT;
+    for (int i=1; i<= Y_MARKS_COUNT; i++) {
+        CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
+        CGPoint p2 = CreateEndPoint(p1, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        [self drawLine:ctx startPoint:p1 endPoint:p2 isDashLine:NO color:backLineColor];
+        [self drawLine:ctx isXAxis:YES startPoint:p2 length:self.xMaxAxis isDashLine:YES color:backLineColor];
+        [self drawLine:ctx isXAxis:YES startPoint:p1 length:-6.0 isDashLine:NO color:frontLineColor];
+    }
+    
+}
+
+- (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor *)color
+{
+    CGContextSaveGState(ctx);
+    if (dash) {
+        CGFloat phase = 2.0;
+        const CGFloat pattern[] = {5.0,5.0};
+        size_t count = 2;
+        CGContextSetLineDash(ctx,phase,pattern,count);
+    }
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, point.x, point.y);
+    if (x) {
+        CGPathAddLineToPoint(path, NULL, point.x+length, point.y);
+    }else{
+        CGPathAddLineToPoint(path, NULL, point.x, point.y - length);
+    }
+    
+    CGContextSetLineWidth(ctx, 1.0);
+    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
+    CGContextAddPath(ctx, path);
+    CGContextDrawPath(ctx, kCGPathStroke);
+    CGPathRelease(path);
+    CGContextRestoreGState(ctx);
+}
+
+- (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor *)color
+{
+    CGContextSaveGState(ctx);
+    if (dash) {
+        CGFloat phase = 3.0;
+        const CGFloat pattern[] = {3.0,3.0};
+        size_t count = 2;
+        CGContextSetLineDash(ctx,phase,pattern,count);
+    }
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, p1.x, p1.y);
+    CGPathAddLineToPoint(path, NULL, p2.x, p2.y);
+    CGContextSetLineWidth(ctx, 1.0);
+    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
+    CGContextAddPath(ctx, path);
+    CGContextDrawPath(ctx, kCGPathStroke);
+    CGPathRelease(path);
+    CGContextRestoreGState(ctx);
+}
+
+@end
+
+
 
 #pragma mark - WSColumnChartView
+
+#define COORDINATE_BOTTOM_GAP 80.0
+#define COORDINATE_TOP_GAP 50.0
+#define COORDINATE_LEFT_GAP 80.0
+
 @interface WSColumnChartView()
+
+@property (nonatomic) CGPoint coordinateOriginalPoint;
+@property (nonatomic) CGFloat xMaxAxis;
+@property (nonatomic) CGFloat maxColumnValue;
+@property (nonatomic) CGFloat minColumnValue;
+@property (nonatomic) CGFloat offsetColumnValue;
+@property (nonatomic, strong) CALayer *areaLayer;
+@property (nonatomic, strong) WSCoordinateLayer *coordinateLayer;
+
 @end
 
 @implementation WSColumnChartView
+
+@synthesize coordinateOriginalPoint = _coordinateOriginalPoint;
+@synthesize xMaxAxis = _xMaxAxis;
+/* 
+ Get the max and min value from column datas.
+ */ 
+@synthesize maxColumnValue = _maxColumnValue;
+@synthesize minColumnValue = _minColumnValue;
+@synthesize offsetColumnValue = _offsetColumnValue;
+@synthesize areaLayer = _areaLayer;
+@synthesize coordinateLayer = _coordinateLayer;
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        self.coordinateOriginalPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
+        self.xMaxAxis = 0.0;
+        self.maxColumnValue = 0.0;
+        self.minColumnValue = CGFLOAT_MAX;
+        self.offsetColumnValue = 0.0;
+        self.areaLayer = [CALayer layer];
+        self.coordinateLayer = [[WSCoordinateLayer alloc] init];
+        self.areaLayer.frame = frame;
+        self.coordinateLayer.frame = frame;
     }
     return self;
 }
 
 - (void)chartData:(NSMutableArray *)datas
 {
+    /*
+     TODO:
+     1. the y values are different. in the coordinate system and the real value for the column data
+     2. if the y value is negative number
+     */
+    
+    // draw coordinate layer
+    self.coordinateLayer.yMaxAxis = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
+    self.coordinateLayer.xMaxAxis = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
+    self.coordinateLayer.originalPoint = self.coordinateOriginalPoint;
+    [self.coordinateLayer setNeedsDisplay];
+    [self.layer addSublayer:self.coordinateLayer];
+    
+    // draw column chart area layer
     NSArray *arr = [datas copy];
     for (int i=0; i<[arr count]; i++) {
         WSColumnItem *item = [arr objectAtIndex:i];
-        
         WSColumnLayer *layer = [[WSColumnLayer alloc] init];
         layer.color = item.color;
         layer.yValue = item.yValue;
+        //TODO, should calculate the value using coodinate system and width value
         layer.cWidth = 20.0;
-        layer.xStartPoint = CGPointMake(50.0*i+80.0, 350.0);
+        layer.xStartPoint = CGPointMake(50.0*i+self.coordinateOriginalPoint.x+50.0, self.coordinateOriginalPoint.y);
         layer.frame = self.bounds;
         [layer setNeedsDisplay];
-        [self.layer addSublayer:layer];
+        [self.areaLayer addSublayer:layer];
+        
+        self.maxColumnValue = self.maxColumnValue > item.yValue ? self.maxColumnValue : item.yValue;
+        self.minColumnValue = self.minColumnValue < item.yValue ? self.minColumnValue : item.yValue;
     }
+    NSLog(@"max : %f , min : %f ",self.maxColumnValue,self.minColumnValue);
+    self.offsetColumnValue = self.maxColumnValue - self.minColumnValue;
+
+    [self.layer addSublayer:self.areaLayer];
 }
 @end
