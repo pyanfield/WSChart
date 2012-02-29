@@ -22,6 +22,7 @@
 
 #import "WSPieChartWithMotionView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "WSLegendLayer.h"
 
 #define OPEN_GAP 15.0
 #define SHADOW_COLOR [UIColor colorWithWhite:.8f alpha:.5f]
@@ -142,53 +143,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
     CGContextRestoreGState(ctx);
 }
 @end
-
-
-#pragma mark - WSLegendLayer
-/*
- For the legend view. Storing the legend's data.
- */
-@interface WSLegendLayer:CAShapeLayer
-@property (nonatomic, strong) UIColor *color;
-@property (nonatomic, strong) NSString *title;
-- (id)initWithColor:(UIColor*)color andTitle:(NSString *)title;
-@end
-
-@implementation WSLegendLayer
-@synthesize color = _color;
-@synthesize title = _title;
-
-- (id)initWithColor:(UIColor *)color andTitle:(NSString *)title
-{
-    self = [super init];
-    if (self != nil) {
-        self.color = color;
-        self.title = title;
-        self.bounds = CGRectMake(0.0, 0.0, 70.0, 20.0);
-        self.anchorPoint = CGPointMake(0.0, 0.0);
-        
-        CGPathRef path = CGPathCreateWithRect(CGRectMake(0.0, 4.0, 15.0, 15.0), NULL);
-        self.path = path;
-        self.fillColor = self.color.CGColor;
-        CFRelease(path);
-	}
-	return self;
-}
-/*
- Draw the legend title.
- */
-- (void)drawInContext:(CGContextRef)ctx
-{
-    CGContextSetFillColorWithColor(ctx, self.color.CGColor);
-    //draw the Text to CALayer, or can use CATextLayer 
-    UIGraphicsPushContext(ctx);
-    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
-    [self.title drawInRect:CGRectMake(20.0, 0.0, 40.0, 20.0) withFont:helveticated lineBreakMode:UILineBreakModeWordWrap alignment:UITextAlignmentLeft];
-    UIGraphicsPopContext();
-}
-
-@end
-
 
 #pragma mark - WSPieChartWithMotionView
 
