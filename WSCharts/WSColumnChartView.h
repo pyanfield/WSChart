@@ -10,19 +10,9 @@
 
 @interface WSColumnChartView : UIView
 
-- (void)chartData:(NSMutableArray*)datas;
-
-@end
-
-
-
-@interface WSColumnItem:NSObject
-
-@property (nonatomic) CGFloat yValue;
-@property (nonatomic, strong) NSString *xValue;
+@property (nonatomic, strong) NSString *xAxisKey;
 @property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) UIColor *color;
+@property (nonatomic) CGFloat columnWidth;
 
-- (void)initColumnItem:(NSString*)title xValue:(NSString*)x yValue:(CGFloat)y color:(UIColor*)color;
-
+- (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
 @end

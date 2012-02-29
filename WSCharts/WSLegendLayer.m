@@ -12,6 +12,8 @@
 @implementation WSLegendLayer
 @synthesize color = _color;
 @synthesize title = _title;
+@synthesize titleStartPoint = _titleStartPoint, rectStartPoint = _rectStartPoint;
+@synthesize font = _font;
 
 - (id)initWithColor:(UIColor *)color andTitle:(NSString *)title
 {
@@ -19,10 +21,13 @@
     if (self != nil) {
         self.color = color;
         self.title = title;
-        self.bounds = CGRectMake(0.0, 0.0, 70.0, 20.0);
+        self.titleStartPoint = CGPointMake(20.0, 0.0);
+        self.rectStartPoint = CGPointMake(0.0, 4.0);
+        self.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
+        CGSize size = [self.title sizeWithFont:self.font];
+        self.bounds = CGRectMake(0.0, 0.0, size.width+self.titleStartPoint.x, size.height);
         self.anchorPoint = CGPointMake(0.0, 0.0);
-        
-        CGPathRef path = CGPathCreateWithRect(CGRectMake(0.0, 4.0, 15.0, 15.0), NULL);
+        CGPathRef path = CGPathCreateWithRect(CGRectMake(self.rectStartPoint.x,self.rectStartPoint.y, 15.0, 15.0), NULL);
         self.path = path;
         self.fillColor = self.color.CGColor;
         CFRelease(path);
@@ -35,12 +40,8 @@
 - (void)drawInContext:(CGContextRef)ctx
 {
     CGContextSetFillColorWithColor(ctx, self.color.CGColor);
-    //draw the Text to CALayer, or can use CATextLayer 
     UIGraphicsPushContext(ctx);
-    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
-    CGSize size = [self.title sizeWithFont:helveticated];
-    [self.title drawAtPoint:CGPointMake(20.0, 0.0) withFont:helveticated];
-    self.bounds = CGRectMake(0.0, 0.0, size.width+20.0, size.height);
+    [self.title drawAtPoint:self.titleStartPoint withFont:self.font];
     UIGraphicsPopContext();
 }
 

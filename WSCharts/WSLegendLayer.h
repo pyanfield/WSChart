@@ -11,5 +11,8 @@
 @interface WSLegendLayer:CAShapeLayer
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *title;
+@property (nonatomic) CGPoint rectStartPoint;
+@property (nonatomic) CGPoint titleStartPoint;
+@property (nonatomic, strong) UIFont *font;
 - (id)initWithColor:(UIColor*)color andTitle:(NSString *)title;
 @end

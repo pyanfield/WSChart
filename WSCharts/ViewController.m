@@ -73,18 +73,30 @@
      */
     
     // demo data for WSColumnChartView
-    columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 600.0, 400.0)];
-    NSMutableArray *datas = [[NSMutableArray alloc] init];
+    columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<5; i++) {
-        WSColumnItem *item = [[WSColumnItem alloc] init];
-        item.xValue = [NSString stringWithFormat:@"XVALUE %d",i];
-        int y = arc4random() % 200;
-        item.yValue = (CGFloat)y;
-        item.title = @"Liverpool";
-        item.color = [UIColor colorWithHue:0.1*i saturation:0.5 brightness:0.6 alpha:1.0];
-        [datas addObject:item];
+        int lfc = arc4random() % 300;
+        int mu = arc4random() % 200;
+        int che = arc4random() % 300;
+        int mc = arc4random() % 200;
+        int year = 2005+i;
+        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
+                                     [NSNumber numberWithInt:lfc],@"Liverpool",
+                                     [NSNumber numberWithInt:mu],@"MU",
+                                     [NSNumber numberWithInt:che],@"Chesea",
+                                     [NSNumber numberWithInt:mc],@"ManCity",nil];
+        [arr addObject:data];
     }
-    [columnChart chartData:datas];
+    NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
+                                                                           [UIColor greenColor],@"MU",
+                                                                           [UIColor blueColor],@"Chesea",
+                                                                           [UIColor orangeColor],@"ManCity", nil];
+    
+    columnChart.xAxisKey = @"Year";
+    columnChart.columnWidth = 20.0;
+    columnChart.title = @"Test the Column Chart";
+    [columnChart drawChart:arr withColor:colorDict];
     columnChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:columnChart];
 }

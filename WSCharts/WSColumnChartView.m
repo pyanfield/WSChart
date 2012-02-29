@@ -8,6 +8,7 @@
 
 #import "WSColumnChartView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "WSLegendLayer.h"
 
 static CGPoint CreateEndPoint(CGPoint startPoint,CGFloat angle,CGFloat distance)
 {
@@ -31,37 +32,17 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     CGFloat hue = 0.0, saturation = 0.0 , brightness = 0.0, alpha = 0.0;
     if ([color respondsToSelector:@selector(getHue:saturation:brightness:alpha:)]) {
         [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
-        //NSLog(@"hub: %f, saturation: %f, brigntness: %f, alpha: %f",hue,saturation,brightness,alpha);
+    }else{
+        NSLog(@"Not support getHue:saturation:brightness:alpha:");
     }
-    //TODO: else case
     
-    UIColor *brightColor = [UIColor colorWithHue:hue saturation:saturation+0.1 brightness:brightness+0.1 alpha:alpha];
-    UIColor *darkColor = [UIColor colorWithHue:hue saturation:saturation-0.2 brightness:brightness-0.2 alpha:alpha];
-    NSDictionary *colors = [NSDictionary dictionaryWithObjectsAndKeys:brightColor,@"brightColor",color,@"normalColor",darkColor,@"darkColor", nil];
+    UIColor *brightColor = [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:alpha];
+    UIColor *normalColor = [UIColor colorWithHue:hue saturation:saturation brightness:brightness*0.91 alpha:alpha];
+    UIColor *darkColor = [UIColor colorWithHue:hue saturation:saturation brightness:brightness*0.78 alpha:alpha];
+    NSDictionary *colors = [NSDictionary dictionaryWithObjectsAndKeys:brightColor,@"brightColor",normalColor,@"normalColor",darkColor,@"darkColor", nil];
     
     return colors;
 }
-
-#pragma mark - WSColumnItem
-@interface WSColumnItem()
-@end
-
-@implementation WSColumnItem
-
-@synthesize xValue = _xValue;
-@synthesize yValue = _yValue;
-@synthesize title = _title;
-@synthesize color = _color;
-
-- (void)initColumnItem:(NSString *)title xValue:(NSString *)x yValue:(CGFloat)y color:(UIColor*)color
-{
-    self.title = title;
-    self.xValue = x;
-    self.yValue = y;
-    self.color = color;
-}
-
-@end
 
 #pragma mark - WSColumnLayer
 
@@ -73,7 +54,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @property (nonatomic) CGPoint xStartPoint;
 @property (nonatomic) CGFloat angle;
 @property (nonatomic) CGFloat yValue;
-@property (nonatomic) CGFloat cWidth;
+@property (nonatomic) CGFloat columnWidth;
 @property (nonatomic, strong) UIColor *color;
 
 //- (void)displayColumn;
@@ -85,7 +66,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @synthesize xStartPoint = _xStartPoint;
 @synthesize angle = _angle;
 @synthesize yValue = _yValue;
-@synthesize cWidth = _cWidth;
+@synthesize columnWidth = _columnWidth;
 @synthesize color = _color;
 
 - (id)init
@@ -98,16 +79,16 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 {
     NSDictionary *colors = ConstructBrightAndDarkColors(self.color);
     
-    CGPoint topLeftFront = CGPointMake(self.xStartPoint.x-self.cWidth/2.0, self.xStartPoint.y-self.yValue);
+    CGPoint topLeftFront = CGPointMake(self.xStartPoint.x, self.xStartPoint.y-self.yValue);
     CGPoint topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT,DISTANCE_DEFAULT);
-    CGPoint topRightFront = CGPointMake(self.xStartPoint.x+self.cWidth/2.0, self.xStartPoint.y-self.yValue);
+    CGPoint topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y-self.yValue);
     CGPoint topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
     CGPoint bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y+self.yValue);
     CGPoint bottomRightFront = CGPointMake(topRightFront.x, self.xStartPoint.y);
     
     // front side
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, CGRectMake(topLeftFront.x,topLeftFront.y, self.cWidth, self.yValue));
+    CGPathAddRect(path, NULL, CGRectMake(topLeftFront.x,topLeftFront.y, self.columnWidth, self.yValue));
     UIColor *normalColor = [colors objectForKey:@"normalColor"];
     CGContextSetFillColorWithColor(ctx, normalColor.CGColor);
     CGContextSetLineWidth(ctx, 1.0);
@@ -156,14 +137,18 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @property (nonatomic) CGFloat yMaxAxis;
 @property (nonatomic) CGPoint originalPoint;
 @property (nonatomic) CGFloat xMaxAxis;
+@property (nonatomic,strong) NSMutableArray *xMarkTitles;
+@property (nonatomic) CGFloat xMarkDistance;
 
 - (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor*)color;
 - (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor*)color;
+- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color;
 
 @end
 
 @implementation WSCoordinateLayer
 @synthesize yMaxAxis = _yMaxAxis,originalPoint = _originalPoint,xMaxAxis = _xMaxAxis;
+@synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance;
 
 - (id)init
 {
@@ -173,6 +158,8 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 
 - (void)drawInContext:(CGContextRef)ctx
 {
+    NSLog(@"draw in context");
+    
     // TODO: should change the color according to the background color
     UIColor *frontLineColor = [UIColor whiteColor];
     UIColor *backLineColor = [UIColor grayColor];
@@ -206,6 +193,26 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         [self drawLine:ctx isXAxis:YES startPoint:p1 length:-6.0 isDashLine:NO color:frontLineColor];
     }
     
+    //draw x axis mark and title
+    for (int i=0; i<[self.xMarkTitles count]; i++) {
+        CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
+        CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
+        [self drawLine:ctx startPoint:p1 endPoint:p2 isDashLine:NO color:frontLineColor];
+        NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
+        [self drawText:ctx withText:mark atPoint:CGPointMake(p1.x-self.xMarkDistance/2, p1.y) color:frontLineColor];
+    }
+    
+}
+
+- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color
+{
+    UIGraphicsPushContext(ctx);
+    CGContextSetFillColorWithColor(ctx,color.CGColor);
+    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
+    CGSize size = [text sizeWithFont:helveticated];
+    p1 = CGPointMake(p1.x-size.width/2, p1.y);
+    [text drawAtPoint:p1 withFont:helveticated];
+    UIGraphicsPopContext();
 }
 
 - (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor *)color
@@ -255,13 +262,12 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 
 @end
 
-
-
 #pragma mark - WSColumnChartView
 
-#define COORDINATE_BOTTOM_GAP 80.0
+#define COORDINATE_BOTTOM_GAP 100.0
 #define COORDINATE_TOP_GAP 50.0
 #define COORDINATE_LEFT_GAP 80.0
+#define TITLE_FONT_SIZE 22
 
 @interface WSColumnChartView()
 
@@ -272,6 +278,8 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @property (nonatomic) CGFloat offsetColumnValue;
 @property (nonatomic, strong) CALayer *areaLayer;
 @property (nonatomic, strong) WSCoordinateLayer *coordinateLayer;
+@property (nonatomic, strong) CATextLayer *titleLayer;
+@property (nonatomic, strong) CALayer *legendLayer;
 
 @end
 
@@ -287,6 +295,11 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @synthesize offsetColumnValue = _offsetColumnValue;
 @synthesize areaLayer = _areaLayer;
 @synthesize coordinateLayer = _coordinateLayer;
+@synthesize xAxisKey = _xAxisKey;
+@synthesize title = _title;
+@synthesize columnWidth = _columnWidth;
+@synthesize titleLayer = _titleLayer;
+@synthesize legendLayer = _legendLayer;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -297,50 +310,81 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         self.xMaxAxis = 0.0;
         self.maxColumnValue = 0.0;
         self.minColumnValue = CGFLOAT_MAX;
+        self.columnWidth = 20.0;
         self.offsetColumnValue = 0.0;
+        self.title = @"WSColumnChart";
         self.areaLayer = [CALayer layer];
         self.coordinateLayer = [[WSCoordinateLayer alloc] init];
+        self.titleLayer = [CATextLayer layer];
+        self.legendLayer = [CALayer layer];
         self.areaLayer.frame = frame;
         self.coordinateLayer.frame = frame;
     }
     return self;
 }
 
-- (void)chartData:(NSMutableArray *)datas
+- (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict
 {
-    /*
-     TODO:
-     1. the y values are different. in the coordinate system and the real value for the column data
-     2. if the y value is negative number
-     */
+    // draw column area
+    NSArray *datas = [arr copy];
+    NSDictionary *colorDict = [dict copy];
+    NSMutableArray *xValues = [[NSMutableArray alloc] init];
+    int length = [datas count];
+    for (int i=0; i<length; i++) {
+        NSDictionary *data = [datas objectAtIndex:i];
+        [xValues addObject:[data valueForKey:self.xAxisKey]];
+        __block int flag = 0.0;
+        [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
+            if (![key isEqual:self.xAxisKey]) {
+                WSColumnLayer *layer = [[WSColumnLayer alloc] init];
+                layer.color = [colorDict valueForKey:key];
+                layer.yValue = [obj floatValue];
+                layer.columnWidth = self.columnWidth;
+                //self.columnWidth*flag+self.coordinateOriginalPoint.x+self.columnWidth*2+i*self.columnWidth*(length+1)
+                layer.xStartPoint = CGPointMake(self.columnWidth*(flag+i*(length+1)+1)+self.coordinateOriginalPoint.x, 
+                                                self.coordinateOriginalPoint.y);
+                layer.frame = self.bounds;
+                [layer setNeedsDisplay];
+                [self.areaLayer addSublayer:layer];
+                
+                flag++;
+                self.maxColumnValue = self.maxColumnValue > [obj floatValue] ? self.maxColumnValue : [obj floatValue];
+                self.minColumnValue = self.minColumnValue < [obj floatValue] ? self.minColumnValue : [obj floatValue];
+            }
+        }];
+    }
     
-    // draw coordinate layer
+    self.offsetColumnValue = self.maxColumnValue - self.minColumnValue;
+    
+    // draw coordinate first
+    self.coordinateLayer.xMarkDistance = self.columnWidth*([[datas objectAtIndex:0] count]+1);
+    self.coordinateLayer.xMarkTitles = xValues;
     self.coordinateLayer.yMaxAxis = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
     self.coordinateLayer.xMaxAxis = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
     self.coordinateLayer.originalPoint = self.coordinateOriginalPoint;
     [self.coordinateLayer setNeedsDisplay];
-    [self.layer addSublayer:self.coordinateLayer];
     
-    // draw column chart area layer
-    NSArray *arr = [datas copy];
-    for (int i=0; i<[arr count]; i++) {
-        WSColumnItem *item = [arr objectAtIndex:i];
-        WSColumnLayer *layer = [[WSColumnLayer alloc] init];
-        layer.color = item.color;
-        layer.yValue = item.yValue;
-        //TODO, should calculate the value using coodinate system and width value
-        layer.cWidth = 20.0;
-        layer.xStartPoint = CGPointMake(50.0*i+self.coordinateOriginalPoint.x+50.0, self.coordinateOriginalPoint.y);
-        layer.frame = self.bounds;
+    // add the title layer
+    self.titleLayer.string = self.title;
+    self.titleLayer.fontSize = TITLE_FONT_SIZE;
+    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:TITLE_FONT_SIZE];
+    CGSize size = [self.title sizeWithFont:helveticated];
+    self.titleLayer.frame = CGRectMake(COORDINATE_LEFT_GAP/2, COORDINATE_TOP_GAP/2, size.width, size.height);
+    
+    // add the lengedn layer
+    __block int flag = 0;
+    [colorDict enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
+        WSLegendLayer *layer = [[WSLegendLayer alloc] initWithColor:obj andTitle:key];
+        layer.position  = CGPointMake(20.0, 20.0*flag);
         [layer setNeedsDisplay];
-        [self.areaLayer addSublayer:layer];
-        
-        self.maxColumnValue = self.maxColumnValue > item.yValue ? self.maxColumnValue : item.yValue;
-        self.minColumnValue = self.minColumnValue < item.yValue ? self.minColumnValue : item.yValue;
-    }
-    NSLog(@"max : %f , min : %f ",self.maxColumnValue,self.minColumnValue);
-    self.offsetColumnValue = self.maxColumnValue - self.minColumnValue;
-
+        [self.legendLayer addSublayer:layer];
+        flag++;
+    }];
+    
+    [self.layer addSublayer:self.legendLayer];
+    [self.layer addSublayer:self.titleLayer];
+    [self.layer addSublayer:self.coordinateLayer];
     [self.layer addSublayer:self.areaLayer];
 }
+
 @end
