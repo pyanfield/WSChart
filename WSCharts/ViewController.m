@@ -76,10 +76,10 @@
     columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<5; i++) {
-        int lfc = arc4random() % 300;
+        int lfc = arc4random() % 3000;
         int mu = arc4random() % 200;
-        int che = arc4random() % 300;
-        int mc = arc4random() % 200;
+        int che = arc4random() % 2500;
+        int mc = arc4random() % 2000;
         int year = 2005+i;
         NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
                                      [NSNumber numberWithInt:lfc],@"Liverpool",

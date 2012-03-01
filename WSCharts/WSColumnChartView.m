@@ -152,17 +152,18 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @property (nonatomic) CGPoint originalPoint;
 @property (nonatomic) CGFloat xMaxAxis;
 @property (nonatomic,strong) NSMutableArray *xMarkTitles;
+@property (nonatomic,strong) NSMutableArray *yMarkTitles;
 @property (nonatomic) CGFloat xMarkDistance;
 
 - (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor*)color;
 - (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor*)color;
-- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color;
+- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color alignment:(WSAliment)alignment;
 
 @end
 
 @implementation WSCoordinateLayer
 @synthesize yMaxAxis = _yMaxAxis,originalPoint = _originalPoint,xMaxAxis = _xMaxAxis;
-@synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance;
+@synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance,yMarkTitles = _yMarkTitles;
 
 - (id)init
 {
@@ -172,8 +173,6 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 
 - (void)drawInContext:(CGContextRef)ctx
 {
-    NSLog(@"draw in context");
-    
     // TODO: should change the color according to the background color
     UIColor *frontLineColor = [UIColor whiteColor];
     UIColor *backLineColor = [UIColor grayColor];
@@ -207,24 +206,41 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         [self drawLine:ctx isXAxis:YES startPoint:p1 length:-6.0 isDashLine:NO color:frontLineColor];
     }
     
+    //draw y axis mark's title
+    for (int i=0; i<=Y_MARKS_COUNT; i++) {
+        CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
+        NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
+        [self drawText:ctx withText:mark atPoint:p1 color:frontLineColor alignment:WSLeft];
+    }
+    
     //draw x axis mark and title
     for (int i=0; i<[self.xMarkTitles count]; i++) {
         CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
         CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
         [self drawLine:ctx startPoint:p1 endPoint:p2 isDashLine:NO color:frontLineColor];
         NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
-        [self drawText:ctx withText:mark atPoint:CGPointMake(p1.x-self.xMarkDistance/2, p1.y) color:frontLineColor];
+        [self drawText:ctx withText:mark atPoint:CGPointMake(p1.x-self.xMarkDistance/2, p1.y) color:frontLineColor alignment:WSTop];
     }
     
 }
 
-- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color
+- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color alignment:(WSAliment)alignment
 {
     UIGraphicsPushContext(ctx);
     CGContextSetFillColorWithColor(ctx,color.CGColor);
     UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
     CGSize size = [text sizeWithFont:helveticated];
-    p1 = CGPointMake(p1.x-size.width/2, p1.y);
+    switch (alignment) {
+        case WSTop:
+            p1 = CGPointMake(p1.x-size.width/2, p1.y);
+            break;
+        case WSLeft:
+            p1 = CGPointMake(p1.x-size.width, p1.y-size.height/2);
+            break;
+        default:
+            break;
+    }
+    
     [text drawAtPoint:p1 withFont:helveticated];
     UIGraphicsPopContext();
 }
@@ -294,6 +310,10 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @property (nonatomic, strong) WSCoordinateLayer *coordinateLayer;
 @property (nonatomic, strong) CATextLayer *titleLayer;
 @property (nonatomic, strong) CALayer *legendLayer;
+@property (nonatomic) CGFloat yMaxAxis;
+
+- (float)calculateFinalIntValue:(float) value isMax:(BOOL)max;
+- (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max;
 
 @end
 
@@ -314,6 +334,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @synthesize columnWidth = _columnWidth;
 @synthesize titleLayer = _titleLayer;
 @synthesize legendLayer = _legendLayer;
+@synthesize yMaxAxis = _yMaxAxis;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -321,7 +342,6 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     if (self) {
         // Initialization code
         self.coordinateOriginalPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
-        self.xMaxAxis = 0.0;
         self.maxColumnValue = 0.0;
         self.minColumnValue = CGFLOAT_MAX;
         self.columnWidth = 20.0;
@@ -333,17 +353,34 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         self.legendLayer = [CALayer layer];
         self.areaLayer.frame = frame;
         self.coordinateLayer.frame = frame;
+        self.yMaxAxis = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
+        self.xMaxAxis = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
     }
     return self;
 }
 
 - (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict
 {
-    // draw column area
+    // calculate the propotion, using this propotion to switch the data value from user data to coordinate y axis value 
     NSArray *datas = [arr copy];
     NSDictionary *colorDict = [dict copy];
-    NSMutableArray *xValues = [[NSMutableArray alloc] init];
     int length = [datas count];
+    for (int i=0; i<length; i++) {
+        NSDictionary *data = [datas objectAtIndex:i];
+        [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
+            if (![key isEqual:self.xAxisKey]) {
+                self.maxColumnValue = self.maxColumnValue > [obj floatValue] ? self.maxColumnValue : [obj floatValue];
+                self.minColumnValue = self.minColumnValue < [obj floatValue] ? self.minColumnValue : [obj floatValue];
+            }
+        }];
+    }
+    float minValue = [self calculateFinalIntValue:self.minColumnValue isMax:NO];
+    float maxValue = [self calculateFinalIntValue:self.maxColumnValue isMax:YES];
+    float offsetValue = maxValue - minValue;
+    float propotion = self.yMaxAxis/offsetValue;
+    
+    // draw column area
+    NSMutableArray *xValues = [[NSMutableArray alloc] init];
     for (int i=0; i<length; i++) {
         NSDictionary *data = [datas objectAtIndex:i];
         [xValues addObject:[data valueForKey:self.xAxisKey]];
@@ -352,7 +389,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
             if (![key isEqual:self.xAxisKey]) {
                 WSColumnLayer *layer = [[WSColumnLayer alloc] init];
                 layer.color = [colorDict valueForKey:key];
-                layer.yValue = [obj floatValue];
+                layer.yValue = [obj floatValue]*propotion;
                 layer.columnWidth = self.columnWidth;
                 //self.columnWidth*flag+self.coordinateOriginalPoint.x+self.columnWidth*2+i*self.columnWidth*(length+1)
                 layer.xStartPoint = CGPointMake(self.columnWidth*(flag+i*(length+1)+1)+self.coordinateOriginalPoint.x, 
@@ -360,21 +397,17 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
                 layer.frame = self.bounds;
                 [layer setNeedsDisplay];
                 [self.areaLayer addSublayer:layer];
-                
                 flag++;
-                self.maxColumnValue = self.maxColumnValue > [obj floatValue] ? self.maxColumnValue : [obj floatValue];
-                self.minColumnValue = self.minColumnValue < [obj floatValue] ? self.minColumnValue : [obj floatValue];
             }
         }];
     }
     
-    self.offsetColumnValue = self.maxColumnValue - self.minColumnValue;
-    
     // draw coordinate first
+    self.coordinateLayer.yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:maxValue];
     self.coordinateLayer.xMarkDistance = self.columnWidth*([[datas objectAtIndex:0] count]+1);
     self.coordinateLayer.xMarkTitles = xValues;
-    self.coordinateLayer.yMaxAxis = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
-    self.coordinateLayer.xMaxAxis = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
+    self.coordinateLayer.yMaxAxis = self.yMaxAxis;//self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
+    self.coordinateLayer.xMaxAxis = self.xMaxAxis;//    self.frame.size.width - 2*COORDINATE_LEFT_GAP;
     self.coordinateLayer.originalPoint = self.coordinateOriginalPoint;
     [self.coordinateLayer setNeedsDisplay];
     
@@ -387,18 +420,62 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     
     // add the lengedn layer
     __block int flag = 0;
+    __block float legendWidth = 0.0;
     [colorDict enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
         WSLegendLayer *layer = [[WSLegendLayer alloc] initWithColor:obj andTitle:key];
         layer.position  = CGPointMake(20.0, 20.0*flag);
         [layer setNeedsDisplay];
         [self.legendLayer addSublayer:layer];
         flag++;
+        legendWidth = legendWidth > layer.frame.size.width ? legendWidth : layer.frame.size.width;
     }];
+    self.legendLayer.frame = CGRectMake(self.bounds.size.width - legendWidth - COORDINATE_LEFT_GAP, 20.0, legendWidth, self.frame.size.height);
     
-    [self.layer addSublayer:self.legendLayer];
-    [self.layer addSublayer:self.titleLayer];
     [self.layer addSublayer:self.coordinateLayer];
+    [self.layer addSublayer:self.titleLayer];
+    [self.layer addSublayer:self.legendLayer];
     [self.layer addSublayer:self.areaLayer];
+}
+
+- (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max
+{
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
+    [arr addObject:[NSNumber numberWithFloat:min]];
+    float offset = (max - min)/Y_MARKS_COUNT;
+    for (int i=1; i<=Y_MARKS_COUNT; i++) {
+        [arr addObject:[NSNumber numberWithFloat:offset*i]];
+    }
+    return arr;
+}
+
+- (float)calculateFinalIntValue:(float)value isMax:(BOOL)max
+{
+    NSNumberFormatter *numFormatter  = [[NSNumberFormatter alloc] init];
+    [numFormatter setNumberStyle:NSNumberFormatterScientificStyle];
+    NSString *numStr = [numFormatter stringFromNumber:[NSNumber numberWithFloat:value]];
+    NSString *e = @"E";
+    // also can use [[maxNumStr componentsSeparatedByString:e] lastObject] to get the substring after "e", but slower than using range
+    NSRange range = [numStr rangeOfString:e];
+    NSString *lastStr = [numStr substringFromIndex:range.location+1];
+    NSString *firstStr = [numStr substringToIndex:range.location];
+    
+    float finalFirstNum = 0.0;
+    if (max) {
+        finalFirstNum = ceilf([firstStr floatValue]);
+        if (finalFirstNum == floorf([firstStr floatValue])) {
+            finalFirstNum += 0.5;
+        }
+    }else
+    {
+        finalFirstNum = floorf([firstStr floatValue]);
+        if (ceilf([firstStr floatValue]) == finalFirstNum) {
+            finalFirstNum -= 0.5;
+        }
+    }
+    NSString *finalStr = [NSString stringWithFormat:@"%fE%@",finalFirstNum,lastStr];
+    [numFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    NSNumber *finalNum = [numFormatter numberFromString:finalStr];
+    return [finalNum floatValue];
 }
 
 @end

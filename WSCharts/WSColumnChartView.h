@@ -22,6 +22,18 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    WSTopLeft,
+    WSTopRight,
+    WSBottomLeft,
+    WSBottomRight,
+    WSRight,
+    WSLeft,
+    WSTop,
+    WSBottom,
+    WSCenter,
+} WSAliment;
+
 @interface WSColumnChartView : UIView
 
 @property (nonatomic, strong) NSString *xAxisKey;
