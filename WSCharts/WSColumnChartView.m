@@ -57,6 +57,74 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     
     return colors;
 }
+//- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color alignment:(WSAliment)alignment
+static void CreateTextAtPoint(CGContextRef ctx,NSString *text,CGPoint p1,UIColor *color,WSAliment alignment)
+{
+    UIGraphicsPushContext(ctx);
+    CGContextSetFillColorWithColor(ctx,color.CGColor);
+    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
+    CGSize size = [text sizeWithFont:helveticated];
+    switch (alignment) {
+        case WSTop:
+            p1 = CGPointMake(p1.x-size.width/2, p1.y);
+            break;
+        case WSLeft:
+            p1 = CGPointMake(p1.x-size.width, p1.y-size.height/2);
+            break;
+        default:
+            break;
+    }
+    
+    [text drawAtPoint:p1 withFont:helveticated];
+    UIGraphicsPopContext();
+}
+
+//(void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor *)color
+static void CreateLineWithLengthFromPoint(CGContextRef ctx,BOOL x, CGPoint point, CGFloat length,BOOL dash,UIColor *color)
+{
+    CGContextSaveGState(ctx);
+    if (dash) {
+        CGFloat phase = 2.0;
+        const CGFloat pattern[] = {5.0,5.0};
+        size_t count = 2;
+        CGContextSetLineDash(ctx,phase,pattern,count);
+    }
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, point.x, point.y);
+    if (x) {
+        CGPathAddLineToPoint(path, NULL, point.x+length, point.y);
+    }else{
+        CGPathAddLineToPoint(path, NULL, point.x, point.y - length);
+    }
+    
+    CGContextSetLineWidth(ctx, 1.0);
+    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
+    CGContextAddPath(ctx, path);
+    CGContextDrawPath(ctx, kCGPathStroke);
+    CGPathRelease(path);
+    CGContextRestoreGState(ctx);
+}
+
+//- (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor *)color
+static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL dash,UIColor *color)
+{
+    CGContextSaveGState(ctx);
+    if (dash) {
+        CGFloat phase = 3.0;
+        const CGFloat pattern[] = {3.0,3.0};
+        size_t count = 2;
+        CGContextSetLineDash(ctx,phase,pattern,count);
+    }
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, p1.x, p1.y);
+    CGPathAddLineToPoint(path, NULL, p2.x, p2.y);
+    CGContextSetLineWidth(ctx, 1.0);
+    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
+    CGContextAddPath(ctx, path);
+    CGContextDrawPath(ctx, kCGPathStroke);
+    CGPathRelease(path);
+    CGContextRestoreGState(ctx);
+}
 
 #pragma mark - WSColumnLayer
 
@@ -193,47 +261,47 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     CGPoint backZeroPoint = CreateEndPoint(self.zeroPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
     
     // draw front y Axis
-    [self drawLine:ctx isXAxis:NO startPoint:self.originalPoint length:self.yAxisLength isDashLine:NO color:frontLineColor];
+    CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, frontLineColor);
     
     // draw front x Axis
-    [self drawLine:ctx isXAxis:YES startPoint:self.zeroPoint length:self.xAxisLength isDashLine:NO color:frontLineColor];
+    CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, frontLineColor);
     
     // draw back y Axis
-    [self drawLine:ctx isXAxis:NO startPoint:backOriginalPoint length:self.yAxisLength isDashLine:YES color:backLineColor];
+    CreateLineWithLengthFromPoint(ctx, NO, backOriginalPoint, self.yAxisLength, YES, backLineColor);
     
     // draw back x Axis
-    [self drawLine:ctx isXAxis:YES startPoint:backZeroPoint length:self.xAxisLength isDashLine:YES color:backLineColor];
+    CreateLineWithLengthFromPoint(ctx, YES, backZeroPoint, self.xAxisLength, YES, backLineColor);
     
     // draw bridge line between front and back original point
-    [self drawLine:ctx startPoint:self.zeroPoint endPoint:backZeroPoint isDashLine:NO color:backLineColor];
+    CreateLinePointToPoint(ctx, self.zeroPoint, backZeroPoint, NO, backLineColor);
     CGPoint xMaxPoint = CGPointMake(self.zeroPoint.x + self.xAxisLength, self.zeroPoint.y);
     CGPoint xMaxPoint2 = CreateEndPoint(xMaxPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-    [self drawLine:ctx startPoint:xMaxPoint endPoint:xMaxPoint2 isDashLine:NO color:backLineColor];
+    CreateLinePointToPoint(ctx, xMaxPoint, xMaxPoint2, NO, backLineColor);
     
     //draw assit line 
     CGFloat markLength = self.yAxisLength/self.yMarksCount;
     for (int i=0; i<= self.yMarksCount; i++) {
         CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
         CGPoint p2 = CreateEndPoint(p1, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-        [self drawLine:ctx startPoint:p1 endPoint:p2 isDashLine:NO color:backLineColor];
-        [self drawLine:ctx isXAxis:YES startPoint:p2 length:self.xAxisLength isDashLine:YES color:backLineColor];
-        [self drawLine:ctx isXAxis:YES startPoint:p1 length:-6.0 isDashLine:NO color:frontLineColor];
+        CreateLinePointToPoint(ctx, p1, p2, NO, backLineColor);
+        CreateLineWithLengthFromPoint(ctx, YES, p2, self.xAxisLength, YES, backLineColor);
+        CreateLineWithLengthFromPoint(ctx, YES, p1, -6.0, NO, frontLineColor);
     }
     
     //draw y axis mark's title
     for (int i=0; i<=self.yMarksCount; i++) {
         CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
         NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
-        [self drawText:ctx withText:mark atPoint:p1 color:frontLineColor alignment:WSLeft];
+        CreateTextAtPoint(ctx, mark, p1, frontLineColor, WSLeft);
     }
     
     //draw x axis mark and title
     for (int i=0; i<[self.xMarkTitles count]; i++) {
         CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
         CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
-        [self drawLine:ctx startPoint:p1 endPoint:p2 isDashLine:NO color:frontLineColor];
+        CreateLinePointToPoint(ctx, p1, p2, NO, frontLineColor);
         NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
-        [self drawText:ctx withText:mark atPoint:CGPointMake(p1.x-self.xMarkDistance/2, p1.y) color:frontLineColor alignment:WSTop];
+        CreateTextAtPoint(ctx, mark, CGPointMake(p1.x-self.xMarkDistance/2, p1.y), frontLineColor, WSTop);
     }
     
 }
