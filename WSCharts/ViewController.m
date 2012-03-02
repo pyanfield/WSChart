@@ -87,10 +87,10 @@
 //                                     [NSNumber numberWithInt:che],@"Chesea",
 //                                     [NSNumber numberWithInt:mc],@"ManCity",nil];
         
-        float lfc = 300;
-        float mu = 460;
-        float che = 520;
-        float mc = 260;
+        float lfc = -300;
+        float mu = -460;
+        float che = -520;
+        float mc = -260;
         int year = i;
         NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"Test %d",year],@"Year",
                               [NSNumber numberWithFloat:lfc],@"Liverpool",
@@ -107,6 +107,7 @@
     columnChart.xAxisKey = @"Year";
     columnChart.columnWidth = 20.0;
     columnChart.title = @"Test the Column Chart";
+    columnChart.showZeroValueAtYAxis = YES;
     [columnChart drawChart:arr withColor:colorDict];
     columnChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:columnChart];

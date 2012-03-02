@@ -353,6 +353,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @synthesize yAxisLength = _yAxisLength;
 @synthesize yMarksCount = _yMarksCount;
 @synthesize zeroPoint = _zeroPoint;
+@synthesize showZeroValueAtYAxis = _showZeroValueAtYAxis;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -374,6 +375,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         self.yAxisLength = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
         self.xAxisLength = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
         self.yMarksCount = Y_MARKS_COUNT;
+        self.showZeroValueAtYAxis = NO;
     }
     return self;
 }
@@ -386,10 +388,8 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     int length = [datas count];
     for (int i=0; i<length; i++) {
         NSDictionary *data = [datas objectAtIndex:i];
-        NSLog(@"****************");
         [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
             if (![key isEqual:self.xAxisKey]) {
-                NSLog(@"y value : %f",[obj floatValue]);
                 self.maxColumnValue = self.maxColumnValue > [obj floatValue] ? self.maxColumnValue : [obj floatValue];
                 self.minColumnValue = self.minColumnValue < [obj floatValue] ? self.minColumnValue : [obj floatValue];
             }
@@ -400,9 +400,12 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     float minValue, maxValue,offsetValue,propotion,correction;
     minValue = [self calculateFinalYAxisTitle:self.minColumnValue isMax:NO];
     maxValue = [self calculateFinalYAxisTitle:self.maxColumnValue isMax:YES];
-    NSLog(@"min value:%f, max value:%f",minValue,maxValue);
+    //NSLog(@"min value:%f, max value:%f",minValue,maxValue);
     
     if (self.minColumnValue >= 0.0 && self.maxColumnValue > 0.0) {
+        if (self.showZeroValueAtYAxis) {
+            minValue = 0.0;
+        }
         offsetValue = maxValue - minValue;
         propotion = self.yAxisLength/offsetValue;
         self.zeroPoint = self.coordinateOriginalPoint;
@@ -428,6 +431,9 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         correction = 0.0;
     }else if (self.minColumnValue < 0.0 && self.maxColumnValue <= 0.0)
     {
+        if (self.showZeroValueAtYAxis) {
+            maxValue = 0.0;
+        }
         offsetValue = maxValue - minValue;
         propotion = self.yAxisLength/offsetValue;
         self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength);
@@ -460,13 +466,13 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     }
     
     // draw coordinate first
-    self.coordinateLayer.yMarkTitles = yMarkTitles;//[self calculateYAxisValuesWithMin:minValue andMax:maxValue];
+    self.coordinateLayer.yMarkTitles = yMarkTitles;
     self.coordinateLayer.xMarkDistance = self.columnWidth*([[datas objectAtIndex:0] count]+1);
     self.coordinateLayer.xMarkTitles = xValues;
     self.coordinateLayer.zeroPoint = self.zeroPoint;
     self.coordinateLayer.yMarksCount = self.yMarksCount;
-    self.coordinateLayer.yAxisLength = self.yAxisLength;//self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
-    self.coordinateLayer.xAxisLength = self.xAxisLength;//    self.frame.size.width - 2*COORDINATE_LEFT_GAP;
+    self.coordinateLayer.yAxisLength = self.yAxisLength;
+    self.coordinateLayer.xAxisLength = self.xAxisLength;
     self.coordinateLayer.originalPoint = self.coordinateOriginalPoint;
     [self.coordinateLayer setNeedsDisplay];
     
@@ -494,13 +500,6 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     [self.layer addSublayer:self.titleLayer];
     [self.layer addSublayer:self.legendLayer];
     [self.layer addSublayer:self.areaLayer];
-    
-    //test calculate the final value
-//#warning test code here,should removed later
-//    float test = 20;
-//    NSLog(@"----------------");
-//    float result = [self calculateFinalYAxisTitle:test isMax:YES];
-//    NSLog(@"%f",result);
 }
 
 - (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max

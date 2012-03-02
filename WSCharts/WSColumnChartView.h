@@ -39,6 +39,7 @@ typedef enum {
 @property (nonatomic, strong) NSString *xAxisKey;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic) CGFloat columnWidth;
+@property (nonatomic) BOOL showZeroValueAtYAxis;
 
 - (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
 @end
