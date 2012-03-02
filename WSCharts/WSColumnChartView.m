@@ -71,8 +71,6 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @property (nonatomic) CGFloat columnWidth;
 @property (nonatomic, strong) UIColor *color;
 
-//- (void)displayColumn;
-
 @end
 
 @implementation WSColumnLayer
@@ -92,17 +90,28 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 - (void)drawInContext:(CGContextRef)ctx
 {
     NSDictionary *colors = ConstructBrightAndDarkColors(self.color);
-    
-    CGPoint topLeftFront = CGPointMake(self.xStartPoint.x, self.xStartPoint.y-self.yValue);
-    CGPoint topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT,DISTANCE_DEFAULT);
-    CGPoint topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y-self.yValue);
-    CGPoint topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-    CGPoint bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y+self.yValue);
-    CGPoint bottomRightFront = CGPointMake(topRightFront.x, self.xStartPoint.y);
+    CGPoint topLeftFront ,topLeftBack,topRightFront,topRightBack , bottomRightBack ,bottomRightFront;
+    if (self.yValue>=0.0) {
+        topLeftFront = CGPointMake(self.xStartPoint.x, self.xStartPoint.y-self.yValue);
+        topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT,DISTANCE_DEFAULT);
+        topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y-self.yValue);
+        topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y+self.yValue);
+        bottomRightFront = CGPointMake(topRightFront.x, self.xStartPoint.y);
+    }else
+    {
+        topLeftFront = self.xStartPoint;
+        topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y);
+        topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y-self.yValue);
+        bottomRightFront = CGPointMake(topRightFront.x, topLeftFront.y-self.yValue);
+    }
+
     
     // front side
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, CGRectMake(topLeftFront.x,topLeftFront.y, self.columnWidth, self.yValue));
+    CGPathAddRect(path, NULL, CGRectMake(topLeftFront.x,topLeftFront.y, self.columnWidth,fabsf(self.yValue)));
     UIColor *normalColor = [colors objectForKey:@"normalColor"];
     CGContextSetFillColorWithColor(ctx, normalColor.CGColor);
     CGContextSetLineWidth(ctx, 1.0);
@@ -148,12 +157,15 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 
 @interface WSCoordinateLayer : CAShapeLayer
 
-@property (nonatomic) CGFloat yMaxAxis;
+@property (nonatomic) CGFloat yAxisLength;
 @property (nonatomic) CGPoint originalPoint;
-@property (nonatomic) CGFloat xMaxAxis;
+@property (nonatomic) CGPoint zeroPoint;
+@property (nonatomic) CGFloat xAxisLength;
 @property (nonatomic,strong) NSMutableArray *xMarkTitles;
 @property (nonatomic,strong) NSMutableArray *yMarkTitles;
 @property (nonatomic) CGFloat xMarkDistance;
+@property (nonatomic) int yMarksCount;
+
 
 - (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor*)color;
 - (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor*)color;
@@ -162,8 +174,9 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @end
 
 @implementation WSCoordinateLayer
-@synthesize yMaxAxis = _yMaxAxis,originalPoint = _originalPoint,xMaxAxis = _xMaxAxis;
-@synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance,yMarkTitles = _yMarkTitles;
+@synthesize yAxisLength = _yAxisLength,originalPoint = _originalPoint,xAxisLength = _xAxisLength;
+@synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance,yMarkTitles = _yMarkTitles,zeroPoint = _zeroPoint;
+@synthesize yMarksCount = _yMarksCount;
 
 - (id)init
 {
@@ -177,37 +190,38 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     UIColor *frontLineColor = [UIColor whiteColor];
     UIColor *backLineColor = [UIColor grayColor];
     CGPoint backOriginalPoint = CreateEndPoint(self.originalPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+    CGPoint backZeroPoint = CreateEndPoint(self.zeroPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
     
     // draw front y Axis
-    [self drawLine:ctx isXAxis:NO startPoint:self.originalPoint length:self.yMaxAxis isDashLine:NO color:frontLineColor];
+    [self drawLine:ctx isXAxis:NO startPoint:self.originalPoint length:self.yAxisLength isDashLine:NO color:frontLineColor];
     
     // draw front x Axis
-    [self drawLine:ctx isXAxis:YES startPoint:self.originalPoint length:self.xMaxAxis isDashLine:NO color:frontLineColor];
+    [self drawLine:ctx isXAxis:YES startPoint:self.zeroPoint length:self.xAxisLength isDashLine:NO color:frontLineColor];
     
     // draw back y Axis
-    [self drawLine:ctx isXAxis:NO startPoint:backOriginalPoint length:self.yMaxAxis isDashLine:YES color:backLineColor];
+    [self drawLine:ctx isXAxis:NO startPoint:backOriginalPoint length:self.yAxisLength isDashLine:YES color:backLineColor];
     
     // draw back x Axis
-    [self drawLine:ctx isXAxis:YES startPoint:backOriginalPoint length:self.xMaxAxis isDashLine:YES color:backLineColor];
+    [self drawLine:ctx isXAxis:YES startPoint:backZeroPoint length:self.xAxisLength isDashLine:YES color:backLineColor];
     
     // draw bridge line between front and back original point
-    [self drawLine:ctx startPoint:self.originalPoint endPoint:backOriginalPoint isDashLine:NO color:backLineColor];
-    CGPoint xMaxPoint = CGPointMake(self.originalPoint.x + self.xMaxAxis, self.originalPoint.y);
+    [self drawLine:ctx startPoint:self.zeroPoint endPoint:backZeroPoint isDashLine:NO color:backLineColor];
+    CGPoint xMaxPoint = CGPointMake(self.zeroPoint.x + self.xAxisLength, self.zeroPoint.y);
     CGPoint xMaxPoint2 = CreateEndPoint(xMaxPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
     [self drawLine:ctx startPoint:xMaxPoint endPoint:xMaxPoint2 isDashLine:NO color:backLineColor];
     
     //draw assit line 
-    CGFloat markLength = self.yMaxAxis/Y_MARKS_COUNT;
-    for (int i=1; i<= Y_MARKS_COUNT; i++) {
+    CGFloat markLength = self.yAxisLength/self.yMarksCount;
+    for (int i=0; i<= self.yMarksCount; i++) {
         CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
         CGPoint p2 = CreateEndPoint(p1, ANGLE_DEFAULT, DISTANCE_DEFAULT);
         [self drawLine:ctx startPoint:p1 endPoint:p2 isDashLine:NO color:backLineColor];
-        [self drawLine:ctx isXAxis:YES startPoint:p2 length:self.xMaxAxis isDashLine:YES color:backLineColor];
+        [self drawLine:ctx isXAxis:YES startPoint:p2 length:self.xAxisLength isDashLine:YES color:backLineColor];
         [self drawLine:ctx isXAxis:YES startPoint:p1 length:-6.0 isDashLine:NO color:frontLineColor];
     }
     
     //draw y axis mark's title
-    for (int i=0; i<=Y_MARKS_COUNT; i++) {
+    for (int i=0; i<=self.yMarksCount; i++) {
         CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
         NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
         [self drawText:ctx withText:mark atPoint:p1 color:frontLineColor alignment:WSLeft];
@@ -302,15 +316,17 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @interface WSColumnChartView()
 
 @property (nonatomic) CGPoint coordinateOriginalPoint;
-@property (nonatomic) CGFloat xMaxAxis;
-@property (nonatomic) CGFloat maxColumnValue;
-@property (nonatomic) CGFloat minColumnValue;
+@property (nonatomic) CGFloat xAxisLength;
+@property (nonatomic) float maxColumnValue;
+@property (nonatomic) float minColumnValue;
 @property (nonatomic) CGFloat offsetColumnValue;
 @property (nonatomic, strong) CALayer *areaLayer;
 @property (nonatomic, strong) WSCoordinateLayer *coordinateLayer;
 @property (nonatomic, strong) CATextLayer *titleLayer;
 @property (nonatomic, strong) CALayer *legendLayer;
-@property (nonatomic) CGFloat yMaxAxis;
+@property (nonatomic) CGFloat yAxisLength;
+@property (nonatomic) int yMarksCount;
+@property (nonatomic) CGPoint zeroPoint;
 
 - (float)calculateFinalYAxisTitle:(float) value isMax:(BOOL)max;
 - (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max;
@@ -320,7 +336,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @implementation WSColumnChartView
 
 @synthesize coordinateOriginalPoint = _coordinateOriginalPoint;
-@synthesize xMaxAxis = _xMaxAxis;
+@synthesize xAxisLength = _xAxisLength;
 /* 
  Get the max and min value from column datas.
  */ 
@@ -334,7 +350,9 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @synthesize columnWidth = _columnWidth;
 @synthesize titleLayer = _titleLayer;
 @synthesize legendLayer = _legendLayer;
-@synthesize yMaxAxis = _yMaxAxis;
+@synthesize yAxisLength = _yAxisLength;
+@synthesize yMarksCount = _yMarksCount;
+@synthesize zeroPoint = _zeroPoint;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -342,7 +360,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     if (self) {
         // Initialization code
         self.coordinateOriginalPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
-        self.maxColumnValue = 0.0;
+        self.maxColumnValue = CGFLOAT_MAX*(-1.0);
         self.minColumnValue = CGFLOAT_MAX;
         self.columnWidth = 20.0;
         self.offsetColumnValue = 0.0;
@@ -353,8 +371,9 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         self.legendLayer = [CALayer layer];
         self.areaLayer.frame = frame;
         self.coordinateLayer.frame = frame;
-        self.yMaxAxis = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
-        self.xMaxAxis = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
+        self.yAxisLength = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
+        self.xAxisLength = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
+        self.yMarksCount = Y_MARKS_COUNT;
     }
     return self;
 }
@@ -376,10 +395,46 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
             }
         }];
     }
-    float minValue = [self calculateFinalYAxisTitle:self.minColumnValue isMax:NO];
-    float maxValue = [self calculateFinalYAxisTitle:self.maxColumnValue isMax:YES];
-    float offsetValue = maxValue - minValue;
-    float propotion = self.yMaxAxis/offsetValue;
+    
+    NSMutableArray *yMarkTitles = [[NSMutableArray alloc] init];
+    float minValue, maxValue,offsetValue,propotion,correction;
+    minValue = [self calculateFinalYAxisTitle:self.minColumnValue isMax:NO];
+    maxValue = [self calculateFinalYAxisTitle:self.maxColumnValue isMax:YES];
+    NSLog(@"min value:%f, max value:%f",minValue,maxValue);
+    
+    if (self.minColumnValue >= 0.0 && self.maxColumnValue > 0.0) {
+        offsetValue = maxValue - minValue;
+        propotion = self.yAxisLength/offsetValue;
+        self.zeroPoint = self.coordinateOriginalPoint;
+        yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:maxValue];
+        correction = minValue;
+    }else if (self.minColumnValue < 0.0 && self.maxColumnValue >= 0.0)
+    {
+        float bigDis = fabsf(minValue)>fabsf(maxValue)?fabsf(minValue):fabsf(maxValue);
+        float markDis = bigDis/Y_MARKS_COUNT;
+        float smallDis = fabsf(minValue)<fabsf(maxValue)?fabsf(minValue):fabsf(maxValue);
+        int smallMarkCount = (int)ceilf(smallDis/markDis);
+        self.yMarksCount = Y_MARKS_COUNT+smallMarkCount;
+        offsetValue = markDis*(float)self.yMarksCount;
+        propotion = self.yAxisLength/offsetValue;
+        if (fabsf(minValue)<=fabsf(maxValue)) {
+            self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*smallMarkCount/self.yMarksCount);
+            yMarkTitles = [self calculateYAxisValuesWithMin:-markDis*smallMarkCount andMax:maxValue];
+        }else
+        {
+            self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*Y_MARKS_COUNT/self.yMarksCount);
+            yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:markDis*smallMarkCount];
+        }
+        correction = 0.0;
+    }else if (self.minColumnValue < 0.0 && self.maxColumnValue <= 0.0)
+    {
+        offsetValue = maxValue - minValue;
+        propotion = self.yAxisLength/offsetValue;
+        self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength);
+        yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:maxValue];
+        correction = maxValue;
+    }
+    
     
     // draw column area
     NSMutableArray *xValues = [[NSMutableArray alloc] init];
@@ -391,11 +446,11 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
             if (![key isEqual:self.xAxisKey]) {
                 WSColumnLayer *layer = [[WSColumnLayer alloc] init];
                 layer.color = [colorDict valueForKey:key];
-                layer.yValue = [obj floatValue]*propotion;
+                layer.yValue = ([obj floatValue]-correction)*propotion;
                 layer.columnWidth = self.columnWidth;
                 //self.columnWidth*flag+self.coordinateOriginalPoint.x+self.columnWidth*2+i*self.columnWidth*(length+1)
-                layer.xStartPoint = CGPointMake(self.columnWidth*(flag+i*(length+1)+1)+self.coordinateOriginalPoint.x, 
-                                                self.coordinateOriginalPoint.y);
+                layer.xStartPoint = CGPointMake(self.columnWidth*(flag+i*(length+1)+1)+self.zeroPoint.x, 
+                                                self.zeroPoint.y);
                 layer.frame = self.bounds;
                 [layer setNeedsDisplay];
                 [self.areaLayer addSublayer:layer];
@@ -405,11 +460,13 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     }
     
     // draw coordinate first
-    self.coordinateLayer.yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:maxValue];
+    self.coordinateLayer.yMarkTitles = yMarkTitles;//[self calculateYAxisValuesWithMin:minValue andMax:maxValue];
     self.coordinateLayer.xMarkDistance = self.columnWidth*([[datas objectAtIndex:0] count]+1);
     self.coordinateLayer.xMarkTitles = xValues;
-    self.coordinateLayer.yMaxAxis = self.yMaxAxis;//self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
-    self.coordinateLayer.xMaxAxis = self.xMaxAxis;//    self.frame.size.width - 2*COORDINATE_LEFT_GAP;
+    self.coordinateLayer.zeroPoint = self.zeroPoint;
+    self.coordinateLayer.yMarksCount = self.yMarksCount;
+    self.coordinateLayer.yAxisLength = self.yAxisLength;//self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
+    self.coordinateLayer.xAxisLength = self.xAxisLength;//    self.frame.size.width - 2*COORDINATE_LEFT_GAP;
     self.coordinateLayer.originalPoint = self.coordinateOriginalPoint;
     [self.coordinateLayer setNeedsDisplay];
     
@@ -439,26 +496,32 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     [self.layer addSublayer:self.areaLayer];
     
     //test calculate the final value
-    
-    float test = 20;
-    NSLog(@"----------------");
-    float result = [self calculateFinalYAxisTitle:test isMax:YES];
-    NSLog(@"%f",result);
+//#warning test code here,should removed later
+//    float test = 20;
+//    NSLog(@"----------------");
+//    float result = [self calculateFinalYAxisTitle:test isMax:YES];
+//    NSLog(@"%f",result);
 }
 
 - (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max
 {
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     [arr addObject:[NSNumber numberWithFloat:min]];
-    float offset = (max - min)/Y_MARKS_COUNT;
-    for (int i=1; i<=Y_MARKS_COUNT; i++) {
-        [arr addObject:[NSNumber numberWithFloat:offset*i]];
+    float offset = (max - min)/self.yMarksCount;
+    for (int i=1; i<=self.yMarksCount; i++) {
+        [arr addObject:[NSNumber numberWithFloat:(min+offset*i)]];
     }
     return arr;
 }
 
 - (float)calculateFinalYAxisTitle:(float)value isMax:(BOOL)max
 {
+
+    if (max) {
+        if (value > -100.0 && value <= 0.0) return 0.0;
+    }else{
+        if (value >= 0.0 && value < 100.0) return 0.0;
+    }
     // value = fisrtStr*10^lastStr
     NSNumberFormatter *numFormatter  = [[NSNumberFormatter alloc] init];
     [numFormatter setNumberStyle:NSNumberFormatterScientificStyle];
@@ -468,22 +531,22 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     NSRange range = [numStr rangeOfString:e];
     NSString *lastStr = [numStr substringFromIndex:range.location+1];
     NSString *firstStr = [numStr substringToIndex:range.location];
-    NSLog(@"%@",lastStr);
     float finalFirstNum = 0.0;
     if (max) {
         finalFirstNum = ceilf([firstStr floatValue]);
+        if (finalFirstNum > ([firstStr floatValue]+0.5)) {
+            finalFirstNum = (floorf([firstStr floatValue])+0.5);
+        }
         if (finalFirstNum == floorf([firstStr floatValue])) {
             finalFirstNum += 0.5;
         }
-    }else
-    {
+    }else{
         finalFirstNum = floorf([firstStr floatValue]);
+        if (finalFirstNum < ([firstStr floatValue]-0.5)) {
+            finalFirstNum = (ceilf([firstStr floatValue])-0.5);
+        }
         if (ceilf([firstStr floatValue]) == finalFirstNum) {
             finalFirstNum -= 0.5;
-        }
-        // value >= 0.0 && value < 100.0
-        if ([lastStr intValue] <=1 && finalFirstNum >= 0.0) {
-            finalFirstNum = 0.0;
         }
     }
     NSString *finalStr = [NSString stringWithFormat:@"%fE%@",finalFirstNum,lastStr];
