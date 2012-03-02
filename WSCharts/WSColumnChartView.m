@@ -312,7 +312,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
 @property (nonatomic, strong) CALayer *legendLayer;
 @property (nonatomic) CGFloat yMaxAxis;
 
-- (float)calculateFinalIntValue:(float) value isMax:(BOOL)max;
+- (float)calculateFinalYAxisTitle:(float) value isMax:(BOOL)max;
 - (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max;
 
 @end
@@ -367,15 +367,17 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     int length = [datas count];
     for (int i=0; i<length; i++) {
         NSDictionary *data = [datas objectAtIndex:i];
+        NSLog(@"****************");
         [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
             if (![key isEqual:self.xAxisKey]) {
+                NSLog(@"y value : %f",[obj floatValue]);
                 self.maxColumnValue = self.maxColumnValue > [obj floatValue] ? self.maxColumnValue : [obj floatValue];
                 self.minColumnValue = self.minColumnValue < [obj floatValue] ? self.minColumnValue : [obj floatValue];
             }
         }];
     }
-    float minValue = [self calculateFinalIntValue:self.minColumnValue isMax:NO];
-    float maxValue = [self calculateFinalIntValue:self.maxColumnValue isMax:YES];
+    float minValue = [self calculateFinalYAxisTitle:self.minColumnValue isMax:NO];
+    float maxValue = [self calculateFinalYAxisTitle:self.maxColumnValue isMax:YES];
     float offsetValue = maxValue - minValue;
     float propotion = self.yMaxAxis/offsetValue;
     
@@ -423,7 +425,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     __block float legendWidth = 0.0;
     [colorDict enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
         WSLegendLayer *layer = [[WSLegendLayer alloc] initWithColor:obj andTitle:key];
-        layer.position  = CGPointMake(20.0, 20.0*flag);
+        layer.position  = CGPointMake(0.0, 20.0*flag);
         [layer setNeedsDisplay];
         [self.legendLayer addSublayer:layer];
         flag++;
@@ -435,6 +437,13 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     [self.layer addSublayer:self.titleLayer];
     [self.layer addSublayer:self.legendLayer];
     [self.layer addSublayer:self.areaLayer];
+    
+    //test calculate the final value
+    
+    float test = 20;
+    NSLog(@"----------------");
+    float result = [self calculateFinalYAxisTitle:test isMax:YES];
+    NSLog(@"%f",result);
 }
 
 - (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max
@@ -448,8 +457,9 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     return arr;
 }
 
-- (float)calculateFinalIntValue:(float)value isMax:(BOOL)max
+- (float)calculateFinalYAxisTitle:(float)value isMax:(BOOL)max
 {
+    // value = fisrtStr*10^lastStr
     NSNumberFormatter *numFormatter  = [[NSNumberFormatter alloc] init];
     [numFormatter setNumberStyle:NSNumberFormatterScientificStyle];
     NSString *numStr = [numFormatter stringFromNumber:[NSNumber numberWithFloat:value]];
@@ -458,7 +468,7 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     NSRange range = [numStr rangeOfString:e];
     NSString *lastStr = [numStr substringFromIndex:range.location+1];
     NSString *firstStr = [numStr substringToIndex:range.location];
-    
+    NSLog(@"%@",lastStr);
     float finalFirstNum = 0.0;
     if (max) {
         finalFirstNum = ceilf([firstStr floatValue]);
@@ -470,6 +480,10 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
         finalFirstNum = floorf([firstStr floatValue]);
         if (ceilf([firstStr floatValue]) == finalFirstNum) {
             finalFirstNum -= 0.5;
+        }
+        // value >= 0.0 && value < 100.0
+        if ([lastStr intValue] <=1 && finalFirstNum >= 0.0) {
+            finalFirstNum = 0.0;
         }
     }
     NSString *finalStr = [NSString stringWithFormat:@"%fE%@",finalFirstNum,lastStr];
