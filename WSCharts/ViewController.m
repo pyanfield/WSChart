@@ -76,32 +76,21 @@
     columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<5; i++) {
-//        int lfc = arc4random() % 100;
-//        int mu = arc4random() % 100;
-//        int che = arc4random() % 200;
-//        int mc = arc4random() % 300;
-//        int year = 2005+i;
-//        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
-//                                     [NSNumber numberWithInt:lfc],@"Liverpool",
-//                                     [NSNumber numberWithInt:mu],@"MU",
-//                                     [NSNumber numberWithInt:che],@"Chesea",
-//                                     [NSNumber numberWithInt:mc],@"ManCity",nil];
-        
-        float lfc = 300;
-        float mu = -460;
-        float che = 520;
-        float mc = -260;
-        int year = i;
-        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"Test %d",year],@"Year",
-                              [NSNumber numberWithFloat:lfc],@"Liverpool",
-                              [NSNumber numberWithFloat:mu],@"MU",
-                              [NSNumber numberWithFloat:che],@"Chesea",
-                              [NSNumber numberWithFloat:mc],@"ManCity",nil];
+        int lfc = arc4random() % 400;
+        int mu = arc4random() % 250;
+        int che = arc4random() % 350;
+        int mc = arc4random() % 300;
+        int year = 2005+i;
+        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
+                                     [NSNumber numberWithInt:lfc],@"Liverpool",
+                                     [NSNumber numberWithInt:mu],@"MU",
+                                     [NSNumber numberWithInt:che],@"Chelsea",
+                                     [NSNumber numberWithInt:mc],@"ManCity",nil];
         [arr addObject:data];
     }
     NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
-                                                                           [UIColor greenColor],@"MU",
-                                                                           [UIColor blueColor],@"Chesea",
+                                                                           [UIColor purpleColor],@"MU",
+                                                                           [UIColor greenColor],@"Chelsea",
                                                                            [UIColor orangeColor],@"ManCity", nil];
     
     columnChart.xAxisKey = @"Year";

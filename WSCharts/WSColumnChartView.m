@@ -24,6 +24,17 @@
 #import <QuartzCore/QuartzCore.h>
 #import "WSLegendLayer.h"
 
+#define Y_MARKS_COUNT 5
+#define ANGLE_DEFAULT M_PI/4.0
+#define DISTANCE_DEFAULT 15.0
+#define COORDINATE_BOTTOM_GAP 100.0
+#define COORDINATE_TOP_GAP 50.0
+#define COORDINATE_LEFT_GAP 80.0
+#define TITLE_FONT_SIZE 22
+
+/*
+ Create a point that is away from "startPoint".
+ */
 static CGPoint CreateEndPoint(CGPoint startPoint,CGFloat angle,CGFloat distance)
 {
     float x = distance*sinf(angle);
@@ -31,18 +42,11 @@ static CGPoint CreateEndPoint(CGPoint startPoint,CGFloat angle,CGFloat distance)
     CGPoint point = CGPointMake(startPoint.x+x,startPoint.y-y);
     return point;
 }
-
+/*
+ Extract different brightness colors from "color".
+ */
 static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
-{
-    /*
-     CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
-     
-     if (![color respondsToSelector:@selector(getRed:green:blue:alpha:)]) {
-     [color getRed:&red green:&green blue:&blue alpha:&alpha];
-     NSLog(@"red: %f, green: %f, blue: %f, alpha: %f",red,green,blue,alpha);
-     }
-     */
-    
+{    
     CGFloat hue = 0.0, saturation = 0.0 , brightness = 0.0, alpha = 0.0;
     if ([color respondsToSelector:@selector(getHue:saturation:brightness:alpha:)]) {
         [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
@@ -57,7 +61,9 @@ static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
     
     return colors;
 }
-//- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color alignment:(WSAliment)alignment
+/*
+ Draw the string "text" at ponint "p1",with the "color".
+ */
 static void CreateTextAtPoint(CGContextRef ctx,NSString *text,CGPoint p1,UIColor *color,WSAliment alignment)
 {
     UIGraphicsPushContext(ctx);
@@ -79,11 +85,13 @@ static void CreateTextAtPoint(CGContextRef ctx,NSString *text,CGPoint p1,UIColor
     UIGraphicsPopContext();
 }
 
-//(void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor *)color
-static void CreateLineWithLengthFromPoint(CGContextRef ctx,BOOL x, CGPoint point, CGFloat length,BOOL dash,UIColor *color)
+/*
+ Draw a line from "point".
+ */
+static void CreateLineWithLengthFromPoint(CGContextRef ctx,BOOL isXAxis, CGPoint point, CGFloat length,BOOL isDash,UIColor *color)
 {
     CGContextSaveGState(ctx);
-    if (dash) {
+    if (isDash) {
         CGFloat phase = 2.0;
         const CGFloat pattern[] = {5.0,5.0};
         size_t count = 2;
@@ -91,7 +99,7 @@ static void CreateLineWithLengthFromPoint(CGContextRef ctx,BOOL x, CGPoint point
     }
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, point.x, point.y);
-    if (x) {
+    if (isXAxis) {
         CGPathAddLineToPoint(path, NULL, point.x+length, point.y);
     }else{
         CGPathAddLineToPoint(path, NULL, point.x, point.y - length);
@@ -105,11 +113,13 @@ static void CreateLineWithLengthFromPoint(CGContextRef ctx,BOOL x, CGPoint point
     CGContextRestoreGState(ctx);
 }
 
-//- (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor *)color
-static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL dash,UIColor *color)
+/*
+ Draw a line from "p1" to "p2".
+ */
+static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL isDash,UIColor *color)
 {
     CGContextSaveGState(ctx);
-    if (dash) {
+    if (isDash) {
         CGFloat phase = 3.0;
         const CGFloat pattern[] = {3.0,3.0};
         size_t count = 2;
@@ -128,13 +138,9 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 
 #pragma mark - WSColumnLayer
 
-#define ANGLE_DEFAULT M_PI/4.0
-#define DISTANCE_DEFAULT 15.0
-
 @interface WSColumnLayer:CAShapeLayer
 
 @property (nonatomic) CGPoint xStartPoint;
-@property (nonatomic) CGFloat angle;
 @property (nonatomic) CGFloat yValue;
 @property (nonatomic) CGFloat columnWidth;
 @property (nonatomic, strong) UIColor *color;
@@ -144,7 +150,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 @implementation WSColumnLayer
 
 @synthesize xStartPoint = _xStartPoint;
-@synthesize angle = _angle;
 @synthesize yValue = _yValue;
 @synthesize columnWidth = _columnWidth;
 @synthesize color = _color;
@@ -221,8 +226,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 
 #pragma mark - WSCoordinateLayer
 
-#define Y_MARKS_COUNT 5
-
 @interface WSCoordinateLayer : CAShapeLayer
 
 @property (nonatomic) CGFloat yAxisLength;
@@ -233,6 +236,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 @property (nonatomic,strong) NSMutableArray *yMarkTitles;
 @property (nonatomic) CGFloat xMarkDistance;
 @property (nonatomic) int yMarksCount;
+// if we should display the subline in coordinate
 @property (nonatomic) BOOL show3DSubline;
 
 @end
@@ -251,7 +255,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 
 - (void)drawInContext:(CGContextRef)ctx
 {
-    // TODO: should change the color according to the background color
     UIColor *frontLineColor = [UIColor whiteColor];
     UIColor *backLineColor = [UIColor grayColor];
     CGPoint backOriginalPoint = CreateEndPoint(self.originalPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
@@ -302,25 +305,25 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 
 #pragma mark - WSColumnChartView
 
-#define COORDINATE_BOTTOM_GAP 100.0
-#define COORDINATE_TOP_GAP 50.0
-#define COORDINATE_LEFT_GAP 80.0
-#define TITLE_FONT_SIZE 22
-
 @interface WSColumnChartView()
 
+// coordinate view's origianl point , that bottom left of that frame.
 @property (nonatomic) CGPoint coordinateOriginalPoint;
+// the length of x and y axis
 @property (nonatomic) CGFloat xAxisLength;
+@property (nonatomic) CGFloat yAxisLength;
+// max and min value of user data
 @property (nonatomic) float maxColumnValue;
 @property (nonatomic) float minColumnValue;
-@property (nonatomic) CGFloat offsetColumnValue;
+// layers for different part of column chart view
 @property (nonatomic, strong) CALayer *areaLayer;
 @property (nonatomic, strong) WSCoordinateLayer *xyAxesLayer;
 @property (nonatomic, strong) WSCoordinateLayer *sublineLayer;
 @property (nonatomic, strong) CATextLayer *titleLayer;
 @property (nonatomic, strong) CALayer *legendLayer;
-@property (nonatomic) CGFloat yAxisLength;
+// mark's count that are on y axis
 @property (nonatomic) int yMarksCount;
+// the point that display zero user data value on y axis
 @property (nonatomic) CGPoint zeroPoint;
 
 - (float)calculateFinalYAxisTitle:(float) value isMax:(BOOL)max;
@@ -337,7 +340,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
  */ 
 @synthesize maxColumnValue = _maxColumnValue;
 @synthesize minColumnValue = _minColumnValue;
-@synthesize offsetColumnValue = _offsetColumnValue;
 @synthesize areaLayer = _areaLayer;
 @synthesize xyAxesLayer = _xyAxesLayer;
 @synthesize xAxisKey = _xAxisKey;
@@ -360,7 +362,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
         self.maxColumnValue = CGFLOAT_MAX*(-1.0);
         self.minColumnValue = CGFLOAT_MAX;
         self.columnWidth = 20.0;
-        self.offsetColumnValue = 0.0;
         self.title = @"WSColumnChart";
         self.areaLayer = [CALayer layer];
         self.xyAxesLayer = [[WSCoordinateLayer alloc] init];
@@ -381,7 +382,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 
 - (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict
 {
-    // calculate the propotion, using this propotion to switch the data value from user data to coordinate y axis value 
+    // get the max and min value from user datas
     NSArray *datas = [arr copy];
     NSDictionary *colorDict = [dict copy];
     int length = [datas count];
@@ -394,12 +395,16 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
             }
         }];
     }
-    
+    //store the marks' value that displayed on y axis
     NSMutableArray *yMarkTitles = [[NSMutableArray alloc] init];
+    /*
+    propotion: to convert the user data value to y axis' value.
+    minValue, maxValue : which will be displayed as max and min value on y axis.
+    correction : if the cross point bwteen y and x axis is not zero. should re-calculate the value that displayed on coordinate
+     */
     float minValue, maxValue,offsetValue,propotion,correction;
     minValue = [self calculateFinalYAxisTitle:self.minColumnValue isMax:NO];
     maxValue = [self calculateFinalYAxisTitle:self.maxColumnValue isMax:YES];
-    //NSLog(@"min value:%f, max value:%f",minValue,maxValue);
     
     if (self.minColumnValue >= 0.0 && self.maxColumnValue > 0.0) {
         if (self.showZeroValueAtYAxis) minValue = 0.0;
@@ -448,7 +453,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
                 layer.color = [colorDict valueForKey:key];
                 layer.yValue = ([obj floatValue]-correction)*propotion;
                 layer.columnWidth = self.columnWidth;
-                //self.columnWidth*flag+self.coordinateOriginalPoint.x+self.columnWidth*2+i*self.columnWidth*(length+1)
                 layer.xStartPoint = CGPointMake(self.columnWidth*(flag+i*(length+1)+1)+self.zeroPoint.x, 
                                                 self.zeroPoint.y);
                 layer.frame = self.bounds;
@@ -496,6 +500,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
     }];
     self.legendLayer.frame = CGRectMake(self.bounds.size.width - legendWidth - COORDINATE_LEFT_GAP, 20.0, legendWidth, self.frame.size.height);
     
+    // carefully about the adding order
     [self.layer addSublayer:self.sublineLayer];
     [self.layer addSublayer:self.titleLayer];
     [self.layer addSublayer:self.legendLayer];
@@ -520,7 +525,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
  */
 - (float)calculateFinalYAxisTitle:(float)value isMax:(BOOL)max
 {
-
     if (max) {
         if (value > -100.0 && value <= 0.0) return 0.0;
     }else{
