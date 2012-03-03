@@ -87,9 +87,9 @@
 //                                     [NSNumber numberWithInt:che],@"Chesea",
 //                                     [NSNumber numberWithInt:mc],@"ManCity",nil];
         
-        float lfc = -300;
+        float lfc = 300;
         float mu = -460;
-        float che = -520;
+        float che = 520;
         float mc = -260;
         int year = i;
         NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"Test %d",year],@"Year",

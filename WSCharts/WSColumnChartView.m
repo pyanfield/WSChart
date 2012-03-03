@@ -233,11 +233,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 @property (nonatomic,strong) NSMutableArray *yMarkTitles;
 @property (nonatomic) CGFloat xMarkDistance;
 @property (nonatomic) int yMarksCount;
-
-
-- (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor*)color;
-- (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor*)color;
-- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color alignment:(WSAliment)alignment;
+@property (nonatomic) BOOL show3DSubline;
 
 @end
 
@@ -245,6 +241,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 @synthesize yAxisLength = _yAxisLength,originalPoint = _originalPoint,xAxisLength = _xAxisLength;
 @synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance,yMarkTitles = _yMarkTitles,zeroPoint = _zeroPoint;
 @synthesize yMarksCount = _yMarksCount;
+@synthesize show3DSubline = _show3DSubline;
 
 - (id)init
 {
@@ -259,119 +256,48 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
     UIColor *backLineColor = [UIColor grayColor];
     CGPoint backOriginalPoint = CreateEndPoint(self.originalPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
     CGPoint backZeroPoint = CreateEndPoint(self.zeroPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-    
-    // draw front y Axis
-    CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, frontLineColor);
-    
-    // draw front x Axis
-    CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, frontLineColor);
-    
-    // draw back y Axis
-    CreateLineWithLengthFromPoint(ctx, NO, backOriginalPoint, self.yAxisLength, YES, backLineColor);
-    
-    // draw back x Axis
-    CreateLineWithLengthFromPoint(ctx, YES, backZeroPoint, self.xAxisLength, YES, backLineColor);
-    
-    // draw bridge line between front and back original point
-    CreateLinePointToPoint(ctx, self.zeroPoint, backZeroPoint, NO, backLineColor);
-    CGPoint xMaxPoint = CGPointMake(self.zeroPoint.x + self.xAxisLength, self.zeroPoint.y);
-    CGPoint xMaxPoint2 = CreateEndPoint(xMaxPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-    CreateLinePointToPoint(ctx, xMaxPoint, xMaxPoint2, NO, backLineColor);
-    
-    //draw assit line 
     CGFloat markLength = self.yAxisLength/self.yMarksCount;
-    for (int i=0; i<= self.yMarksCount; i++) {
-        CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
-        CGPoint p2 = CreateEndPoint(p1, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-        CreateLinePointToPoint(ctx, p1, p2, NO, backLineColor);
-        CreateLineWithLengthFromPoint(ctx, YES, p2, self.xAxisLength, YES, backLineColor);
-        CreateLineWithLengthFromPoint(ctx, YES, p1, -6.0, NO, frontLineColor);
-    }
     
-    //draw y axis mark's title
-    for (int i=0; i<=self.yMarksCount; i++) {
-        CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
-        NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
-        CreateTextAtPoint(ctx, mark, p1, frontLineColor, WSLeft);
-    }
-    
-    //draw x axis mark and title
-    for (int i=0; i<[self.xMarkTitles count]; i++) {
-        CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
-        CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
-        CreateLinePointToPoint(ctx, p1, p2, NO, frontLineColor);
-        NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
-        CreateTextAtPoint(ctx, mark, CGPointMake(p1.x-self.xMarkDistance/2, p1.y), frontLineColor, WSTop);
-    }
-    
-}
-
-- (void)drawText:(CGContextRef)ctx withText:(NSString*)text atPoint:(CGPoint)p1 color:(UIColor*)color alignment:(WSAliment)alignment
-{
-    UIGraphicsPushContext(ctx);
-    CGContextSetFillColorWithColor(ctx,color.CGColor);
-    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
-    CGSize size = [text sizeWithFont:helveticated];
-    switch (alignment) {
-        case WSTop:
-            p1 = CGPointMake(p1.x-size.width/2, p1.y);
-            break;
-        case WSLeft:
-            p1 = CGPointMake(p1.x-size.width, p1.y-size.height/2);
-            break;
-        default:
-            break;
-    }
-    
-    [text drawAtPoint:p1 withFont:helveticated];
-    UIGraphicsPopContext();
-}
-
-- (void)drawLine:(CGContextRef)ctx isXAxis:(BOOL)x startPoint:(CGPoint)point length:(CGFloat)length isDashLine:(BOOL)dash color:(UIColor *)color
-{
-    CGContextSaveGState(ctx);
-    if (dash) {
-        CGFloat phase = 2.0;
-        const CGFloat pattern[] = {5.0,5.0};
-        size_t count = 2;
-        CGContextSetLineDash(ctx,phase,pattern,count);
-    }
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, NULL, point.x, point.y);
-    if (x) {
-        CGPathAddLineToPoint(path, NULL, point.x+length, point.y);
+    if (self.show3DSubline) {
+        // draw back y Axis
+        CreateLineWithLengthFromPoint(ctx, NO, backOriginalPoint, self.yAxisLength, YES, backLineColor);
+        // draw back x Axis
+        CreateLineWithLengthFromPoint(ctx, YES, backZeroPoint, self.xAxisLength, YES, backLineColor);
+        // draw bridge line between front and back original point
+        CreateLinePointToPoint(ctx, self.zeroPoint, backZeroPoint, NO, backLineColor);
+        CGPoint xMaxPoint = CGPointMake(self.zeroPoint.x + self.xAxisLength, self.zeroPoint.y);
+        CGPoint xMaxPoint2 = CreateEndPoint(xMaxPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        CreateLinePointToPoint(ctx, xMaxPoint, xMaxPoint2, NO, backLineColor);
+        //draw assist line 
+        for (int i=0; i<= self.yMarksCount; i++) {
+            CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
+            CGPoint p2 = CreateEndPoint(p1, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+            CreateLinePointToPoint(ctx, p1, p2, NO, backLineColor);
+            CreateLineWithLengthFromPoint(ctx, YES, p2, self.xAxisLength, YES, backLineColor);
+            CreateLineWithLengthFromPoint(ctx, YES, p1, -6.0, NO, frontLineColor);
+        }
     }else{
-        CGPathAddLineToPoint(path, NULL, point.x, point.y - length);
+        // draw front y Axis
+        CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, frontLineColor);
+        // draw front x Axis
+        CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, frontLineColor);
+        //draw y axis mark's title
+        for (int i=0; i<=self.yMarksCount; i++) {
+            CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
+            NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
+            CreateTextAtPoint(ctx, mark, p1, frontLineColor, WSLeft);
+        }
+        //draw x axis mark and title
+        for (int i=0; i<[self.xMarkTitles count]; i++) {
+            CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
+            CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
+            CreateLinePointToPoint(ctx, p1, p2, NO, frontLineColor);
+            NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
+            CreateTextAtPoint(ctx, mark, CGPointMake(p1.x-self.xMarkDistance/2, p1.y), frontLineColor, WSTop);
+        }
     }
     
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
-    CGContextAddPath(ctx, path);
-    CGContextDrawPath(ctx, kCGPathStroke);
-    CGPathRelease(path);
-    CGContextRestoreGState(ctx);
 }
-
-- (void)drawLine:(CGContextRef)ctx startPoint:(CGPoint)p1 endPoint:(CGPoint)p2 isDashLine:(BOOL)dash color:(UIColor *)color
-{
-    CGContextSaveGState(ctx);
-    if (dash) {
-        CGFloat phase = 3.0;
-        const CGFloat pattern[] = {3.0,3.0};
-        size_t count = 2;
-        CGContextSetLineDash(ctx,phase,pattern,count);
-    }
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, NULL, p1.x, p1.y);
-    CGPathAddLineToPoint(path, NULL, p2.x, p2.y);
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
-    CGContextAddPath(ctx, path);
-    CGContextDrawPath(ctx, kCGPathStroke);
-    CGPathRelease(path);
-    CGContextRestoreGState(ctx);
-}
-
 @end
 
 #pragma mark - WSColumnChartView
@@ -389,7 +315,8 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 @property (nonatomic) float minColumnValue;
 @property (nonatomic) CGFloat offsetColumnValue;
 @property (nonatomic, strong) CALayer *areaLayer;
-@property (nonatomic, strong) WSCoordinateLayer *coordinateLayer;
+@property (nonatomic, strong) WSCoordinateLayer *xyAxesLayer;
+@property (nonatomic, strong) WSCoordinateLayer *sublineLayer;
 @property (nonatomic, strong) CATextLayer *titleLayer;
 @property (nonatomic, strong) CALayer *legendLayer;
 @property (nonatomic) CGFloat yAxisLength;
@@ -412,7 +339,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 @synthesize minColumnValue = _minColumnValue;
 @synthesize offsetColumnValue = _offsetColumnValue;
 @synthesize areaLayer = _areaLayer;
-@synthesize coordinateLayer = _coordinateLayer;
+@synthesize xyAxesLayer = _xyAxesLayer;
 @synthesize xAxisKey = _xAxisKey;
 @synthesize title = _title;
 @synthesize columnWidth = _columnWidth;
@@ -422,6 +349,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
 @synthesize yMarksCount = _yMarksCount;
 @synthesize zeroPoint = _zeroPoint;
 @synthesize showZeroValueAtYAxis = _showZeroValueAtYAxis;
+@synthesize sublineLayer = _sublineLayer;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -435,11 +363,14 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
         self.offsetColumnValue = 0.0;
         self.title = @"WSColumnChart";
         self.areaLayer = [CALayer layer];
-        self.coordinateLayer = [[WSCoordinateLayer alloc] init];
+        self.xyAxesLayer = [[WSCoordinateLayer alloc] init];
+        self.sublineLayer = [[WSCoordinateLayer alloc] init];
+        self.sublineLayer.show3DSubline = YES;
         self.titleLayer = [CATextLayer layer];
         self.legendLayer = [CALayer layer];
         self.areaLayer.frame = frame;
-        self.coordinateLayer.frame = frame;
+        self.xyAxesLayer.frame = frame;
+        self.sublineLayer.frame = frame;
         self.yAxisLength = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
         self.xAxisLength = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
         self.yMarksCount = Y_MARKS_COUNT;
@@ -471,9 +402,7 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
     //NSLog(@"min value:%f, max value:%f",minValue,maxValue);
     
     if (self.minColumnValue >= 0.0 && self.maxColumnValue > 0.0) {
-        if (self.showZeroValueAtYAxis) {
-            minValue = 0.0;
-        }
+        if (self.showZeroValueAtYAxis) minValue = 0.0;
         offsetValue = maxValue - minValue;
         propotion = self.yAxisLength/offsetValue;
         self.zeroPoint = self.coordinateOriginalPoint;
@@ -491,17 +420,14 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
         if (fabsf(minValue)<=fabsf(maxValue)) {
             self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*smallMarkCount/self.yMarksCount);
             yMarkTitles = [self calculateYAxisValuesWithMin:-markDis*smallMarkCount andMax:maxValue];
-        }else
-        {
+        }else{
             self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*Y_MARKS_COUNT/self.yMarksCount);
             yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:markDis*smallMarkCount];
         }
         correction = 0.0;
     }else if (self.minColumnValue < 0.0 && self.maxColumnValue <= 0.0)
     {
-        if (self.showZeroValueAtYAxis) {
-            maxValue = 0.0;
-        }
+        if (self.showZeroValueAtYAxis) maxValue = 0.0;
         offsetValue = maxValue - minValue;
         propotion = self.yAxisLength/offsetValue;
         self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength);
@@ -534,15 +460,21 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
     }
     
     // draw coordinate first
-    self.coordinateLayer.yMarkTitles = yMarkTitles;
-    self.coordinateLayer.xMarkDistance = self.columnWidth*([[datas objectAtIndex:0] count]+1);
-    self.coordinateLayer.xMarkTitles = xValues;
-    self.coordinateLayer.zeroPoint = self.zeroPoint;
-    self.coordinateLayer.yMarksCount = self.yMarksCount;
-    self.coordinateLayer.yAxisLength = self.yAxisLength;
-    self.coordinateLayer.xAxisLength = self.xAxisLength;
-    self.coordinateLayer.originalPoint = self.coordinateOriginalPoint;
-    [self.coordinateLayer setNeedsDisplay];
+    self.xyAxesLayer.yMarkTitles = yMarkTitles;
+    self.xyAxesLayer.xMarkDistance = self.columnWidth*([[datas objectAtIndex:0] count]+1);
+    self.xyAxesLayer.xMarkTitles = xValues;
+    self.xyAxesLayer.zeroPoint = self.zeroPoint;
+    self.xyAxesLayer.yMarksCount = self.yMarksCount;
+    self.xyAxesLayer.yAxisLength = self.yAxisLength;
+    self.xyAxesLayer.xAxisLength = self.xAxisLength;
+    self.xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
+    [self.xyAxesLayer setNeedsDisplay];
+    self.sublineLayer.zeroPoint = self.zeroPoint;
+    self.sublineLayer.yMarksCount = self.yMarksCount;
+    self.sublineLayer.yAxisLength = self.yAxisLength;
+    self.sublineLayer.xAxisLength = self.xAxisLength;
+    self.sublineLayer.originalPoint = self.coordinateOriginalPoint;
+    [self.sublineLayer setNeedsDisplay];
     
     // add the title layer
     self.titleLayer.string = self.title;
@@ -564,12 +496,15 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
     }];
     self.legendLayer.frame = CGRectMake(self.bounds.size.width - legendWidth - COORDINATE_LEFT_GAP, 20.0, legendWidth, self.frame.size.height);
     
-    [self.layer addSublayer:self.coordinateLayer];
+    [self.layer addSublayer:self.sublineLayer];
     [self.layer addSublayer:self.titleLayer];
     [self.layer addSublayer:self.legendLayer];
     [self.layer addSublayer:self.areaLayer];
+    [self.layer addSublayer:self.xyAxesLayer];
 }
-
+/*
+ Calculate the marks' value which should be displayed on y axis. 
+ */
 - (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max
 {
     NSMutableArray *arr = [[NSMutableArray alloc] init];
@@ -580,7 +515,9 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL d
     }
     return arr;
 }
-
+/*
+ Calculate the user data's max and min value which should be displayed on y axis.
+ */
 - (float)calculateFinalYAxisTitle:(float)value isMax:(BOOL)max
 {
 
