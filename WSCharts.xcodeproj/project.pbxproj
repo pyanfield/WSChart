@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		90055310150495BA00BC7CD4 /* WSLineChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9005530F150495BA00BC7CD4 /* WSLineChartView.m */; };
+		9005531815049FDF00BC7CD4 /* WSCoordinateLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */; };
+		900553221504ADD800BC7CD4 /* WSGlobalCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 900553211504ADD800BC7CD4 /* WSGlobalCore.m */; };
 		901EAE6614DA1EE7001BD2D0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE6514DA1EE7001BD2D0 /* UIKit.framework */; };
 		901EAE6814DA1EE7001BD2D0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE6714DA1EE7001BD2D0 /* Foundation.framework */; };
 		901EAE6A14DA1EE7001BD2D0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE6914DA1EE7001BD2D0 /* CoreGraphics.framework */; };
@@ -29,6 +31,10 @@
 /* Begin PBXFileReference section */
 		9005530E150495BA00BC7CD4 /* WSLineChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSLineChartView.h; sourceTree = "<group>"; };
 		9005530F150495BA00BC7CD4 /* WSLineChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSLineChartView.m; sourceTree = "<group>"; };
+		9005531615049FDF00BC7CD4 /* WSCoordinateLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSCoordinateLayer.h; sourceTree = "<group>"; };
+		9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSCoordinateLayer.m; sourceTree = "<group>"; };
+		900553201504ADD800BC7CD4 /* WSGlobalCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSGlobalCore.h; sourceTree = "<group>"; };
+		900553211504ADD800BC7CD4 /* WSGlobalCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSGlobalCore.m; sourceTree = "<group>"; };
 		901EAE6114DA1EE7001BD2D0 /* WSCharts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WSCharts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		901EAE6514DA1EE7001BD2D0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		901EAE6714DA1EE7001BD2D0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -172,6 +178,10 @@
 				902FF3BE14FDBF4400A5DD5A /* PieChart */,
 				902FF3C514FE203600A5DD5A /* WSLegendLayer.h */,
 				902FF3C614FE203600A5DD5A /* WSLegendLayer.m */,
+				9005531615049FDF00BC7CD4 /* WSCoordinateLayer.h */,
+				9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */,
+				900553201504ADD800BC7CD4 /* WSGlobalCore.h */,
+				900553211504ADD800BC7CD4 /* WSGlobalCore.m */,
 			);
 			name = charts;
 			sourceTree = "<group>";
@@ -250,6 +260,8 @@
 				90E8318B14F3798600847C48 /* WSColumnChartView.m in Sources */,
 				902FF3C714FE203700A5DD5A /* WSLegendLayer.m in Sources */,
 				90055310150495BA00BC7CD4 /* WSLineChartView.m in Sources */,
+				9005531815049FDF00BC7CD4 /* WSCoordinateLayer.m in Sources */,
+				900553221504ADD800BC7CD4 /* WSGlobalCore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -22,18 +22,6 @@
 
 #import <UIKit/UIKit.h>
 
-typedef enum {
-    WSTopLeft,
-    WSTopRight,
-    WSBottomLeft,
-    WSBottomRight,
-    WSRight,
-    WSLeft,
-    WSTop,
-    WSBottom,
-    WSCenter,
-} WSAliment;
-
 @interface WSColumnChartView : UIView
 // the key value in the user data which will be displayed on x axis
 @property (nonatomic, strong) NSString *xAxisKey;

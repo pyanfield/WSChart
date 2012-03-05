@@ -23,6 +23,8 @@
 #import "WSColumnChartView.h"
 #import <QuartzCore/QuartzCore.h>
 #import "WSLegendLayer.h"
+#import "WSCoordinateLayer.h"
+#import "WSGlobalCore.h"
 
 #define Y_MARKS_COUNT 5
 #define ANGLE_DEFAULT M_PI/4.0
@@ -34,109 +36,6 @@
 #define FRONT_LINE_COLOR [UIColor whiteColor]
 #define BACK_LINE_COLOR [UIColor grayColor]
 
-/*
- Create a point that is away from "startPoint".
- */
-static CGPoint CreateEndPoint(CGPoint startPoint,CGFloat angle,CGFloat distance)
-{
-    float x = distance*sinf(angle);
-    float y = distance*cosf(angle);
-    CGPoint point = CGPointMake(startPoint.x+x,startPoint.y-y);
-    return point;
-}
-/*
- Extract different brightness colors from "color".
- */
-static NSDictionary* ConstructBrightAndDarkColors(UIColor *color)
-{    
-    CGFloat hue = 0.0, saturation = 0.0 , brightness = 0.0, alpha = 0.0;
-    if ([color respondsToSelector:@selector(getHue:saturation:brightness:alpha:)]) {
-        [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
-    }else{
-        NSLog(@"Not support getHue:saturation:brightness:alpha:");
-    }
-    
-    UIColor *brightColor = [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:alpha];
-    UIColor *normalColor = [UIColor colorWithHue:hue saturation:saturation brightness:brightness*0.91 alpha:alpha];
-    UIColor *darkColor = [UIColor colorWithHue:hue saturation:saturation brightness:brightness*0.78 alpha:alpha];
-    NSDictionary *colors = [NSDictionary dictionaryWithObjectsAndKeys:brightColor,@"brightColor",normalColor,@"normalColor",darkColor,@"darkColor", nil];
-    
-    return colors;
-}
-/*
- Draw the string "text" at ponint "p1",with the "color".
- */
-static void CreateTextAtPoint(CGContextRef ctx,NSString *text,CGPoint p1,UIColor *color,WSAliment alignment)
-{
-    UIGraphicsPushContext(ctx);
-    CGContextSetFillColorWithColor(ctx,color.CGColor);
-    UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
-    CGSize size = [text sizeWithFont:helveticated];
-    switch (alignment) {
-        case WSTop:
-            p1 = CGPointMake(p1.x-size.width/2, p1.y);
-            break;
-        case WSLeft:
-            p1 = CGPointMake(p1.x-size.width, p1.y-size.height/2);
-            break;
-        default:
-            break;
-    }
-    
-    [text drawAtPoint:p1 withFont:helveticated];
-    UIGraphicsPopContext();
-}
-
-/*
- Draw a line from "point".
- */
-static void CreateLineWithLengthFromPoint(CGContextRef ctx,BOOL isXAxis, CGPoint point, CGFloat length,BOOL isDash,UIColor *color)
-{
-    CGContextSaveGState(ctx);
-    if (isDash) {
-        CGFloat phase = 2.0;
-        const CGFloat pattern[] = {5.0,5.0};
-        size_t count = 2;
-        CGContextSetLineDash(ctx,phase,pattern,count);
-    }
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, NULL, point.x, point.y);
-    if (isXAxis) {
-        CGPathAddLineToPoint(path, NULL, point.x+length, point.y);
-    }else{
-        CGPathAddLineToPoint(path, NULL, point.x, point.y - length);
-    }
-    
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
-    CGContextAddPath(ctx, path);
-    CGContextDrawPath(ctx, kCGPathStroke);
-    CGPathRelease(path);
-    CGContextRestoreGState(ctx);
-}
-
-/*
- Draw a line from "p1" to "p2".
- */
-static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL isDash,UIColor *color)
-{
-    CGContextSaveGState(ctx);
-    if (isDash) {
-        CGFloat phase = 3.0;
-        const CGFloat pattern[] = {3.0,3.0};
-        size_t count = 2;
-        CGContextSetLineDash(ctx,phase,pattern,count);
-    }
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, NULL, p1.x, p1.y);
-    CGPathAddLineToPoint(path, NULL, p2.x, p2.y);
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextSetStrokeColorWithColor(ctx, color.CGColor);
-    CGContextAddPath(ctx, path);
-    CGContextDrawPath(ctx, kCGPathStroke);
-    CGPathRelease(path);
-    CGContextRestoreGState(ctx);
-}
 
 #pragma mark - WSColumnLayer
 
@@ -224,83 +123,6 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL i
     CGPathRelease(rightPath);
 }
 
-@end
-
-#pragma mark - WSCoordinateLayer
-
-@interface WSCoordinateLayer : CAShapeLayer
-
-@property (nonatomic) CGFloat yAxisLength;
-@property (nonatomic) CGPoint originalPoint;
-@property (nonatomic) CGPoint zeroPoint;
-@property (nonatomic) CGFloat xAxisLength;
-@property (nonatomic,strong) NSMutableArray *xMarkTitles;
-@property (nonatomic,strong) NSMutableArray *yMarkTitles;
-@property (nonatomic) CGFloat xMarkDistance;
-@property (nonatomic) int yMarksCount;
-// if we should display the subline in coordinate
-@property (nonatomic) BOOL show3DSubline;
-
-@end
-
-@implementation WSCoordinateLayer
-@synthesize yAxisLength = _yAxisLength,originalPoint = _originalPoint,xAxisLength = _xAxisLength;
-@synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance,yMarkTitles = _yMarkTitles,zeroPoint = _zeroPoint;
-@synthesize yMarksCount = _yMarksCount;
-@synthesize show3DSubline = _show3DSubline;
-
-- (id)init
-{
-    self = [super init];
-    return self;
-}
-
-- (void)drawInContext:(CGContextRef)ctx
-{
-    CGPoint backOriginalPoint = CreateEndPoint(self.originalPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-    CGPoint backZeroPoint = CreateEndPoint(self.zeroPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-    CGFloat markLength = self.yAxisLength/self.yMarksCount;
-    
-    if (self.show3DSubline) {
-        // draw back y Axis
-        CreateLineWithLengthFromPoint(ctx, NO, backOriginalPoint, self.yAxisLength, YES, BACK_LINE_COLOR);
-        // draw back x Axis
-        CreateLineWithLengthFromPoint(ctx, YES, backZeroPoint, self.xAxisLength, YES, BACK_LINE_COLOR);
-        // draw bridge line between front and back original point
-        CreateLinePointToPoint(ctx, self.zeroPoint, backZeroPoint, NO, BACK_LINE_COLOR);
-        CGPoint xMaxPoint = CGPointMake(self.zeroPoint.x + self.xAxisLength, self.zeroPoint.y);
-        CGPoint xMaxPoint2 = CreateEndPoint(xMaxPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-        CreateLinePointToPoint(ctx, xMaxPoint, xMaxPoint2, NO, BACK_LINE_COLOR);
-        //draw assist line 
-        for (int i=0; i<= self.yMarksCount; i++) {
-            CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
-            CGPoint p2 = CreateEndPoint(p1, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-            CreateLinePointToPoint(ctx, p1, p2, NO, BACK_LINE_COLOR);
-            CreateLineWithLengthFromPoint(ctx, YES, p2, self.xAxisLength, YES, BACK_LINE_COLOR);
-            CreateLineWithLengthFromPoint(ctx, YES, p1, -6.0, NO, FRONT_LINE_COLOR);
-        }
-    }else{
-        // draw front y Axis
-        CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, FRONT_LINE_COLOR);
-        // draw front x Axis
-        CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, FRONT_LINE_COLOR);
-        //draw y axis mark's title
-        for (int i=0; i<=self.yMarksCount; i++) {
-            CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
-            NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
-            CreateTextAtPoint(ctx, mark, p1, FRONT_LINE_COLOR, WSLeft);
-        }
-        //draw x axis mark and title
-        for (int i=0; i<[self.xMarkTitles count]; i++) {
-            CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
-            CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
-            CreateLinePointToPoint(ctx, p1, p2, NO, FRONT_LINE_COLOR);
-            NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
-            CreateTextAtPoint(ctx, mark, CGPointMake(p1.x-self.xMarkDistance/2, p1.y), FRONT_LINE_COLOR, WSTop);
-        }
-    }
-    
-}
 @end
 
 #pragma mark - WSColumnChartView

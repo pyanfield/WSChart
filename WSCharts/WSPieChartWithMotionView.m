@@ -23,6 +23,7 @@
 #import "WSPieChartWithMotionView.h"
 #import <QuartzCore/QuartzCore.h>
 #import "WSLegendLayer.h"
+#import "WSGlobalCore.h"
 
 #define OPEN_GAP 15.0
 #define SHADOW_COLOR [UIColor colorWithWhite:.8f alpha:.5f]
@@ -39,17 +40,6 @@ typedef enum{
     CloseOngoing,
 } PieStatus;
 
-/*
- Create the pie's sector path. Using this path to draw the pie.
- */
-static CGMutablePathRef CreatePiePathWithCenter(CGPoint center, CGFloat radius,CGFloat startAngle, CGFloat angle,CGAffineTransform *transform)
-{
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, transform, center.x, center.y);
-    CGPathAddRelativeArc(path, transform, center.x, center.y, radius, startAngle, angle);
-    CGPathCloseSubpath(path);
-    return path;
-}
 /*
  Create the shadow. 
  */
