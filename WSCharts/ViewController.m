@@ -7,9 +7,9 @@
 //
 
 #import "ViewController.h"
-#import "WSPieChartView.h"
-#import "WSPieChartWithMotionView.h"
-#import "WSColumnChartView.h"
+//#import "WSPieChartView.h"
+//#import "WSPieChartWithMotionView.h"
+//#import "WSColumnChartView.h"
 #import "WSLineChartView.h"
 
 @interface ViewController()
@@ -41,6 +41,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
     /*
     // demo data for WSPieChartWithMotionView
     pieData = [[NSMutableDictionary alloc] init];
@@ -62,6 +63,7 @@
     pieData2 = [[NSMutableDictionary alloc] init];
     pieData2 = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:15],@"test5",[[NSNumber alloc] initWithFloat:80],@"test3",[[NSNumber alloc] initWithFloat:5],@"test2",[[NSNumber alloc] initWithFloat:5],@"test1",[[NSNumber alloc] initWithFloat:5],@"test4",[[NSNumber alloc] initWithFloat:5],@"test6",nil];
      */
+     
     /*
     // demo data for WSPieChartView
     WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
@@ -124,7 +126,10 @@
                                [UIColor purpleColor],@"MU",
                                [UIColor greenColor],@"Chelsea",
                                [UIColor orangeColor],@"ManCity", nil];
-    
+    lineChart.xAxisKey = @"Year";
+    lineChart.rowWidth = 20.0;
+    lineChart.title = @"Pyanfield's Line Chart";
+    lineChart.showZeroValueAtYAxis = YES;
     [lineChart drawChart:arr withColor:colorDict];
     lineChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:lineChart];

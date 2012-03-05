@@ -119,8 +119,6 @@
 			isa = PBXGroup;
 			children = (
 				90CAF43A14DA7B6C00928735 /* charts */,
-				901EAE7414DA1EE7001BD2D0 /* AppDelegate.h */,
-				901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */,
 				901EAE7714DA1EE7001BD2D0 /* ViewController.h */,
 				901EAE7814DA1EE7001BD2D0 /* ViewController.m */,
 				901EAE6C14DA1EE7001BD2D0 /* Supporting Files */,
@@ -131,6 +129,8 @@
 		901EAE6C14DA1EE7001BD2D0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				901EAE7414DA1EE7001BD2D0 /* AppDelegate.h */,
+				901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */,
 				901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */,
 				901EAE6D14DA1EE7001BD2D0 /* WSCharts-Info.plist */,
 				901EAE6E14DA1EE7001BD2D0 /* InfoPlist.strings */,
@@ -160,6 +160,19 @@
 			name = ColumnChart;
 			sourceTree = "<group>";
 		};
+		9062D4331504B2FC0000809F /* Global */ = {
+			isa = PBXGroup;
+			children = (
+				902FF3C514FE203600A5DD5A /* WSLegendLayer.h */,
+				902FF3C614FE203600A5DD5A /* WSLegendLayer.m */,
+				9005531615049FDF00BC7CD4 /* WSCoordinateLayer.h */,
+				9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */,
+				900553201504ADD800BC7CD4 /* WSGlobalCore.h */,
+				900553211504ADD800BC7CD4 /* WSGlobalCore.m */,
+			);
+			name = Global;
+			sourceTree = "<group>";
+		};
 		906F683A14E0156400E0D9CF /* github */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,15 +186,10 @@
 		90CAF43A14DA7B6C00928735 /* charts */ = {
 			isa = PBXGroup;
 			children = (
+				9062D4331504B2FC0000809F /* Global */,
 				90055312150495C000BC7CD4 /* LineChart */,
 				902FF3C014FDBF5F00A5DD5A /* ColumnChart */,
 				902FF3BE14FDBF4400A5DD5A /* PieChart */,
-				902FF3C514FE203600A5DD5A /* WSLegendLayer.h */,
-				902FF3C614FE203600A5DD5A /* WSLegendLayer.m */,
-				9005531615049FDF00BC7CD4 /* WSCoordinateLayer.h */,
-				9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */,
-				900553201504ADD800BC7CD4 /* WSGlobalCore.h */,
-				900553211504ADD800BC7CD4 /* WSGlobalCore.m */,
 			);
 			name = charts;
 			sourceTree = "<group>";
