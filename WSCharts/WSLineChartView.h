@@ -22,8 +22,26 @@ SOFTWARE.
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    WSTopLeft,
+    WSTopRight,
+    WSBottomLeft,
+    WSBottomRight,
+    WSRight,
+    WSLeft,
+    WSTop,
+    WSBottom,
+    WSCenter,
+} WSAliment;
+
 @interface WSLineChartView : UIView
 
-- (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
+// the key value in the user data which will be displayed on x axis
+@property (nonatomic, strong) NSString *xAxisKey;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic) CGFloat columnWidth;
+//cross point between x and y axis, always display zero user data value.
+@property (nonatomic) BOOL showZeroValueAtYAxis;
 
+- (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
 @end
