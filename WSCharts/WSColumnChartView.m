@@ -31,6 +31,8 @@
 #define COORDINATE_TOP_GAP 50.0
 #define COORDINATE_LEFT_GAP 80.0
 #define TITLE_FONT_SIZE 22
+#define FRONT_LINE_COLOR [UIColor whiteColor]
+#define BACK_LINE_COLOR [UIColor grayColor]
 
 /*
  Create a point that is away from "startPoint".
@@ -255,48 +257,46 @@ static void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL i
 
 - (void)drawInContext:(CGContextRef)ctx
 {
-    UIColor *frontLineColor = [UIColor whiteColor];
-    UIColor *backLineColor = [UIColor grayColor];
     CGPoint backOriginalPoint = CreateEndPoint(self.originalPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
     CGPoint backZeroPoint = CreateEndPoint(self.zeroPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
     CGFloat markLength = self.yAxisLength/self.yMarksCount;
     
     if (self.show3DSubline) {
         // draw back y Axis
-        CreateLineWithLengthFromPoint(ctx, NO, backOriginalPoint, self.yAxisLength, YES, backLineColor);
+        CreateLineWithLengthFromPoint(ctx, NO, backOriginalPoint, self.yAxisLength, YES, BACK_LINE_COLOR);
         // draw back x Axis
-        CreateLineWithLengthFromPoint(ctx, YES, backZeroPoint, self.xAxisLength, YES, backLineColor);
+        CreateLineWithLengthFromPoint(ctx, YES, backZeroPoint, self.xAxisLength, YES, BACK_LINE_COLOR);
         // draw bridge line between front and back original point
-        CreateLinePointToPoint(ctx, self.zeroPoint, backZeroPoint, NO, backLineColor);
+        CreateLinePointToPoint(ctx, self.zeroPoint, backZeroPoint, NO, BACK_LINE_COLOR);
         CGPoint xMaxPoint = CGPointMake(self.zeroPoint.x + self.xAxisLength, self.zeroPoint.y);
         CGPoint xMaxPoint2 = CreateEndPoint(xMaxPoint, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-        CreateLinePointToPoint(ctx, xMaxPoint, xMaxPoint2, NO, backLineColor);
+        CreateLinePointToPoint(ctx, xMaxPoint, xMaxPoint2, NO, BACK_LINE_COLOR);
         //draw assist line 
         for (int i=0; i<= self.yMarksCount; i++) {
             CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
             CGPoint p2 = CreateEndPoint(p1, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-            CreateLinePointToPoint(ctx, p1, p2, NO, backLineColor);
-            CreateLineWithLengthFromPoint(ctx, YES, p2, self.xAxisLength, YES, backLineColor);
-            CreateLineWithLengthFromPoint(ctx, YES, p1, -6.0, NO, frontLineColor);
+            CreateLinePointToPoint(ctx, p1, p2, NO, BACK_LINE_COLOR);
+            CreateLineWithLengthFromPoint(ctx, YES, p2, self.xAxisLength, YES, BACK_LINE_COLOR);
+            CreateLineWithLengthFromPoint(ctx, YES, p1, -6.0, NO, FRONT_LINE_COLOR);
         }
     }else{
         // draw front y Axis
-        CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, frontLineColor);
+        CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, FRONT_LINE_COLOR);
         // draw front x Axis
-        CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, frontLineColor);
+        CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, FRONT_LINE_COLOR);
         //draw y axis mark's title
         for (int i=0; i<=self.yMarksCount; i++) {
             CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
             NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
-            CreateTextAtPoint(ctx, mark, p1, frontLineColor, WSLeft);
+            CreateTextAtPoint(ctx, mark, p1, FRONT_LINE_COLOR, WSLeft);
         }
         //draw x axis mark and title
         for (int i=0; i<[self.xMarkTitles count]; i++) {
             CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
             CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
-            CreateLinePointToPoint(ctx, p1, p2, NO, frontLineColor);
+            CreateLinePointToPoint(ctx, p1, p2, NO, FRONT_LINE_COLOR);
             NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
-            CreateTextAtPoint(ctx, mark, CGPointMake(p1.x-self.xMarkDistance/2, p1.y), frontLineColor, WSTop);
+            CreateTextAtPoint(ctx, mark, CGPointMake(p1.x-self.xMarkDistance/2, p1.y), FRONT_LINE_COLOR, WSTop);
         }
     }
     

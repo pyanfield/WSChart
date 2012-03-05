@@ -3,11 +3,7 @@ Read Me
 
 **WSChart's target is using simple code to create charts.**
 
-PieChart's screenshots are under the folder /screenshots:
-
-'pieChart.showIndicator = YES' is /screenshots/PieChart-showIndicator.png
-
-'pieChart.openEnabled = YES' is /screenshots/PieChart-openEnabled.png
+Charts' screenshots are under the folder /screenshots.
 
 I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, Line Chart, Comno Chart, Column Chart, Area Chart and Candlestick Chart.
 
@@ -18,7 +14,9 @@ Adding WSChart to your project by:
 #### Second : Add QuartzCore framework to your project.
 
 #### Third: Add usage in your code as following sample:
-
+    
+    //demo code of pie chart as below
+    //other charts' demo code you can find in the ViewController.m file
 	NSMutableDictionary *pieData = [[NSMutableDictionary alloc] init];
     NSMutableArray *colors = [[NSMutableArray alloc] init];
     pieData = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:20],@"test1",[[NSNumber alloc] initWithFloat:34],@"test2",[[NSNumber alloc] initWithFloat:55],@"test3",[[NSNumber alloc] initWithFloat:12],@"test4",[[NSNumber alloc] initWithFloat:78],@"test5",[[NSNumber alloc] initWithFloat:110],@"test6",nil];
@@ -35,10 +33,11 @@ Adding WSChart to your project by:
 History
 ----------------------- 
 * PieChart : done
+* Column Chart : done
 
 TODO List
 ----------------------- 
-* Column Chart : waiting.
+* Line Chart : waiting.
 
 License
 ------------------------
