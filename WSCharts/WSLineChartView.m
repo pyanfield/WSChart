@@ -40,18 +40,19 @@
 
 @interface WSLineLayer:CAShapeLayer
 
-@property (nonatomic) CGPoint xStartPoint;
-@property (nonatomic) CGFloat yValue;
-@property (nonatomic) CGFloat columnWidth;
+@property (nonatomic, strong) NSArray* points;
+//@property (nonatomic) CGFloat yValue;
+@property (nonatomic) CGFloat rowWidth;
 @property (nonatomic, strong) UIColor *color;
+//@property (nonatomic) const CGPoint points[];
 
 @end
 
 @implementation WSLineLayer
 
-@synthesize xStartPoint = _xStartPoint;
-@synthesize yValue = _yValue;
-@synthesize columnWidth = _columnWidth;
+@synthesize points = _points;
+//@synthesize yValue = _yValue;
+@synthesize rowWidth = _rowWidth;
 @synthesize color = _color;
 
 - (id)init
@@ -61,65 +62,20 @@
 }
 
 - (void)drawInContext:(CGContextRef)ctx
-{
-//    NSDictionary *colors = ConstructBrightAndDarkColors(self.color);
-//    CGPoint topLeftFront ,topLeftBack,topRightFront,topRightBack , bottomRightBack ,bottomRightFront;
-//    if (self.yValue>=0.0) {
-//        topLeftFront = CGPointMake(self.xStartPoint.x, self.xStartPoint.y-self.yValue);
-//        topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT,DISTANCE_DEFAULT);
-//        topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y-self.yValue);
-//        topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-//        bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y+self.yValue);
-//        bottomRightFront = CGPointMake(topRightFront.x, self.xStartPoint.y);
-//    }else
-//    {
-//        topLeftFront = self.xStartPoint;
-//        topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-//        topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y);
-//        topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
-//        bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y-self.yValue);
-//        bottomRightFront = CGPointMake(topRightFront.x, topLeftFront.y-self.yValue);
-//    }
-//    
-//    
-//    // front side
-//    CGMutablePathRef path = CGPathCreateMutable();
-//    CGPathAddRect(path, NULL, CGRectMake(topLeftFront.x,topLeftFront.y, self.columnWidth,fabsf(self.yValue)));
-//    UIColor *normalColor = [colors objectForKey:@"normalColor"];
-//    CGContextSetFillColorWithColor(ctx, normalColor.CGColor);
-//    CGContextSetLineWidth(ctx, 1.0);
-//    CGContextAddPath(ctx, path);
-//    CGContextDrawPath(ctx, kCGPathFill);
-//    CGPathRelease(path);
-//    
-//    
-//    // top side
-//    CGMutablePathRef topPath = CGPathCreateMutable();
-//    CGPathMoveToPoint(topPath, NULL, topLeftFront.x,topLeftFront.y);
-//    CGPathAddLineToPoint(topPath, NULL, topLeftBack.x,topLeftBack.y);
-//    CGPathAddLineToPoint(topPath, NULL, topRightBack.x, topRightBack.y);
-//    CGPathAddLineToPoint(topPath, NULL,topRightFront.x,topRightFront.y);
-//    CGPathCloseSubpath(topPath);
-//    UIColor *brightColor = [colors objectForKey:@"brightColor"];
-//    CGContextSetFillColorWithColor(ctx, brightColor.CGColor);
-//    CGContextSetLineWidth(ctx, 1.0);
-//    CGContextAddPath(ctx, topPath);
-//    CGContextDrawPath(ctx, kCGPathFill);
-//    CGPathRelease(topPath);
-//    
-//    // right side
-//    CGMutablePathRef rightPath = CGPathCreateMutable();
-//    CGPathMoveToPoint(rightPath, NULL, topRightBack.x,topRightBack.y);
-//    CGPathAddLineToPoint(rightPath, NULL, bottomRightBack.x, bottomRightBack.y);
-//    CGPathAddLineToPoint(rightPath, NULL, bottomRightFront.x, bottomRightFront.y);
-//    CGPathAddLineToPoint(rightPath, NULL, topRightFront.x, topRightFront.y);
-//    CGPathCloseSubpath(rightPath);
-//    UIColor *darkColor = [colors objectForKey:@"darkColor"];
-//    CGContextSetFillColorWithColor(ctx, darkColor.CGColor);
-//    CGContextSetLineWidth(ctx, 1.0);
-//    CGContextAddPath(ctx, rightPath);
-//    CGContextDrawPath(ctx, kCGPathFill);
-//    CGPathRelease(rightPath);
+{   
+    size_t count = [self.points count];
+    CGPoint p[count];
+    for (int i=0; i<count; i++) {
+        CGPoint point = [[self.points objectAtIndex:i] CGPointValue];
+        p[i] = point;
+    }
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathAddLines(path, NULL, p, count);
+    CGContextSetStrokeColorWithColor(ctx, self.color.CGColor);
+    CGContextSetLineWidth(ctx, 2.0);
+    CGContextAddPath(ctx, path);
+    CGContextDrawPath(ctx, kCGPathStroke);
+    CGPathRelease(path);
 }
 
 @end
@@ -203,9 +159,11 @@
     // get the max and min value from user datas
     NSArray *datas = [arr copy];
     NSDictionary *colorDict = [dict copy];
+    NSMutableArray *xValues = [[NSMutableArray alloc] init];
     int length = [datas count];
     for (int i=0; i<length; i++) {
         NSDictionary *data = [datas objectAtIndex:i];
+        [xValues addObject:[data valueForKey:self.xAxisKey]];
         [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
             if (![key isEqual:self.xAxisKey]) {
                 self.maxLineValue = self.maxLineValue > [obj floatValue] ? self.maxLineValue : [obj floatValue];
@@ -231,8 +189,7 @@
         self.zeroPoint = self.coordinateOriginalPoint;
         yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:maxValue];
         correction = minValue;
-    }else if (self.minLineValue < 0.0 && self.maxLineValue >= 0.0)
-    {
+    }else if (self.minLineValue < 0.0 && self.maxLineValue >= 0.0){
         float bigDis = fabsf(minValue)>fabsf(maxValue)?fabsf(minValue):fabsf(maxValue);
         float markDis = bigDis/Y_MARKS_COUNT;
         float smallDis = fabsf(minValue)<fabsf(maxValue)?fabsf(minValue):fabsf(maxValue);
@@ -248,8 +205,7 @@
             yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:markDis*smallMarkCount];
         }
         correction = 0.0;
-    }else if (self.minLineValue < 0.0 && self.maxLineValue <= 0.0)
-    {
+    }else if (self.minLineValue < 0.0 && self.maxLineValue <= 0.0){
         if (self.showZeroValueAtYAxis) maxValue = 0.0;
         offsetValue = maxValue - minValue;
         propotion = self.yAxisLength/offsetValue;
@@ -258,37 +214,34 @@
         correction = maxValue;
     }
     
-    
     // draw line area
-    NSMutableArray *xValues = [[NSMutableArray alloc] init];
-    for (int i=0; i<length; i++) {
-        NSDictionary *data = [datas objectAtIndex:i];
-        [xValues addObject:[data valueForKey:self.xAxisKey]];
-        __block int flag = 0.0;
-        [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
-            if (![key isEqual:self.xAxisKey]) {
-//                WSLineLayer *layer = [[WSLineLayer alloc] init];
-//                layer.color = [colorDict valueForKey:key];
-                layer.yValue = ([obj floatValue]-correction)*propotion;
-//                layer.columnWidth = self.rowWidth;
-//                layer.xStartPoint = CGPointMake(self.rowWidth*(flag+i*(length+1)+1)+self.zeroPoint.x, 
-//                                                self.zeroPoint.y);
-//                layer.frame = self.bounds;
-//                [layer setNeedsDisplay];
-//                [self.areaLayer addSublayer:layer];
-//                flag++;
-            }
-        }];
+    //yValue = ([obj floatValue]-correction)*propotion;
+    NSArray *legendNames = [colorDict allKeys];
+    for (int j=0; j<[legendNames count]; j++) {
+        NSString *legendName = [legendNames objectAtIndex:j];
+        NSMutableArray *points = [[NSMutableArray alloc] init];
+        WSLineLayer *layer = [[WSLineLayer alloc] init];
+        layer.color = [colorDict valueForKey:legendName];
+        for (int i=0; i<length; i++) {
+            NSDictionary *data = [datas objectAtIndex:i];
+            
+            CGFloat yValue = self.zeroPoint.y - ([[data valueForKey:legendName] floatValue]-correction)*propotion;
+            CGPoint point = CGPointMake(self.rowWidth*i+self.zeroPoint.x, yValue);
+            [points addObject:[NSValue valueWithCGPoint:point]];
+        }
+        layer.points = [points copy];
+        layer.frame = self.bounds;
+        [layer setNeedsDisplay];
+        [self.areaLayer addSublayer:layer];
     }
-    
     // draw coordinate first
     self.xyAxesLayer.yMarkTitles = yMarkTitles;
-    self.xyAxesLayer.xMarkDistance = self.rowWidth*([[datas objectAtIndex:0] count]+1);
+    self.xyAxesLayer.xMarkDistance = self.rowWidth;
     self.xyAxesLayer.xMarkTitles = xValues;
     self.xyAxesLayer.zeroPoint = self.zeroPoint;
     self.xyAxesLayer.yMarksCount = self.yMarksCount;
     self.xyAxesLayer.yAxisLength = self.yAxisLength;
-    self.xyAxesLayer.xAxisLength = self.xAxisLength;
+    self.xyAxesLayer.xAxisLength = self.rowWidth*[xValues count];
     self.xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
     [self.xyAxesLayer setNeedsDisplay];
     

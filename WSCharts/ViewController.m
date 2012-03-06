@@ -109,12 +109,13 @@
     // demo data for WSLineChartView
     lineChart = [[WSLineChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
-    for (int i=0; i<40; i++) {
+    for (int i=0; i<30; i++) {
         int lfc = arc4random() % 400;
-        int mu = arc4random() % 250;
-        int che = arc4random() % 350;
-        int mc = arc4random() % 300;
-        int year = 2005+i;
+        NSLog(@"lfc value: %d",lfc);
+        int mu = -30;
+        int che = -140;
+        int mc = -250;
+        int year = i;
         NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
                               [NSNumber numberWithInt:lfc],@"Liverpool",
                               [NSNumber numberWithInt:mu],@"MU",
