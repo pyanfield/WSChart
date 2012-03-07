@@ -41,19 +41,17 @@
 @interface WSLineLayer:CAShapeLayer
 
 @property (nonatomic, strong) NSArray* points;
-//@property (nonatomic) CGFloat yValue;
 @property (nonatomic) CGFloat rowWidth;
 @property (nonatomic, strong) UIColor *color;
-//@property (nonatomic) const CGPoint points[];
 
 @end
 
 @implementation WSLineLayer
 
 @synthesize points = _points;
-//@synthesize yValue = _yValue;
 @synthesize rowWidth = _rowWidth;
 @synthesize color = _color;
+
 
 - (id)init
 {
@@ -102,6 +100,7 @@
 @property (nonatomic) int yMarksCount;
 // the point that display zero user data value on y axis
 @property (nonatomic) CGPoint zeroPoint;
+
 
 - (float)calculateFinalYAxisTitle:(float) value isMax:(BOOL)max;
 - (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max;
@@ -243,6 +242,7 @@
     self.xyAxesLayer.yAxisLength = self.yAxisLength;
     self.xyAxesLayer.xAxisLength = self.rowWidth*[xValues count];
     self.xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
+    self.xyAxesLayer.xMarkTitlePosition = WSAtPoint;
     [self.xyAxesLayer setNeedsDisplay];
     
     // add the title layer
@@ -326,7 +326,5 @@
     NSNumber *finalNum = [numFormatter numberFromString:finalStr];
     return [finalNum floatValue];
 }
-
-
 
 @end

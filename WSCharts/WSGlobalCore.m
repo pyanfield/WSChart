@@ -66,6 +66,7 @@ CGPoint CreateEndPoint(CGPoint startPoint,CGFloat angle,CGFloat distance)
 }
 /*
  Draw the string "text" at ponint "p1",with the "color".
+ Alignment point is p1.
  */
 void CreateTextAtPoint(CGContextRef ctx,NSString *text,CGPoint p1,UIColor *color,WSAliment alignment)
 {
