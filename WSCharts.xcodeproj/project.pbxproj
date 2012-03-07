@@ -21,6 +21,7 @@
 		901EAE8314DA1F0A001BD2D0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */; };
 		901EAE8614DA2043001BD2D0 /* WSPieChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE8514DA2043001BD2D0 /* WSPieChartView.m */; };
 		9026093514E29B13007779D9 /* WSPieChartWithMotionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9026093414E29B13007779D9 /* WSPieChartWithMotionView.m */; };
+		902D3212150749E000D9CA06 /* WSAreaChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D3211150749E000D9CA06 /* WSAreaChartView.m */; };
 		902FF3C714FE203700A5DD5A /* WSLegendLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 902FF3C614FE203600A5DD5A /* WSLegendLayer.m */; };
 		906F683E14E0157E00E0D9CF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 906F683C14E0157E00E0D9CF /* LICENSE */; };
 		906F683F14E0157E00E0D9CF /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 906F683D14E0157E00E0D9CF /* Readme.md */; };
@@ -53,6 +54,8 @@
 		901EAE8514DA2043001BD2D0 /* WSPieChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSPieChartView.m; sourceTree = "<group>"; };
 		9026093314E29B13007779D9 /* WSPieChartWithMotionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSPieChartWithMotionView.h; sourceTree = "<group>"; };
 		9026093414E29B13007779D9 /* WSPieChartWithMotionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSPieChartWithMotionView.m; sourceTree = "<group>"; };
+		902D3210150749E000D9CA06 /* WSAreaChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSAreaChartView.h; sourceTree = "<group>"; };
+		902D3211150749E000D9CA06 /* WSAreaChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSAreaChartView.m; sourceTree = "<group>"; };
 		902FF3C514FE203600A5DD5A /* WSLegendLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSLegendLayer.h; sourceTree = "<group>"; };
 		902FF3C614FE203600A5DD5A /* WSLegendLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSLegendLayer.m; sourceTree = "<group>"; };
 		906F683C14E0157E00E0D9CF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -140,6 +143,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		902D320E1507494E00D9CA06 /* Area Chart */ = {
+			isa = PBXGroup;
+			children = (
+				902D3210150749E000D9CA06 /* WSAreaChartView.h */,
+				902D3211150749E000D9CA06 /* WSAreaChartView.m */,
+			);
+			name = "Area Chart";
+			sourceTree = "<group>";
+		};
 		902FF3BE14FDBF4400A5DD5A /* PieChart */ = {
 			isa = PBXGroup;
 			children = (
@@ -186,6 +198,7 @@
 		90CAF43A14DA7B6C00928735 /* charts */ = {
 			isa = PBXGroup;
 			children = (
+				902D320E1507494E00D9CA06 /* Area Chart */,
 				9062D4331504B2FC0000809F /* Global */,
 				90055312150495C000BC7CD4 /* LineChart */,
 				902FF3C014FDBF5F00A5DD5A /* ColumnChart */,
@@ -270,6 +283,7 @@
 				90055310150495BA00BC7CD4 /* WSLineChartView.m in Sources */,
 				9005531815049FDF00BC7CD4 /* WSCoordinateLayer.m in Sources */,
 				900553221504ADD800BC7CD4 /* WSGlobalCore.m in Sources */,
+				902D3212150749E000D9CA06 /* WSAreaChartView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
