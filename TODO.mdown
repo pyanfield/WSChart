@@ -3,8 +3,8 @@ TODO
 
 * Pie Chart : ok - 2012.2.21
 * Column Chart : ok - 2012.3.5
-* Line Chart : ongoing
-* Area Chart
+* Line Chart : 2012.3.7
+* Area Chart : ongoing
 * Bar Chart
 * Scatter Chart
 * Candlestick Chart
