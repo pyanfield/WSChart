@@ -188,7 +188,7 @@
         self.areaLayer = [CALayer layer];
         self.xyAxesLayer = [[WSCoordinateLayer alloc] init];
         self.sublineLayer = [[WSCoordinateLayer alloc] init];
-        self.sublineLayer.show3DSubline = YES;
+        self.sublineLayer.show3DXAxisSubline = YES;
         self.titleLayer = [CATextLayer layer];
         self.legendLayer = [CALayer layer];
         self.areaLayer.frame = frame;
