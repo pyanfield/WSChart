@@ -26,10 +26,22 @@
 
 @implementation WSCoordinateLayer
 
-@synthesize yAxisLength = _yAxisLength,originalPoint = _originalPoint,xAxisLength = _xAxisLength;
-@synthesize xMarkTitles = _xMarkTitles,xMarkDistance = _xMarkDistance,yMarkTitles = _yMarkTitlest;
-@synthesize yMarksCount = _yMarksCount,show3DSubline = _show3DSubline,zeroPoint = _zeroPoin;
-@synthesize sublineColor = _sublineColor, axisColor = _axisColor,sublineAngle = _sublineAngle,sublineDistance = _sublineDistance;
+@synthesize yAxisLength = _yAxisLength;
+@synthesize originalPoint = _originalPoint;
+@synthesize xAxisLength = _xAxisLength;
+@synthesize xMarkTitles = _xMarkTitles;
+@synthesize xMarkDistance = _xMarkDistance;
+@synthesize yMarkTitles = _yMarkTitlest;
+@synthesize yMarksCount = _yMarksCount;
+@synthesize show3DXAxisSubline = _show3DXAxisSubline;
+@synthesize zeroPoint = _zeroPoin;
+@synthesize sublineColor = _sublineColor;
+@synthesize axisColor = _axisColor;
+@synthesize sublineAngle = _sublineAngle;
+@synthesize sublineDistance = _sublineDistance;
+@synthesize showXAxisSubline = _showXAxisSubline;
+@synthesize showYAxisSubline = _showYAxisSubline;
+@synthesize xMarkTitlePosition = _xMarkTitlePosition;
 
 - (id)init
 {
@@ -40,6 +52,10 @@
         self.axisColor = [UIColor whiteColor];
         self.sublineDistance = 15.0;
         self.sublineAngle = M_PI/4.0;
+        self.showYAxisSubline = NO;
+        self.showXAxisSubline = NO;
+        self.show3DXAxisSubline = NO;
+        self.xMarkTitlePosition = WSAtSection;
     }
     return self;
 }
@@ -48,9 +64,9 @@
 {
     CGPoint backOriginalPoint = CreateEndPoint(self.originalPoint, self.sublineAngle, self.sublineDistance);
     CGPoint backZeroPoint = CreateEndPoint(self.zeroPoint, self.sublineAngle, self.sublineDistance);
-    CGFloat markLength = self.yAxisLength/self.yMarksCount;
+    CGFloat yMarkLength = self.yAxisLength/self.yMarksCount;
     
-    if (self.show3DSubline) {
+    if (self.show3DXAxisSubline) {
         // draw back y Axis
         CreateLineWithLengthFromPoint(ctx, NO, backOriginalPoint, self.yAxisLength, YES, self.sublineColor);
         // draw back x Axis
@@ -62,11 +78,10 @@
         CreateLinePointToPoint(ctx, xMaxPoint, xMaxPoint2, NO, self.sublineColor);
         //draw assist line 
         for (int i=0; i<= self.yMarksCount; i++) {
-            CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-markLength*i);
+            CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-yMarkLength*i);
             CGPoint p2 = CreateEndPoint(p1, self.sublineAngle, self.sublineDistance);
             CreateLinePointToPoint(ctx, p1, p2, NO, self.sublineColor);
             CreateLineWithLengthFromPoint(ctx, YES, p2, self.xAxisLength, YES, self.sublineColor);
-            CreateLineWithLengthFromPoint(ctx, YES, p1, -6.0, NO, self.axisColor);
         }
     }else{
         // draw front y Axis
@@ -75,17 +90,40 @@
         CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, self.axisColor);
         //draw y axis mark's title
         for (int i=0; i<=self.yMarksCount; i++) {
-            CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-markLength*i);
+            CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-yMarkLength*i);
             NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
             CreateTextAtPoint(ctx, mark, p1, self.axisColor, WSLeft);
+            CreateLineWithLengthFromPoint(ctx, YES, p1, 6.0, NO, self.axisColor);
         }
         //draw x axis mark and title
         for (int i=0; i<[self.xMarkTitles count]; i++) {
-            CGPoint p1 = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
+            CGPoint p1 = CGPointMake(self.xMarkDistance*i+self.originalPoint.x, self.originalPoint.y);
             CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
             CreateLinePointToPoint(ctx, p1, p2, NO, self.axisColor);
             NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
-            CreateTextAtPoint(ctx, mark, CGPointMake(p1.x-self.xMarkDistance/2, p1.y), self.axisColor, WSTop);
+            if (self.xMarkTitlePosition == WSAtSection) {
+                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x+self.xMarkDistance/2, p1.y), self.axisColor, WSTop);
+            }else{
+                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x, p1.y+2), self.axisColor, WSTop);
+            }
+        }
+    }
+    
+    // draw x axis subline
+    if (self.showXAxisSubline) {
+        for (int i=0; i<[self.yMarkTitles count]; i++) {
+            CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-yMarkLength*i);
+            if (self.zeroPoint.y != p1.y) {
+                CreateLineWithLengthFromPoint(ctx, YES, p1, self.xAxisLength, YES, self.sublineColor);
+            }
+            
+        }
+    }
+    // draw y axis subline
+    if (self.showYAxisSubline) {
+        for (int i=0; i<[self.xMarkTitles count]; i++) {
+            CGPoint p = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
+            CreateLineWithLengthFromPoint(ctx, NO, p, self.yAxisLength, YES, self.sublineColor);
         }
     }
     

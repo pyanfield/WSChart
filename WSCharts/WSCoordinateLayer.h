@@ -22,6 +22,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+typedef enum{
+    WSAtPoint,
+    WSAtSection,
+} WSXMarkTitlePosition;
+
 @interface WSCoordinateLayer : CAShapeLayer
 
 @property (nonatomic) CGFloat yAxisLength;
@@ -33,10 +38,13 @@
 @property (nonatomic) CGFloat xMarkDistance;
 @property (nonatomic) int yMarksCount;
 // if we should display the subline in coordinate
-@property (nonatomic) BOOL show3DSubline;
+@property (nonatomic) BOOL show3DXAxisSubline;
 @property (nonatomic, strong) UIColor *sublineColor;
 @property (nonatomic, strong) UIColor *axisColor;
 @property (nonatomic) CGFloat sublineAngle;
 @property (nonatomic) CGFloat sublineDistance;
+@property (nonatomic) BOOL showXAxisSubline;
+@property (nonatomic) BOOL showYAxisSubline;
+@property (nonatomic) WSXMarkTitlePosition xMarkTitlePosition;
 
 @end
