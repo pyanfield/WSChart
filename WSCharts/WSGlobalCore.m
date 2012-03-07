@@ -80,6 +80,26 @@ void CreateTextAtPoint(CGContextRef ctx,NSString *text,CGPoint p1,UIColor *color
         case WSLeft:
             p1 = CGPointMake(p1.x-size.width, p1.y-size.height/2);
             break;
+        case WSRight:
+            p1 = CGPointMake(p1.x-size.width, p1.y-size.height/2);
+            break;
+        case WSBottom:
+            p1 = CGPointMake(p1.x-size.width/2, p1.y-size.height);
+            break;
+        case WSTopRight:
+            p1 = CGPointMake(p1.x-size.width, p1.y);
+            break;
+        case WSBottomLeft:
+            p1 = CGPointMake(p1.x, p1.y-size.height);
+            break;
+        case WSBottomRight:
+            p1 = CGPointMake(p1.x-size.width, p1.y-size.height);
+            break;
+        case WSCenter:
+            p1 = CGPointMake(p1.x-size.width/2, p1.y-size.height/2);
+            break;
+        case WSTopLeft:
+            break;
         default:
             break;
     }
