@@ -10,7 +10,8 @@
 //#import "WSPieChartView.h"
 //#import "WSPieChartWithMotionView.h"
 //#import "WSColumnChartView.h"
-#import "WSLineChartView.h"
+//#import "WSLineChartView.h"
+#import "WSAreaChartView.h"
 
 @interface ViewController()
 
@@ -18,7 +19,8 @@
 //@property (nonatomic, strong) NSMutableDictionary *pieData2;
 //@property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
 //@property (nonatomic, strong) WSColumnChartView *columnChart;
-@property (nonatomic, strong) WSLineChartView *lineChart;
+//@property (nonatomic, strong) WSLineChartView *lineChart;
+@property (nonatomic, strong) WSAreaChartView *areaChart;
 @property (nonatomic) BOOL flag;
 
 @end
@@ -26,7 +28,7 @@
 @implementation ViewController
 
 //@synthesize pieData,pieData2,pieChart;
-@synthesize lineChart;
+@synthesize areaChart;
 @synthesize flag;
 
 - (void)didReceiveMemoryWarning
@@ -107,7 +109,7 @@
      */
     
     // demo data for WSLineChartView
-    
+    /*
     lineChart = [[WSLineChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<30; i++) {
@@ -134,6 +136,33 @@
     [lineChart drawChart:arr withColor:colorDict];
     lineChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:lineChart];
+     */
+    areaChart  = [[WSAreaChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
+    for (int i=0; i<30; i++) {
+        int lfc = arc4random() % 400;
+        int mu = -30 + arc4random() % 200;
+        int che = -140+arc4random() % 400;
+        int mc = -250+arc4random() % 100;
+        int year = i;
+        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
+                              [NSNumber numberWithInt:lfc],@"Liverpool",
+                              [NSNumber numberWithInt:mu],@"MU",
+                              [NSNumber numberWithInt:che],@"Chelsea",
+                              [NSNumber numberWithInt:mc],@"ManCity",nil];
+        [arr addObject:data];
+    }
+    NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
+                               [UIColor purpleColor],@"MU",
+                               [UIColor greenColor],@"Chelsea",
+                               [UIColor orangeColor],@"ManCity", nil];
+    areaChart.xAxisKey = @"Year";
+    areaChart.rowWidth = 20.0;
+    areaChart.title = @"Pyanfield's Area Chart";
+    areaChart.showZeroValueAtYAxis = YES;
+    [areaChart drawChart:arr withColor:colorDict];
+    areaChart.backgroundColor = [UIColor blackColor];
+    [self.view addSubview:areaChart];
 }
 
 - (IBAction)switchData:(id)sender {

@@ -24,4 +24,12 @@
 
 @interface WSAreaChartView : UIView
 
+// the key value in the user data which will be displayed on x axis
+@property (nonatomic, strong) NSString *xAxisKey;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic) CGFloat rowWidth;
+//cross point between x and y axis, always display zero user data value.
+@property (nonatomic) BOOL showZeroValueAtYAxis;
+
+- (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
 @end
