@@ -7,10 +7,10 @@
 //
 
 #import "ViewController.h"
-//#import "WSPieChartView.h"
-//#import "WSPieChartWithMotionView.h"
-//#import "WSColumnChartView.h"
-//#import "WSLineChartView.h"
+#import "WSPieChartView.h"
+#import "WSPieChartWithMotionView.h"
+#import "WSColumnChartView.h"
+#import "WSLineChartView.h"
 #import "WSAreaChartView.h"
 
 @interface ViewController()
@@ -18,8 +18,8 @@
 //@property (nonatomic, strong) NSMutableDictionary *pieData;
 //@property (nonatomic, strong) NSMutableDictionary *pieData2;
 //@property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
-//@property (nonatomic, strong) WSColumnChartView *columnChart;
-//@property (nonatomic, strong) WSLineChartView *lineChart;
+@property (nonatomic, strong) WSColumnChartView *columnChart;
+@property (nonatomic, strong) WSLineChartView *lineChart;
 @property (nonatomic, strong) WSAreaChartView *areaChart;
 @property (nonatomic) BOOL flag;
 
@@ -29,6 +29,8 @@
 
 //@synthesize pieData,pieData2,pieChart;
 @synthesize areaChart;
+@synthesize lineChart;
+@synthesize columnChart;
 @synthesize flag;
 
 - (void)didReceiveMemoryWarning
@@ -77,15 +79,16 @@
     [self.view addSubview:pieChart];
      */
     
-    /*
+    
     // demo data for WSColumnChartView
+    /*
     columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<5; i++) {
         int lfc = arc4random() % 400;
         int mu = arc4random() % 250;
         int che = arc4random() % 350;
-        int mc = arc4random() % 300;
+        int mc = -500+arc4random() % 300;
         int year = 2005+i;
         NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
                                      [NSNumber numberWithInt:lfc],@"Liverpool",
@@ -100,14 +103,14 @@
                                                                            [UIColor orangeColor],@"ManCity", nil];
     
     columnChart.xAxisKey = @"Year";
-    columnChart.columnWidth = 20.0;
+    columnChart.rowWidth = 20.0;
     columnChart.title = @"Test the Column Chart";
     columnChart.showZeroValueAtYAxis = YES;
     [columnChart drawChart:arr withColor:colorDict];
     columnChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:columnChart];
-     */
-    
+     
+    */
     // demo data for WSLineChartView
     /*
     lineChart = [[WSLineChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
@@ -137,6 +140,7 @@
     lineChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:lineChart];
      */
+    
     areaChart  = [[WSAreaChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<30; i++) {
@@ -163,6 +167,7 @@
     [areaChart drawChart:arr withColor:colorDict];
     areaChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:areaChart];
+    
 }
 
 - (IBAction)switchData:(id)sender {

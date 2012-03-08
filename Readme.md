@@ -35,10 +35,11 @@ History
 * PieChart : done
 * Column Chart : done
 * Line Chart : done
+* Area Chart : done
 
 TODO List
 ----------------------- 
-* Area Chart : waiting.
+* Scatter Chart : waiting.
 
 License
 ------------------------

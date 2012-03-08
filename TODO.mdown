@@ -4,9 +4,9 @@ TODO
 * Pie Chart : ok - 2012.2.21
 * Column Chart : ok - 2012.3.5
 * Line Chart : 2012.3.7
-* Area Chart : ongoing
+* Area Chart : 2012.3.8
 * Bar Chart
-* Scatter Chart
+* Scatter Chart : ongoing
 * Candlestick Chart
 * Combo Chart
 * Geo Chart
