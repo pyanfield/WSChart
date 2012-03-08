@@ -23,6 +23,7 @@
 		9026093514E29B13007779D9 /* WSPieChartWithMotionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9026093414E29B13007779D9 /* WSPieChartWithMotionView.m */; };
 		902D3212150749E000D9CA06 /* WSAreaChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D3211150749E000D9CA06 /* WSAreaChartView.m */; };
 		902FF3C714FE203700A5DD5A /* WSLegendLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 902FF3C614FE203600A5DD5A /* WSLegendLayer.m */; };
+		90653E2D15089E2C00ECE29D /* WSBaseChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90653E2C15089E2C00ECE29D /* WSBaseChartView.m */; };
 		906F683E14E0157E00E0D9CF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 906F683C14E0157E00E0D9CF /* LICENSE */; };
 		906F683F14E0157E00E0D9CF /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 906F683D14E0157E00E0D9CF /* Readme.md */; };
 		906F684114E0158A00E0D9CF /* TODO.mdown in Resources */ = {isa = PBXBuildFile; fileRef = 906F684014E0158A00E0D9CF /* TODO.mdown */; };
@@ -58,6 +59,8 @@
 		902D3211150749E000D9CA06 /* WSAreaChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSAreaChartView.m; sourceTree = "<group>"; };
 		902FF3C514FE203600A5DD5A /* WSLegendLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSLegendLayer.h; sourceTree = "<group>"; };
 		902FF3C614FE203600A5DD5A /* WSLegendLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSLegendLayer.m; sourceTree = "<group>"; };
+		90653E2B15089E2C00ECE29D /* WSBaseChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSBaseChartView.h; sourceTree = "<group>"; };
+		90653E2C15089E2C00ECE29D /* WSBaseChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSBaseChartView.m; sourceTree = "<group>"; };
 		906F683C14E0157E00E0D9CF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		906F683D14E0157E00E0D9CF /* Readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.md; sourceTree = "<group>"; };
 		906F684014E0158A00E0D9CF /* TODO.mdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.mdown; sourceTree = "<group>"; };
@@ -181,6 +184,8 @@
 				9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */,
 				900553201504ADD800BC7CD4 /* WSGlobalCore.h */,
 				900553211504ADD800BC7CD4 /* WSGlobalCore.m */,
+				90653E2B15089E2C00ECE29D /* WSBaseChartView.h */,
+				90653E2C15089E2C00ECE29D /* WSBaseChartView.m */,
 			);
 			name = Global;
 			sourceTree = "<group>";
@@ -284,6 +289,7 @@
 				9005531815049FDF00BC7CD4 /* WSCoordinateLayer.m in Sources */,
 				900553221504ADD800BC7CD4 /* WSGlobalCore.m in Sources */,
 				902D3212150749E000D9CA06 /* WSAreaChartView.m in Sources */,
+				90653E2D15089E2C00ECE29D /* WSBaseChartView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
