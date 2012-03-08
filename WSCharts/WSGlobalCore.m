@@ -159,3 +159,28 @@ void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL isDash,U
     CGPathRelease(path);
     CGContextRestoreGState(ctx);
 }
+
+/*
+ Set color's alpha.
+*/
+UIColor* CreateAlphaColor(UIColor *color, CGFloat alphaValue)
+{
+    CGFloat hue = 0.0, saturation = 0.0 , brightness = 0.0, alpha = 0.0;
+    if ([color respondsToSelector:@selector(getHue:saturation:brightness:alpha:)]) {
+        [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
+    }else{
+        NSLog(@"Not support getHue:saturation:brightness:alpha:");
+    }
+    
+    return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:alphaValue];
+}
+
+
+
+
+
+
+
+
+
+

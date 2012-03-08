@@ -59,3 +59,14 @@ void CreateLineWithLengthFromPoint(CGContextRef ctx,BOOL isXAxis, CGPoint point,
  Draw a line from "p1" to "p2".
  */
 void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL isDash,UIColor *color);
+/*
+ Get a alpha color.
+*/
+UIColor* CreateAlphaColor(UIColor *color, CGFloat alphaValue);
+
+
+
+
+
+
+
