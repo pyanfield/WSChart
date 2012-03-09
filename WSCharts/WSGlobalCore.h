@@ -63,7 +63,14 @@ void CreateLinePointToPoint(CGContextRef ctx,CGPoint p1,CGPoint p2,BOOL isDash,U
  Get a alpha color.
 */
 UIColor* CreateAlphaColor(UIColor *color, CGFloat alphaValue);
-
+/*
+ Calculate the user data's max and min value which should be displayed on axis.
+ */
+float CalculateAxisExtremePointValue(float value,BOOL max);
+/*
+ Calculate the marks' value which should be displayed on axis. 
+ */
+NSMutableArray* CalculateValuesBetweenMinAndMax(CGFloat min,CGFloat max, int count);
 
 
 

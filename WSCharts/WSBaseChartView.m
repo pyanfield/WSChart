@@ -39,10 +39,6 @@
 @property (nonatomic) float maxDataValue;
 @property (nonatomic) float minDataValue;
 
-
-- (float)calculateFinalYAxisTitle:(float) value isMax:(BOOL)max;
-- (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max;
-
 @end
 
 @implementation WSBaseChartView
@@ -116,15 +112,15 @@
      correction : if the cross point bwteen y and x axis is not zero. should re-calculate the value that displayed on coordinate
      */
     float minValue, maxValue,offsetValue,propotion,correction;
-    minValue = [self calculateFinalYAxisTitle:self.minDataValue isMax:NO];
-    maxValue = [self calculateFinalYAxisTitle:self.maxDataValue isMax:YES];
+    minValue = CalculateAxisExtremePointValue(self.minDataValue, NO);
+    maxValue = CalculateAxisExtremePointValue(self.maxDataValue, YES);
     
     if (self.minDataValue >= 0.0 && self.maxDataValue > 0.0) {
         if (self.showZeroValueAtYAxis) minValue = 0.0;
         offsetValue = maxValue - minValue;
         propotion = self.yAxisLength/offsetValue;
         self.zeroPoint = self.coordinateOriginalPoint;
-        yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:maxValue];
+        yMarkTitles = CalculateValuesBetweenMinAndMax(minValue, maxValue, self.yMarksCount);
         correction = minValue;
     }else if (self.minDataValue < 0.0 && self.maxDataValue >= 0.0){
         float bigDis = fabsf(minValue)>fabsf(maxValue)?fabsf(minValue):fabsf(maxValue);
@@ -136,10 +132,10 @@
         propotion = self.yAxisLength/offsetValue;
         if (fabsf(minValue)<=fabsf(maxValue)) {
             self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*smallMarkCount/self.yMarksCount);
-            yMarkTitles = [self calculateYAxisValuesWithMin:-markDis*smallMarkCount andMax:maxValue];
+            yMarkTitles = CalculateValuesBetweenMinAndMax(-markDis*smallMarkCount, maxValue, self.yMarksCount);
         }else{
             self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*Y_MARKS_COUNT/self.yMarksCount);
-            yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:markDis*smallMarkCount];
+            yMarkTitles = CalculateValuesBetweenMinAndMax(minValue, markDis*smallMarkCount, self.yMarksCount);
         }
         correction = 0.0;
     }else if (self.minDataValue < 0.0 && self.maxDataValue <= 0.0){
@@ -147,7 +143,7 @@
         offsetValue = maxValue - minValue;
         propotion = self.yAxisLength/offsetValue;
         self.zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength);
-        yMarkTitles = [self calculateYAxisValuesWithMin:minValue andMax:maxValue];
+        yMarkTitles = CalculateValuesBetweenMinAndMax(minValue, maxValue, self.yMarksCount);
         correction = maxValue;
     }
     
@@ -194,63 +190,6 @@
 - (void)manageAllLayersOrder
 {
 
-}
-
-/*
- Calculate the marks' value which should be displayed on y axis. 
- */
-- (NSMutableArray*)calculateYAxisValuesWithMin:(CGFloat)min andMax:(CGFloat)max
-{
-    NSMutableArray *arr = [[NSMutableArray alloc] init];
-    [arr addObject:[NSNumber numberWithFloat:min]];
-    float offset = (max - min)/self.yMarksCount;
-    for (int i=1; i<=self.yMarksCount; i++) {
-        [arr addObject:[NSNumber numberWithFloat:(min+offset*i)]];
-    }
-    return arr;
-}
-
-/*
- Calculate the user data's max and min value which should be displayed on y axis.
- */
-- (float)calculateFinalYAxisTitle:(float)value isMax:(BOOL)max
-{
-    if (max) {
-        if (value > -100.0 && value <= 0.0) return 0.0;
-    }else{
-        if (value >= 0.0 && value < 100.0) return 0.0;
-    }
-    // value = fisrtStr*10^lastStr
-    NSNumberFormatter *numFormatter  = [[NSNumberFormatter alloc] init];
-    [numFormatter setNumberStyle:NSNumberFormatterScientificStyle];
-    NSString *numStr = [numFormatter stringFromNumber:[NSNumber numberWithFloat:value]];
-    NSString *e = @"E";
-    // also can use [[maxNumStr componentsSeparatedByString:e] lastObject] to get the substring after "e", but slower than using range
-    NSRange range = [numStr rangeOfString:e];
-    NSString *lastStr = [numStr substringFromIndex:range.location+1];
-    NSString *firstStr = [numStr substringToIndex:range.location];
-    float finalFirstNum = 0.0;
-    if (max) {
-        finalFirstNum = ceilf([firstStr floatValue]);
-        if (finalFirstNum > ([firstStr floatValue]+0.5)) {
-            finalFirstNum = (floorf([firstStr floatValue])+0.5);
-        }
-        if (finalFirstNum == floorf([firstStr floatValue])) {
-            finalFirstNum += 0.5;
-        }
-    }else{
-        finalFirstNum = floorf([firstStr floatValue]);
-        if (finalFirstNum < ([firstStr floatValue]-0.5)) {
-            finalFirstNum = (ceilf([firstStr floatValue])-0.5);
-        }
-        if (ceilf([firstStr floatValue]) == finalFirstNum) {
-            finalFirstNum -= 0.5;
-        }
-    }
-    NSString *finalStr = [NSString stringWithFormat:@"%fE%@",finalFirstNum,lastStr];
-    [numFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-    NSNumber *finalNum = [numFormatter numberFromString:finalStr];
-    return [finalNum floatValue];
 }
 
 @end
