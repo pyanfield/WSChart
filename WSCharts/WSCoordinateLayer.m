@@ -42,6 +42,9 @@
 @synthesize showXAxisSubline = _showXAxisSubline;
 @synthesize showYAxisSubline = _showYAxisSubline;
 @synthesize xMarkTitlePosition = _xMarkTitlePosition;
+@synthesize showBorder = _showBorder;
+@synthesize showTopRightBorder = _showTopRightBorder;
+@synthesize showBottomLeftBorder = _showBottomLeftBorder;
 
 - (id)init
 {
@@ -55,6 +58,9 @@
         self.showYAxisSubline = NO;
         self.showXAxisSubline = NO;
         self.show3DXAxisSubline = NO;
+        self.showBorder = NO;
+        self.showBottomLeftBorder = NO;
+        self.showTopRightBorder = NO;
         self.xMarkTitlePosition = WSAtSection;
     }
     return self;
@@ -85,9 +91,11 @@
         }
     }else{
         // draw front y Axis
-        CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, self.axisColor);
+        CGPoint yStartPoint = CGPointMake(self.zeroPoint.x, self.originalPoint.y);
+        CreateLineWithLengthFromPoint(ctx, NO, yStartPoint, self.yAxisLength, NO, self.axisColor);
         // draw front x Axis
-        CreateLineWithLengthFromPoint(ctx, YES, self.zeroPoint, self.xAxisLength, NO, self.axisColor);
+        CGPoint xStattPoint = CGPointMake(self.originalPoint.x, self.zeroPoint.y);
+        CreateLineWithLengthFromPoint(ctx, YES, xStattPoint, self.xAxisLength, NO, self.axisColor);
         //draw y axis mark's title
         for (int i=0; i<=self.yMarksCount; i++) {
             CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-yMarkLength*i);
@@ -100,7 +108,7 @@
             CGPoint p1 = CGPointMake(self.xMarkDistance*i+self.originalPoint.x, self.originalPoint.y);
             CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
             CreateLinePointToPoint(ctx, p1, p2, NO, self.axisColor);
-            NSString *mark = [NSString stringWithFormat:[self.xMarkTitles objectAtIndex:i]];
+            NSString *mark = [NSString stringWithFormat:@"%@",[self.xMarkTitles objectAtIndex:i]];
             if (self.xMarkTitlePosition == WSAtSection) {
                 CreateTextAtPoint(ctx, mark, CGPointMake(p1.x+self.xMarkDistance/2, p1.y), self.axisColor, WSTop);
             }else{
@@ -125,6 +133,17 @@
             CGPoint p = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
             CreateLineWithLengthFromPoint(ctx, NO, p, self.yAxisLength, YES, self.sublineColor);
         }
+    }
+    
+    // draw the border
+    if (self.showBorder || self.showBottomLeftBorder) {
+        CreateLineWithLengthFromPoint(ctx, YES, self.originalPoint, self.xAxisLength, NO, self.axisColor);
+        CreateLineWithLengthFromPoint(ctx, NO, self.originalPoint, self.yAxisLength, NO, self.axisColor);
+    }
+    
+    if (self.showTopRightBorder || self.showBorder) {
+        CreateLineWithLengthFromPoint(ctx, YES, CGPointMake(self.originalPoint.x, self.originalPoint.y-self.yAxisLength), self.xAxisLength, NO, self.axisColor);
+        CreateLineWithLengthFromPoint(ctx, NO, CGPointMake(self.originalPoint.x+self.xAxisLength, self.originalPoint.y), self.yAxisLength, NO, self.axisColor);
     }
     
 }

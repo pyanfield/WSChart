@@ -27,6 +27,8 @@
 		906F683E14E0157E00E0D9CF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 906F683C14E0157E00E0D9CF /* LICENSE */; };
 		906F683F14E0157E00E0D9CF /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 906F683D14E0157E00E0D9CF /* Readme.md */; };
 		906F684114E0158A00E0D9CF /* TODO.mdown in Resources */ = {isa = PBXBuildFile; fileRef = 906F684014E0158A00E0D9CF /* TODO.mdown */; };
+		907C7AE0150F3DDB00656860 /* WSChartObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 907C7ADF150F3DDB00656860 /* WSChartObject.m */; };
+		90936B601509E3A80021AF14 /* WSScatterChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90936B5F1509E3A80021AF14 /* WSScatterChartView.m */; };
 		90E8318B14F3798600847C48 /* WSColumnChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90E8318A14F3798600847C48 /* WSColumnChartView.m */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +66,10 @@
 		906F683C14E0157E00E0D9CF /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		906F683D14E0157E00E0D9CF /* Readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.md; sourceTree = "<group>"; };
 		906F684014E0158A00E0D9CF /* TODO.mdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.mdown; sourceTree = "<group>"; };
+		907C7ADE150F3DDB00656860 /* WSChartObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSChartObject.h; sourceTree = "<group>"; };
+		907C7ADF150F3DDB00656860 /* WSChartObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSChartObject.m; sourceTree = "<group>"; };
+		90936B5E1509E3A80021AF14 /* WSScatterChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSScatterChartView.h; sourceTree = "<group>"; };
+		90936B5F1509E3A80021AF14 /* WSScatterChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSScatterChartView.m; sourceTree = "<group>"; };
 		90E8318914F3798600847C48 /* WSColumnChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSColumnChartView.h; sourceTree = "<group>"; };
 		90E8318A14F3798600847C48 /* WSColumnChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSColumnChartView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -186,6 +192,8 @@
 				900553211504ADD800BC7CD4 /* WSGlobalCore.m */,
 				90653E2B15089E2C00ECE29D /* WSBaseChartView.h */,
 				90653E2C15089E2C00ECE29D /* WSBaseChartView.m */,
+				907C7ADE150F3DDB00656860 /* WSChartObject.h */,
+				907C7ADF150F3DDB00656860 /* WSChartObject.m */,
 			);
 			name = Global;
 			sourceTree = "<group>";
@@ -200,9 +208,19 @@
 			name = github;
 			sourceTree = "<group>";
 		};
+		90936B621509E3AC0021AF14 /* Scatter Chart */ = {
+			isa = PBXGroup;
+			children = (
+				90936B5E1509E3A80021AF14 /* WSScatterChartView.h */,
+				90936B5F1509E3A80021AF14 /* WSScatterChartView.m */,
+			);
+			name = "Scatter Chart";
+			sourceTree = "<group>";
+		};
 		90CAF43A14DA7B6C00928735 /* charts */ = {
 			isa = PBXGroup;
 			children = (
+				90936B621509E3AC0021AF14 /* Scatter Chart */,
 				902D320E1507494E00D9CA06 /* Area Chart */,
 				9062D4331504B2FC0000809F /* Global */,
 				90055312150495C000BC7CD4 /* LineChart */,
@@ -238,7 +256,7 @@
 		901EAE5814DA1EE7001BD2D0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = pyanfield;
 			};
 			buildConfigurationList = 901EAE5B14DA1EE7001BD2D0 /* Build configuration list for PBXProject "WSCharts" */;
@@ -290,6 +308,8 @@
 				900553221504ADD800BC7CD4 /* WSGlobalCore.m in Sources */,
 				902D3212150749E000D9CA06 /* WSAreaChartView.m in Sources */,
 				90653E2D15089E2C00ECE29D /* WSBaseChartView.m in Sources */,
+				90936B601509E3A80021AF14 /* WSScatterChartView.m in Sources */,
+				907C7AE0150F3DDB00656860 /* WSChartObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

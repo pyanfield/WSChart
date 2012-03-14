@@ -46,5 +46,8 @@ typedef enum{
 @property (nonatomic) BOOL showXAxisSubline;
 @property (nonatomic) BOOL showYAxisSubline;
 @property (nonatomic) WSXMarkTitlePosition xMarkTitlePosition;
+@property (nonatomic) BOOL showBottomLeftBorder;
+@property (nonatomic) BOOL showTopRightBorder;
+@property (nonatomic) BOOL showBorder;
 
 @end
