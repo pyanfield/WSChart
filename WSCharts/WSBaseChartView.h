@@ -45,6 +45,7 @@
 @property (nonatomic, strong) CALayer *legendLayer;
 // mark's count that are on y axis
 @property (nonatomic) int yMarksCount;
+@property (nonatomic) int xMarksCount;
 // the length of x and y axis
 @property (nonatomic) CGFloat xAxisLength;
 @property (nonatomic) CGFloat yAxisLength;

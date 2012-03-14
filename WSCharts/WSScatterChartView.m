@@ -174,7 +174,7 @@
             self.maxXValue = self.maxXValue > [chartObj.xValue floatValue] ? self.maxXValue : [chartObj.xValue floatValue];
             self.minXValue = self.minXValue < [chartObj.xValue floatValue] ? self.minXValue : [chartObj.xValue floatValue];
             
-            NSLog(@"%f || %f",[chartObj.xValue floatValue],chartObj.yValue);
+            //NSLog(@"%f || %f",[chartObj.xValue floatValue],chartObj.yValue);
         }];
     }
     
@@ -326,7 +326,7 @@
     self.xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
     self.xyAxesLayer.xMarkTitlePosition = WSAtPoint;
     
-//    self.xyAxesLayer.showBorder = YES;
+    self.xyAxesLayer.showBorder = YES;
 //    self.xyAxesLayer.showTopRightBorder = YES;
 //    self.xyAxesLayer.showBottomLeftBorder = YES;
 //    self.xyAxesLayer.showXAxisSubline = YES;
