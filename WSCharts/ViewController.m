@@ -118,7 +118,7 @@
                                [UIColor orangeColor],@"ManCity", nil];
     columnChart.rowWidth = 20.0;
     columnChart.title = @"Test the Column Chart";
-    columnChart.showZeroValueAtYAxis = YES;
+    columnChart.showZeroValueOnYAxis = YES;
     [columnChart drawChart:arr withColor:colorDict];
     columnChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:columnChart];
@@ -159,7 +159,7 @@
     lineChart.xAxisKey = @"Year";
     lineChart.rowWidth = 20.0;
     lineChart.title = @"Pyanfield's Line Chart";
-    lineChart.showZeroValueAtYAxis = YES;
+    lineChart.showZeroValueOnYAxis = YES;
     [lineChart drawChart:arr withColor:colorDict];
     lineChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:lineChart];
@@ -198,7 +198,7 @@
     
     areaChart.rowWidth = 20.0;
     areaChart.title = @"Pyanfield's Area Chart";
-    areaChart.showZeroValueAtYAxis = YES;
+    areaChart.showZeroValueOnYAxis = YES;
     [areaChart drawChart:arr withColor:colorDict];
     areaChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:areaChart];
@@ -235,7 +235,7 @@
                                [UIColor greenColor],@"Chelsea",
                                [UIColor orangeColor],@"ManCity", nil];
     scatterChart.title = @"Pyanfield's Scatter Chart";
-    scatterChart.showZeroValueAtYAxis = YES;
+    scatterChart.showZeroValueOnYAxis = YES;
     scatterChart.yAxisName = @"Y Axis";
     scatterChart.xAxisName = @"X Axis";
     [scatterChart drawChart:arr withColor:colorDict];

@@ -58,15 +58,21 @@
 // the name of x and y axes
 @property (nonatomic, strong) NSString *xAxisName;
 @property (nonatomic, strong) NSString *yAxisName;
+// the chart view's title.
 @property (nonatomic, strong) NSString *title;
 /*
- if rowWidth value > 0.0 , the x axis will be just displayed as WSChartObject xValue as xMark.
- if not, will calculate the x axis xMark automatically. it's used for taht the WSChartObject's xValues have negative float values.
+ If rowWidth value > 0.0 , the x marks are same as WSChartObject's xValue.
+ If not, will calculate the xMark automatically. The chart view will calculate the min and max x value that display on the x axis.
+ Then create a array (xMarkTitles) to store all marks.
+ For now,it means that rowWidth is used in area, line ,column charts.
+ In scatter chart view, please don't set rowWidth.
  */
 @property (nonatomic) CGFloat rowWidth;
-//cross point between x and y axis, always display zero user data value.
-@property (nonatomic) BOOL showZeroValueAtYAxis;
-// coordinate view's origianl point , that bottom left of that frame.
+//show zero value on y axis
+@property (nonatomic) BOOL showZeroValueOnYAxis;
+//show zero value on x axis. it is available when you don't set rowWidth.
+@property (nonatomic) BOOL showZeroValueOnXAxis;
+//coordinate view's origianl point , that bottom left of that frame.
 @property (nonatomic) CGPoint coordinateOriginalPoint;
 
 

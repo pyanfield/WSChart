@@ -42,7 +42,9 @@
 @property (nonatomic) CGFloat maxXValue;
 @property (nonatomic) CGFloat minXValue;
 
-//generate the key values for drawing x and y axes
+/*
+ generate the key values for drawing x and y axes. e.g. minX,maxX,correctionX,propotionX.
+ */
 - (void)generateXAxisInfos;
 - (void)generateYAxisInfos;
 
@@ -61,7 +63,8 @@
 @synthesize yAxisName = _yAxisName;
 @synthesize title = _title;
 @synthesize rowWidth = _rowWidth;
-@synthesize showZeroValueAtYAxis = _showZeroValueAtYAxis;
+@synthesize showZeroValueOnYAxis = _showZeroValueOnYAxis;
+@synthesize showZeroValueOnXAxis = _showZeroValueOnXAxis;
 
 
 - (id)initWithFrame:(CGRect)frame
@@ -87,7 +90,8 @@
         xAxisLength = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
         yMarksCount = Y_MARKS_COUNT;
         xMarksCount = X_MARKS_COUNT;
-        self.showZeroValueAtYAxis = NO;
+        self.showZeroValueOnYAxis = NO;
+        self.showZeroValueOnXAxis = NO;
         self.xAxisName = @"";
         self.yAxisName = @"";
     }
@@ -136,6 +140,7 @@
 {
     int length = [datas count];
     if (self.rowWidth > 0.0) {
+        //for line, area and column charts
         NSString *oneName = [[colorDict allKeys] objectAtIndex:0];
         xMarkTitles = [[NSMutableArray alloc] init];
         for (int i=0; i<[datas count]; i++) {
@@ -145,6 +150,7 @@
         }
         xMarksCount = [xMarkTitles count];
     }else {
+        //for scatter chart
         for (int i=0; i<length; i++) {
             NSDictionary *data = [datas objectAtIndex:i];
             [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
@@ -159,7 +165,7 @@
         maxX = CalculateAxisExtremePointValue(self.maxXValue, YES);
         
         if (self.minXValue >= 0.0 && self.maxXValue > 0.0) {
-            if (self.showZeroValueAtYAxis) minX = 0.0;
+            if (self.showZeroValueOnXAxis) minX = 0.0;
             offsetX = maxX - minX;
             propotionX = xAxisLength/offsetX;
             zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, zeroPoint.y);
@@ -182,7 +188,7 @@
             }
             correctionX = 0.0;
         }else if (self.minXValue < 0.0 && self.maxXValue <= 0.0){
-            if (self.showZeroValueAtYAxis) maxX = 0.0;
+            if (self.showZeroValueOnXAxis) maxX = 0.0;
             offsetX = maxX - minX;
             propotionX = xAxisLength/offsetX;
             zeroPoint = CGPointMake(self.coordinateOriginalPoint.x+xAxisLength, zeroPoint.y);
@@ -212,7 +218,7 @@
     maxY = CalculateAxisExtremePointValue(self.maxYValue, YES);
     
     if (self.minYValue >= 0.0 && self.maxYValue > 0.0) {
-        if (self.showZeroValueAtYAxis) minY = 0.0;
+        if (self.showZeroValueOnYAxis) minY = 0.0;
         offsetY = maxY - minY;
         propotionY = yAxisLength/offsetY;
         zeroPoint = CGPointMake(zeroPoint.x, self.coordinateOriginalPoint.y);
@@ -235,7 +241,7 @@
         }
         correctionY = 0.0;
     }else if (self.minYValue < 0.0 && self.maxYValue <= 0.0){
-        if (self.showZeroValueAtYAxis) maxY = 0.0;
+        if (self.showZeroValueOnYAxis) maxY = 0.0;
         offsetY = maxY - minY;
         propotionY = yAxisLength/offsetY;
         zeroPoint = CGPointMake(zeroPoint.x, self.coordinateOriginalPoint.y-yAxisLength);
