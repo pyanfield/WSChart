@@ -7,8 +7,8 @@
 //
 
 #import "ViewController.h"
-#import "WSPieChartView.h"
-#import "WSPieChartWithMotionView.h"
+//#import "WSPieChartView.h"
+//#import "WSPieChartWithMotionView.h"
 #import "WSColumnChartView.h"
 #import "WSLineChartView.h"
 #import "WSAreaChartView.h"
@@ -90,53 +90,72 @@
     columnChart = [[WSColumnChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<5; i++) {
-        int lfc = arc4random() % 400;
-        int mu = arc4random() % 250;
-        int che = arc4random() % 350;
-        int mc = -500+arc4random() % 300;
-        int year = 2005+i;
-        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
-                                     [NSNumber numberWithInt:lfc],@"Liverpool",
-                                     [NSNumber numberWithInt:mu],@"MU",
-                                     [NSNumber numberWithInt:che],@"Chelsea",
-                                     [NSNumber numberWithInt:mc],@"ManCity",nil];
-        [arr addObject:data];
-    }
-    NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
-                                                                           [UIColor purpleColor],@"MU",
-                                                                           [UIColor greenColor],@"Chelsea",
-                                                                           [UIColor orangeColor],@"ManCity", nil];
-    
-    columnChart.xAxisKey = @"Year";
-    columnChart.rowWidth = 20.0;
-    columnChart.title = @"Test the Column Chart";
-    columnChart.showZeroValueAtYAxis = YES;
-    [columnChart drawChart:arr withColor:colorDict];
-    columnChart.backgroundColor = [UIColor blackColor];
-    [self.view addSubview:columnChart];
-     
-    */
-    // demo data for WSLineChartView
-    /*
-    lineChart = [[WSLineChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
-    NSMutableArray *arr = [[NSMutableArray alloc] init];
-    for (int i=0; i<30; i++) {
-        int lfc = arc4random() % 400;
-        int mu = -30 + arc4random() % 200;
-        int che = -140+arc4random() % 400;
-        int mc = -250+arc4random() % 100;
-        int year = i;
-        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
-                              [NSNumber numberWithInt:lfc],@"Liverpool",
-                              [NSNumber numberWithInt:mu],@"MU",
-                              [NSNumber numberWithInt:che],@"Chelsea",
-                              [NSNumber numberWithInt:mc],@"ManCity",nil];
+        WSChartObject *lfcObj = [[WSChartObject alloc] init];
+        lfcObj.name = @"Liverpool";
+        lfcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        lfcObj.yValue = arc4random() % 400;
+        WSChartObject *chObj = [[WSChartObject alloc] init];
+        chObj.name = @"Chelsea";
+        chObj.xValue = [NSString stringWithFormat:@"%d",i];
+        chObj.yValue = (int)(arc4random() % 400) - 140;
+        WSChartObject *muObj = [[WSChartObject alloc] init];
+        muObj.name = @"MU";
+        muObj.xValue = [NSString stringWithFormat:@"%d",i];
+        muObj.yValue = (int)(arc4random() % 200) - 30;
+        WSChartObject *mcObj = [[WSChartObject alloc] init];
+        mcObj.name = @"ManCity";
+        mcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        mcObj.yValue = (int)(arc4random() % 100) - 150;
+        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:lfcObj,@"Liverpool",
+                              muObj,@"MU",
+                              chObj,@"Chelsea",
+                              mcObj,@"ManCity",nil];
         [arr addObject:data];
     }
     NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
                                [UIColor purpleColor],@"MU",
                                [UIColor greenColor],@"Chelsea",
                                [UIColor orangeColor],@"ManCity", nil];
+    columnChart.rowWidth = 20.0;
+    columnChart.title = @"Test the Column Chart";
+    columnChart.showZeroValueAtYAxis = YES;
+    [columnChart drawChart:arr withColor:colorDict];
+    columnChart.backgroundColor = [UIColor blackColor];
+    [self.view addSubview:columnChart];
+     */
+    
+    // demo data for WSLineChartView
+    /*
+    lineChart = [[WSLineChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
+    for (int i=0; i<30; i++) {
+        WSChartObject *lfcObj = [[WSChartObject alloc] init];
+        lfcObj.name = @"Liverpool";
+        lfcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        lfcObj.yValue = arc4random() % 400;
+        WSChartObject *chObj = [[WSChartObject alloc] init];
+        chObj.name = @"Chelsea";
+        chObj.xValue = [NSString stringWithFormat:@"%d",i];
+        chObj.yValue = (int)(arc4random() % 400) - 140;
+        WSChartObject *muObj = [[WSChartObject alloc] init];
+        muObj.name = @"MU";
+        muObj.xValue = [NSString stringWithFormat:@"%d",i];
+        muObj.yValue = (int)(arc4random() % 200) - 30;
+        WSChartObject *mcObj = [[WSChartObject alloc] init];
+        mcObj.name = @"ManCity";
+        mcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        mcObj.yValue = (int)(arc4random() % 100) - 150;
+        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:lfcObj,@"Liverpool",
+                              muObj,@"MU",
+                              chObj,@"Chelsea",
+                              mcObj,@"ManCity",nil];
+        [arr addObject:data];
+    }
+    NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
+                               [UIColor purpleColor],@"MU",
+                               [UIColor greenColor],@"Chelsea",
+                               [UIColor orangeColor],@"ManCity", nil];
+
     lineChart.xAxisKey = @"Year";
     lineChart.rowWidth = 20.0;
     lineChart.title = @"Pyanfield's Line Chart";
@@ -144,29 +163,39 @@
     [lineChart drawChart:arr withColor:colorDict];
     lineChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:lineChart];
-     */
+    */ 
     /*
     // demo for area chart
     areaChart  = [[WSAreaChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<30; i++) {
-        int lfc = arc4random() % 400;
-        int mu = -30 + arc4random() % 200;
-        int che = -140+arc4random() % 400;
-        int mc = -250+arc4random() % 100;
-        int year = i;
-        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",year],@"Year",
-                              [NSNumber numberWithInt:lfc],@"Liverpool",
-                              [NSNumber numberWithInt:mu],@"MU",
-                              [NSNumber numberWithInt:che],@"Chelsea",
-                              [NSNumber numberWithInt:mc],@"ManCity",nil];
+        WSChartObject *lfcObj = [[WSChartObject alloc] init];
+        lfcObj.name = @"Liverpool";
+        lfcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        lfcObj.yValue = arc4random() % 400;
+        WSChartObject *chObj = [[WSChartObject alloc] init];
+        chObj.name = @"Chelsea";
+        chObj.xValue = [NSString stringWithFormat:@"%d",i];
+        chObj.yValue = (int)(arc4random() % 400) - 140;
+        WSChartObject *muObj = [[WSChartObject alloc] init];
+        muObj.name = @"MU";
+        muObj.xValue = [NSString stringWithFormat:@"%d",i];
+        muObj.yValue = (int)(arc4random() % 200) - 30;
+        WSChartObject *mcObj = [[WSChartObject alloc] init];
+        mcObj.name = @"ManCity";
+        mcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        mcObj.yValue = (int)(arc4random() % 100) - 150;
+        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:lfcObj,@"Liverpool",
+                              muObj,@"MU",
+                              chObj,@"Chelsea",
+                              mcObj,@"ManCity",nil];
         [arr addObject:data];
     }
     NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
                                [UIColor purpleColor],@"MU",
                                [UIColor greenColor],@"Chelsea",
                                [UIColor orangeColor],@"ManCity", nil];
-    areaChart.xAxisKey = @"Year";
+    
     areaChart.rowWidth = 20.0;
     areaChart.title = @"Pyanfield's Area Chart";
     areaChart.showZeroValueAtYAxis = YES;
@@ -205,13 +234,13 @@
                                [UIColor purpleColor],@"MU",
                                [UIColor greenColor],@"Chelsea",
                                [UIColor orangeColor],@"ManCity", nil];
-    //scatterChart.xAxisKey = @"Year";
     scatterChart.title = @"Pyanfield's Scatter Chart";
     scatterChart.showZeroValueAtYAxis = YES;
+    scatterChart.yAxisName = @"Y Axis";
+    scatterChart.xAxisName = @"X Axis";
     [scatterChart drawChart:arr withColor:colorDict];
     scatterChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:scatterChart];
-     
 }
 
 - (IBAction)switchData:(id)sender {

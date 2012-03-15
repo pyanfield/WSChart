@@ -6,8 +6,6 @@ TODO
 * Line Chart : 2012.3.7
 * Area Chart : 2012.3.8
 * Bar Chart
-* Scatter Chart : ongoing
-* Candlestick Chart
+* Scatter Chart : 2012.3.15
 * Combo Chart
-* Geo Chart
-* Treemap
+* Treemap : ongoing
