@@ -49,5 +49,7 @@ typedef enum{
 @property (nonatomic) BOOL showBottomLeftBorder;
 @property (nonatomic) BOOL showTopRightBorder;
 @property (nonatomic) BOOL showBorder;
+@property (nonatomic, strong) NSString *xAxisName;
+@property (nonatomic, strong) NSString *yAxisName;
 
 @end

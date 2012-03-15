@@ -45,6 +45,8 @@
 @synthesize showBorder = _showBorder;
 @synthesize showTopRightBorder = _showTopRightBorder;
 @synthesize showBottomLeftBorder = _showBottomLeftBorder;
+@synthesize xAxisName = _xAxisName;
+@synthesize yAxisName = _yAxisName;
 
 - (id)init
 {
@@ -144,6 +146,14 @@
     if (self.showTopRightBorder || self.showBorder) {
         CreateLineWithLengthFromPoint(ctx, YES, CGPointMake(self.originalPoint.x, self.originalPoint.y-self.yAxisLength), self.xAxisLength, NO, self.axisColor);
         CreateLineWithLengthFromPoint(ctx, NO, CGPointMake(self.originalPoint.x+self.xAxisLength, self.originalPoint.y), self.yAxisLength, NO, self.axisColor);
+    }
+    
+    // draw xy axes's name
+    if (self.xAxisName != nil || ![self.xAxisName isEqualToString:@""]) {
+        CreateTextAtPoint(ctx, self.xAxisName, CGPointMake(self.originalPoint.x+self.xAxisLength, self.zeroPoint.y), self.axisColor, WSRight);
+    }
+    if (self.yAxisName != nil || ![self.yAxisName isEqualToString:@""]) {
+        CreateTextAtPoint(ctx, self.yAxisName, CGPointMake(self.zeroPoint.x, self.originalPoint.y-self.yAxisLength), self.axisColor, WSBottom);
     }
     
 }
