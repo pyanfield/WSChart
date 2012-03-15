@@ -26,44 +26,7 @@
 #import "WSCoordinateLayer.h"
 #import "WSGlobalCore.h"
 #import "WSChartObject.h"
+#import "WSBaseChartView.h"
 
-@interface WSScatterChartView : UIView
-
-// the key value in the user data which will be displayed on x axis
-//@property (nonatomic, strong) NSString *xAxisKey;
-@property (nonatomic, strong) NSString *title;
-//@property (nonatomic) CGFloat rowWidth;
-//cross point between x and y axis, always display zero user data value.
-@property (nonatomic) BOOL showZeroValueAtYAxis;
-// coordinate view's origianl point , that bottom left of that frame.
-@property (nonatomic) CGPoint coordinateOriginalPoint;
-// the point that display zero user data value on y axis
-@property (nonatomic) CGPoint zeroPoint;
-// layers for different part of Area chart view
-@property (nonatomic, strong) CALayer *chartLayer;
-@property (nonatomic, strong) WSCoordinateLayer *xyAxesLayer;
-@property (nonatomic, strong) CATextLayer *titleLayer;
-@property (nonatomic, strong) CALayer *legendLayer;
-// mark's count that are on y axis
-@property (nonatomic) int yMarksCount;
-@property (nonatomic) int xMarksCount;
-// the length of x and y axis
-@property (nonatomic) CGFloat xAxisLength;
-@property (nonatomic) CGFloat yAxisLength;
-
-
-- (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
-/*
- Create Chart Layer for the view. Then add it to self.chartLayer.
- */
-- (void)createChartLayerWithDatas:(NSArray*)datas colors:(NSDictionary*)colorDict yCorrection:(CGFloat)correctionY yPropotion:(CGFloat)propotionY xCorrection:(CGFloat)correctionX xPropotion:(CGFloat)propotionX;
-/*
- Create the coordinate layer and add it to self.xyAxesLayer
- */
-- (void)createCoordinateLayerWithYTitles:(NSMutableArray*)yMarkTitles XTitles:(NSMutableArray*)xMarkTitles;
-/*
- Manage all layers order.
- */
-- (void)manageAllLayersOrder;
-
+@interface WSScatterChartView : WSBaseChartView
 @end

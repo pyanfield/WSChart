@@ -146,44 +146,43 @@
     [super drawChart:arr withColor:dict];
 }
 
-- (void)createChartLayerWithDatas:(NSArray *)datas colors:(NSDictionary *)colorDict yValueCorrection:(CGFloat)correction yValuePropotion:(CGFloat)propotion
+- (void)createChartLayer
 {
     int length = [datas count];
     for (int i=0; i<length; i++) {
         NSDictionary *data = [datas objectAtIndex:i];
         __block int flag = 0.0;
         [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
-            if (![key isEqual:self.xAxisKey]) {
-                WSColumnLayer *layer = [[WSColumnLayer alloc] init];
-                layer.color = [colorDict valueForKey:key];
-                layer.yValue = ([obj floatValue]-correction)*propotion;
-                layer.columnWidth = self.rowWidth;
-                layer.xStartPoint = CGPointMake(self.rowWidth*(flag+i*(length+1)+1)+self.zeroPoint.x, 
-                                                self.zeroPoint.y);
-                layer.frame = self.bounds;
-                [layer setNeedsDisplay];
-                [self.chartLayer addSublayer:layer];
-                flag++;
-            }
+            WSColumnLayer *layer = [[WSColumnLayer alloc] init];
+            WSChartObject *chartObj = obj;
+            layer.color = [colorDict valueForKey:key];
+            layer.yValue = (chartObj.yValue-correctionY)*propotionY;
+            layer.columnWidth = self.rowWidth;
+            layer.xStartPoint = CGPointMake(self.rowWidth*(flag+i*(length+1)+1)+zeroPoint.x, 
+                                            zeroPoint.y);
+            layer.frame = self.bounds;
+            [layer setNeedsDisplay];
+            [chartLayer addSublayer:layer];
+            flag++;
         }];
     }
 }
 
-- (void)createCoordinateLayerWithYTitles:(NSMutableArray *)yMarkTitles XTitles:(NSMutableArray *)xValues
+- (void)createCoordinateLayer
 {
-    self.xyAxesLayer.yMarkTitles = yMarkTitles;
-    self.xyAxesLayer.xMarkDistance = self.rowWidth*(self.columnNum+1);
-    self.xyAxesLayer.xMarkTitles = xValues;
-    self.xyAxesLayer.zeroPoint = self.zeroPoint;
-    self.xyAxesLayer.yMarksCount = self.yMarksCount;
-    self.xyAxesLayer.yAxisLength = self.yAxisLength;
-    self.xyAxesLayer.xAxisLength = self.xAxisLength;
-    self.xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
-    [self.xyAxesLayer setNeedsDisplay];
-    self.sublineLayer.zeroPoint = self.zeroPoint;
-    self.sublineLayer.yMarksCount = self.yMarksCount;
-    self.sublineLayer.yAxisLength = self.yAxisLength;
-    self.sublineLayer.xAxisLength = self.xAxisLength;
+    xyAxesLayer.yMarkTitles = yMarkTitles;
+    xyAxesLayer.xMarkDistance = self.rowWidth*(self.columnNum+2);
+    xyAxesLayer.xMarkTitles = xMarkTitles;
+    xyAxesLayer.zeroPoint = zeroPoint;
+    xyAxesLayer.yMarksCount = yMarksCount;
+    xyAxesLayer.yAxisLength = yAxisLength;
+    xyAxesLayer.xAxisLength = xAxisLength;
+    xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
+    [xyAxesLayer setNeedsDisplay];
+    self.sublineLayer.zeroPoint = zeroPoint;
+    self.sublineLayer.yMarksCount = yMarksCount;
+    self.sublineLayer.yAxisLength = yAxisLength;
+    self.sublineLayer.xAxisLength = xAxisLength;
     self.sublineLayer.originalPoint = self.coordinateOriginalPoint;
     [self.sublineLayer setNeedsDisplay];
 }
@@ -191,10 +190,10 @@
 - (void)manageAllLayersOrder
 {
     [self.layer addSublayer:self.sublineLayer];
-    [self.layer addSublayer:self.titleLayer];
-    [self.layer addSublayer:self.legendLayer];
-    [self.layer addSublayer:self.chartLayer];
-    [self.layer addSublayer:self.xyAxesLayer];
+    [self.layer addSublayer:titleLayer];
+    [self.layer addSublayer:legendLayer];
+    [self.layer addSublayer:chartLayer];
+    [self.layer addSublayer:xyAxesLayer];
 }
 
 @end

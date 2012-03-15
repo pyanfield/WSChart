@@ -83,7 +83,7 @@
     [super drawChart:arr withColor:dict];
 }
 
-- (void)createChartLayerWithDatas:(NSArray *)datas colors:(NSDictionary *)colorDict yValueCorrection:(CGFloat)correction yValuePropotion:(CGFloat)propotion
+- (void)createChartLayer
 {
     NSArray *legendNames = [colorDict allKeys];
     for (int j=0; j<[legendNames count]; j++) {
@@ -93,38 +93,38 @@
         layer.color = [colorDict valueForKey:legendName];
         for (int i=0; i<[datas count]; i++) {
             NSDictionary *data = [datas objectAtIndex:i];
-            
-            CGFloat yValue = self.zeroPoint.y - ([[data valueForKey:legendName] floatValue]-correction)*propotion;
-            CGPoint point = CGPointMake(self.rowWidth*i+self.zeroPoint.x, yValue);
+            WSChartObject *chartObj = [data valueForKey:legendName];
+            CGFloat yValue = zeroPoint.y - (chartObj.yValue-correctionY)*propotionY;
+            CGPoint point = CGPointMake(self.rowWidth*i+zeroPoint.x, yValue);
             [points addObject:[NSValue valueWithCGPoint:point]];
         }
         layer.points = [points copy];
         layer.frame = self.bounds;
         [layer setNeedsDisplay];
-        [self.chartLayer addSublayer:layer];
+        [chartLayer addSublayer:layer];
     }
 }
 
-- (void)createCoordinateLayerWithYTitles:(NSMutableArray *)yMarkTitles XTitles:(NSMutableArray *)xValues
+- (void)createCoordinateLayer
 {
-    self.xyAxesLayer.yMarkTitles = yMarkTitles;
-    self.xyAxesLayer.xMarkDistance = self.rowWidth;
-    self.xyAxesLayer.xMarkTitles = xValues;
-    self.xyAxesLayer.zeroPoint = self.zeroPoint;
-    self.xyAxesLayer.yMarksCount = self.yMarksCount;
-    self.xyAxesLayer.yAxisLength = self.yAxisLength;
-    self.xyAxesLayer.xAxisLength = self.rowWidth*[xValues count];
-    self.xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
-    self.xyAxesLayer.xMarkTitlePosition = WSAtPoint;
-    [self.xyAxesLayer setNeedsDisplay];
+    xyAxesLayer.yMarkTitles = yMarkTitles;
+    xyAxesLayer.xMarkDistance = self.rowWidth;
+    xyAxesLayer.xMarkTitles = xMarkTitles;
+    xyAxesLayer.zeroPoint = zeroPoint;
+    xyAxesLayer.yMarksCount = yMarksCount;
+    xyAxesLayer.yAxisLength = yAxisLength;
+    xyAxesLayer.xAxisLength = self.rowWidth*xMarksCount;
+    xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
+    xyAxesLayer.xMarkTitlePosition = WSAtPoint;
+    [xyAxesLayer setNeedsDisplay];
 }
 
 - (void)manageAllLayersOrder
 {
-    [self.layer addSublayer:self.titleLayer];
-    [self.layer addSublayer:self.legendLayer];
-    [self.layer addSublayer:self.chartLayer];
-    [self.layer addSublayer:self.xyAxesLayer];
+    [self.layer addSublayer:titleLayer];
+    [self.layer addSublayer:legendLayer];
+    [self.layer addSublayer:chartLayer];
+    [self.layer addSublayer:xyAxesLayer];
 }
 
 @end
