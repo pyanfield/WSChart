@@ -25,41 +25,60 @@
 #import "WSLegendLayer.h"
 #import "WSCoordinateLayer.h"
 #import "WSGlobalCore.h"
+#import "WSChartObject.h"
 
 @interface WSBaseChartView : UIView
+{
+    @protected
+    NSArray *datas;
+    NSDictionary *colorDict;
+    NSMutableArray *yMarkTitles;
+    NSMutableArray *xMarkTitles;
+    // the point that display zero user data value on y axis
+    CGPoint zeroPoint;
+    CALayer *chartLayer;
+    WSCoordinateLayer *xyAxesLayer;
+    CATextLayer *titleLayer;
+    CALayer *legendLayer;
+    // mark's count that are on y axis
+    int yMarksCount;
+    int xMarksCount;
+    // the length of x and y axis
+    CGFloat xAxisLength;
+    CGFloat yAxisLength;
+    /*
+     propotion: to convert the user data value to y axis' value.
+     minValue, maxValue : which will be displayed as max and min value on y axis.
+     correction : if the cross point bwteen y and x axis is not zero. should re-calculate the value that displayed on coordinate
+     */
+    float minY, maxY,offsetY,propotionY,correctionY;
+    float minX, maxX,offsetX,propotionX,correctionX;
+}
 
-// the key value in the user data which will be displayed on x axis
-@property (nonatomic, strong) NSString *xAxisKey;
+// the name of x and y axes
+@property (nonatomic, strong) NSString *xAxisName;
+@property (nonatomic, strong) NSString *yAxisName;
 @property (nonatomic, strong) NSString *title;
+/*
+ if rowWidth value > 0.0 , the x axis will be just displayed as WSChartObject xValue as xMark.
+ if not, will calculate the x axis xMark automatically. it's used for taht the WSChartObject's xValues have negative float values.
+ */
 @property (nonatomic) CGFloat rowWidth;
 //cross point between x and y axis, always display zero user data value.
 @property (nonatomic) BOOL showZeroValueAtYAxis;
 // coordinate view's origianl point , that bottom left of that frame.
 @property (nonatomic) CGPoint coordinateOriginalPoint;
-// the point that display zero user data value on y axis
-@property (nonatomic) CGPoint zeroPoint;
-// layers for different part of Area chart view
-@property (nonatomic, strong) CALayer *chartLayer;
-@property (nonatomic, strong) WSCoordinateLayer *xyAxesLayer;
-@property (nonatomic, strong) CATextLayer *titleLayer;
-@property (nonatomic, strong) CALayer *legendLayer;
-// mark's count that are on y axis
-@property (nonatomic) int yMarksCount;
-@property (nonatomic) int xMarksCount;
-// the length of x and y axis
-@property (nonatomic) CGFloat xAxisLength;
-@property (nonatomic) CGFloat yAxisLength;
 
 
 - (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
 /*
  Create Chart Layer for the view. Then add it to self.chartLayer.
  */
-- (void)createChartLayerWithDatas:(NSArray*)datas colors:(NSDictionary*)colorDict yValueCorrection:(CGFloat)correction yValuePropotion:(CGFloat)propotion;
+- (void)createChartLayer;
 /*
  Create the coordinate layer and add it to self.xyAxesLayer
  */
-- (void)createCoordinateLayerWithYTitles:(NSMutableArray*)yMarkTitles XTitles:(NSMutableArray*)xValues;
+- (void)createCoordinateLayer;
 /*
  Manage all layers order.
  */

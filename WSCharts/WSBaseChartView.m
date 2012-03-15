@@ -41,12 +41,14 @@
 @property (nonatomic) CGFloat minYValue;
 @property (nonatomic) CGFloat maxXValue;
 @property (nonatomic) CGFloat minXValue;
+
+//generate the key values for drawing x and y axes
+- (void)generateXAxisInfos;
+- (void)generateYAxisInfos;
+
 @end
 
 @implementation WSBaseChartView
-
-@synthesize coordinateOriginalPoint = _coordinateOriginalPoint;
-@synthesize xAxisLength = _xAxisLength;
 /* 
  Get the max and min value from Area datas.
  */ 
@@ -54,120 +56,64 @@
 @synthesize minXValue = _minXValue;
 @synthesize maxYValue = _maxYValue;
 @synthesize minYValue = _minYValue;
-@synthesize chartLayer = _chartLayer;
-@synthesize xyAxesLayer = _xyAxesLayer;
-@synthesize xAxisKey = _xAxisKey;
+@synthesize coordinateOriginalPoint = _coordinateOriginalPoint;
+@synthesize xAxisName = _xAxisName;
+@synthesize yAxisName = _yAxisName;
 @synthesize title = _title;
 @synthesize rowWidth = _rowWidth;
-@synthesize titleLayer = _titleLayer;
-@synthesize legendLayer = _legendLayer;
-@synthesize yAxisLength = _yAxisLength;
-@synthesize yMarksCount = _yMarksCount;
-@synthesize zeroPoint = _zeroPoint;
 @synthesize showZeroValueAtYAxis = _showZeroValueAtYAxis;
-@synthesize xMarksCount = _xMarksCount;
 
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.title = @"WSChart";
-
         // Initialization code
+        self.title = @"WSChart";
         self.maxXValue = CGFLOAT_MAX*(-1.0);
         self.minXValue = CGFLOAT_MAX;
         self.maxYValue = CGFLOAT_MAX*(-1.0);
         self.minYValue = CGFLOAT_MAX;
         self.coordinateOriginalPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
-        self.zeroPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
-        self.rowWidth = 20.0;
-        self.chartLayer = [CALayer layer];
-        self.xyAxesLayer = [[WSCoordinateLayer alloc] init];
-        self.titleLayer = [CATextLayer layer];
-        self.legendLayer = [CALayer layer];
-        self.chartLayer.frame = frame;
-        self.xyAxesLayer.frame = frame;
-        self.yAxisLength = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
-        self.xAxisLength = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
-        self.yMarksCount = Y_MARKS_COUNT;
+        zeroPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
+        self.rowWidth = 0.0;
+        chartLayer = [CALayer layer];
+        xyAxesLayer = [[WSCoordinateLayer alloc] init];
+        titleLayer = [CATextLayer layer];
+        legendLayer = [CALayer layer];
+        chartLayer.frame = frame;
+        xyAxesLayer.frame = frame;
+        yAxisLength = self.frame.size.height - COORDINATE_BOTTOM_GAP - COORDINATE_TOP_GAP;
+        xAxisLength = self.frame.size.width - 2*COORDINATE_LEFT_GAP;
+        yMarksCount = Y_MARKS_COUNT;
+        xMarksCount = X_MARKS_COUNT;
         self.showZeroValueAtYAxis = NO;
+        self.xAxisName = @"";
+        self.yAxisName = @"";
     }
     return self;
 }
 
 - (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict
 {
-    // get the max and min value from user datas
-    NSArray *datas = [arr copy];
-    NSDictionary *colorDict = [dict copy];
-    NSMutableArray *xValues = [[NSMutableArray alloc] init];
-    int length = [datas count];
-    for (int i=0; i<length; i++) {
-        NSDictionary *data = [datas objectAtIndex:i];
-        [xValues addObject:[data valueForKey:self.xAxisKey]];
-        [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
-            if (![key isEqual:self.xAxisKey]) {
-                self.maxYValue = self.maxYValue > [obj floatValue] ? self.maxYValue : [obj floatValue];
-                self.minYValue = self.minYValue < [obj floatValue] ? self.minYValue : [obj floatValue];
-            }
-        }];
-    }
-    //store the marks' value that displayed on y axis
-    NSMutableArray *yMarkTitles = [[NSMutableArray alloc] init];
-    /*
-     propotion: to convert the user data value to y axis' value.
-     minValue, maxValue : which will be displayed as max and min value on y axis.
-     correction : if the cross point bwteen y and x axis is not zero. should re-calculate the value that displayed on coordinate
-     */
-    float minY, maxY,offsetY,propotionY,correctionY;
-    minY = CalculateAxisExtremePointValue(self.minYValue, NO);
-    maxY = CalculateAxisExtremePointValue(self.maxYValue, YES);
-    
-    if (self.minYValue >= 0.0 && self.maxYValue > 0.0) {
-        if (self.showZeroValueAtYAxis) minY = 0.0;
-        offsetY = maxY - minY;
-        propotionY = self.yAxisLength/offsetY;
-        self.zeroPoint = CGPointMake(self.zeroPoint.x, self.coordinateOriginalPoint.y);
-        yMarkTitles = CalculateValuesBetweenMinAndMax(minY, maxY, self.yMarksCount);
-        correctionY = minY;
-    }else if (self.minYValue < 0.0 && self.maxYValue >= 0.0){
-        float bigDis = fabsf(minY)>fabsf(maxY)?fabsf(minY):fabsf(maxY);
-        float markDis = bigDis/Y_MARKS_COUNT;
-        float smallDis = fabsf(minY)<fabsf(maxY)?fabsf(minY):fabsf(maxY);
-        int smallMarkCount = (int)ceilf(smallDis/markDis);
-        self.yMarksCount = Y_MARKS_COUNT+smallMarkCount;
-        offsetY = markDis*(float)self.yMarksCount;
-        propotionY = self.yAxisLength/offsetY;
-        if (fabsf(minY)<=fabsf(maxY)) {
-            self.zeroPoint = CGPointMake(self.zeroPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*smallMarkCount/self.yMarksCount);
-            yMarkTitles = CalculateValuesBetweenMinAndMax(-markDis*smallMarkCount, maxY, self.yMarksCount);
-        }else{
-            self.zeroPoint = CGPointMake(self.zeroPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength*Y_MARKS_COUNT/self.yMarksCount);
-            yMarkTitles = CalculateValuesBetweenMinAndMax(minY, markDis*smallMarkCount, self.yMarksCount);
-        }
-        correctionY = 0.0;
-    }else if (self.minYValue < 0.0 && self.maxYValue <= 0.0){
-        if (self.showZeroValueAtYAxis) maxY = 0.0;
-        offsetY = maxY - minY;
-        propotionY = self.yAxisLength/offsetY;
-        self.zeroPoint = CGPointMake(self.zeroPoint.x, self.coordinateOriginalPoint.y-self.yAxisLength);
-        yMarkTitles = CalculateValuesBetweenMinAndMax(minY, maxY, self.yMarksCount);
-        correctionY = maxY;
-    }
+    datas = [arr copy];
+    colorDict = [dict copy];
+
+    [self generateYAxisInfos];
+    [self generateXAxisInfos];
     
     // draw chart layer
-    //yValue = ([obj floatValue]-correction)*propotion;
-    [self createChartLayerWithDatas:datas colors:colorDict yValueCorrection:correctionY yValuePropotion:propotionY];
+    [self createChartLayer];
+    
     // draw coordinate first
-    [self createCoordinateLayerWithYTitles:yMarkTitles XTitles:xValues];
+    [self createCoordinateLayer];
     
     // add the title layer
-    self.titleLayer.string = self.title;
-    self.titleLayer.fontSize = TITLE_FONT_SIZE;
+    titleLayer.string = self.title;
+    titleLayer.fontSize = TITLE_FONT_SIZE;
     UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:TITLE_FONT_SIZE];
     CGSize size = [self.title sizeWithFont:helveticated];
-    self.titleLayer.frame = CGRectMake(COORDINATE_LEFT_GAP/2, COORDINATE_TOP_GAP/2, size.width, size.height);
+    titleLayer.frame = CGRectMake(COORDINATE_LEFT_GAP/2, COORDINATE_TOP_GAP/2, size.width, size.height);
     
     // add the lengedn layer
     __block int flag = 0;
@@ -176,29 +122,135 @@
         WSLegendLayer *layer = [[WSLegendLayer alloc] initWithColor:obj andTitle:key];
         layer.position  = CGPointMake(0.0, 20.0*flag);
         [layer setNeedsDisplay];
-        [self.legendLayer addSublayer:layer];
+        [legendLayer addSublayer:layer];
         flag++;
         legendWidth = legendWidth > layer.frame.size.width ? legendWidth : layer.frame.size.width;
     }];
-    self.legendLayer.frame = CGRectMake(self.bounds.size.width - legendWidth - COORDINATE_LEFT_GAP, 20.0, legendWidth, self.frame.size.height);
+    legendLayer.frame = CGRectMake(self.bounds.size.width - legendWidth - COORDINATE_LEFT_GAP, 20.0, legendWidth, self.frame.size.height);
     
     // carefully about the adding order
     [self manageAllLayersOrder];
 }
 
-- (void)createChartLayerWithDatas:(NSArray*)datas colors:(NSDictionary*)colorDict yValueCorrection:(CGFloat)correction yValuePropotion:(CGFloat)propotion
+- (void)generateXAxisInfos
 {
-
+    int length = [datas count];
+    if (self.rowWidth > 0.0) {
+        NSString *oneName = [[colorDict allKeys] objectAtIndex:0];
+        xMarkTitles = [[NSMutableArray alloc] init];
+        for (int i=0; i<[datas count]; i++) {
+            NSDictionary *data = [datas objectAtIndex:i];
+            WSChartObject *chartObj = [data valueForKey:oneName];
+            [xMarkTitles addObject:chartObj.xValue];
+        }
+        xMarksCount = [xMarkTitles count];
+    }else {
+        for (int i=0; i<length; i++) {
+            NSDictionary *data = [datas objectAtIndex:i];
+            [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
+                WSChartObject *chartObj = (WSChartObject*)obj;
+                self.maxXValue = self.maxXValue > [chartObj.xValue floatValue] ? self.maxXValue : [chartObj.xValue floatValue];
+                self.minXValue = self.minXValue < [chartObj.xValue floatValue] ? self.minXValue : [chartObj.xValue floatValue];
+            }];
+        }
+        
+        xMarkTitles = [[NSMutableArray alloc] init];
+        minX = CalculateAxisExtremePointValue(self.minXValue, NO);
+        maxX = CalculateAxisExtremePointValue(self.maxXValue, YES);
+        
+        if (self.minXValue >= 0.0 && self.maxXValue > 0.0) {
+            if (self.showZeroValueAtYAxis) minX = 0.0;
+            offsetX = maxX - minX;
+            propotionX = xAxisLength/offsetX;
+            zeroPoint = CGPointMake(self.coordinateOriginalPoint.x, zeroPoint.y);
+            xMarkTitles = CalculateValuesBetweenMinAndMax(minX, maxX, xMarksCount);
+            correctionX = minX;
+        }else if (self.minXValue < 0.0 && self.maxXValue >= 0.0){
+            float bigDis = fabsf(minX)>fabsf(maxX)?fabsf(minX):fabsf(maxX);
+            float markDis = bigDis/X_MARKS_COUNT;
+            float smallDis = fabsf(minX)<fabsf(maxX)?fabsf(minX):fabsf(maxX);
+            int smallMarkCount = (int)ceilf(smallDis/markDis);
+            xMarksCount = X_MARKS_COUNT+smallMarkCount;
+            offsetX = markDis*(float)xMarksCount;
+            propotionX = xAxisLength/offsetX;
+            if (fabsf(minX)<=fabsf(maxX)) {
+                zeroPoint = CGPointMake(self.coordinateOriginalPoint.x+xAxisLength*smallMarkCount/xMarksCount,zeroPoint.y);
+                xMarkTitles = CalculateValuesBetweenMinAndMax(-markDis*smallMarkCount, maxX, xMarksCount);
+            }else{
+                zeroPoint = CGPointMake(self.coordinateOriginalPoint.x+xAxisLength*X_MARKS_COUNT/xMarksCount, zeroPoint.y);
+                xMarkTitles = CalculateValuesBetweenMinAndMax(minX, markDis*smallMarkCount, xMarksCount);
+            }
+            correctionX = 0.0;
+        }else if (self.minXValue < 0.0 && self.maxXValue <= 0.0){
+            if (self.showZeroValueAtYAxis) maxX = 0.0;
+            offsetX = maxX - minX;
+            propotionX = xAxisLength/offsetX;
+            zeroPoint = CGPointMake(self.coordinateOriginalPoint.x+xAxisLength, zeroPoint.y);
+            xMarkTitles = CalculateValuesBetweenMinAndMax(minX, maxX, xMarksCount);
+            correctionX = maxX;
+        }
+    }
 }
 
-- (void)createCoordinateLayerWithYTitles:(NSMutableArray*)yMarkTitles XTitles:(NSMutableArray*)xValues
+- (void)generateYAxisInfos
 {
-
+    //get the max and min value of WSChartObject's yValue
+    int length = [datas count];
+    for (int i=0; i<length; i++) {
+        NSDictionary *data = [datas objectAtIndex:i];
+        [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
+            WSChartObject *chartObj = (WSChartObject*)obj;
+            self.maxYValue = self.maxYValue > chartObj.yValue ? self.maxYValue : chartObj.yValue;
+            self.minYValue = self.minYValue < chartObj.yValue ? self.minYValue : chartObj.yValue;
+        }];
+    }
+    //store the marks' value that displayed on y axis
+    yMarkTitles = [[NSMutableArray alloc] init];
+    
+    //get the max and min data should be displayed on the y axis
+    minY = CalculateAxisExtremePointValue(self.minYValue, NO);
+    maxY = CalculateAxisExtremePointValue(self.maxYValue, YES);
+    
+    if (self.minYValue >= 0.0 && self.maxYValue > 0.0) {
+        if (self.showZeroValueAtYAxis) minY = 0.0;
+        offsetY = maxY - minY;
+        propotionY = yAxisLength/offsetY;
+        zeroPoint = CGPointMake(zeroPoint.x, self.coordinateOriginalPoint.y);
+        yMarkTitles = CalculateValuesBetweenMinAndMax(minY, maxY, yMarksCount);
+        correctionY = minY;
+    }else if (self.minYValue < 0.0 && self.maxYValue >= 0.0){
+        float bigDis = fabsf(minY)>fabsf(maxY)?fabsf(minY):fabsf(maxY);
+        float markDis = bigDis/Y_MARKS_COUNT;
+        float smallDis = fabsf(minY)<fabsf(maxY)?fabsf(minY):fabsf(maxY);
+        int smallMarkCount = (int)ceilf(smallDis/markDis);
+        yMarksCount = Y_MARKS_COUNT+smallMarkCount;
+        offsetY = markDis*(float)yMarksCount;
+        propotionY = yAxisLength/offsetY;
+        if (fabsf(minY)<=fabsf(maxY)) {
+            zeroPoint = CGPointMake(zeroPoint.x, self.coordinateOriginalPoint.y-yAxisLength*smallMarkCount/yMarksCount);
+            yMarkTitles = CalculateValuesBetweenMinAndMax(-markDis*smallMarkCount, maxY, yMarksCount);
+        }else{
+            zeroPoint = CGPointMake(zeroPoint.x, self.coordinateOriginalPoint.y-yAxisLength*Y_MARKS_COUNT/yMarksCount);
+            yMarkTitles = CalculateValuesBetweenMinAndMax(minY, markDis*smallMarkCount, yMarksCount);
+        }
+        correctionY = 0.0;
+    }else if (self.minYValue < 0.0 && self.maxYValue <= 0.0){
+        if (self.showZeroValueAtYAxis) maxY = 0.0;
+        offsetY = maxY - minY;
+        propotionY = yAxisLength/offsetY;
+        zeroPoint = CGPointMake(zeroPoint.x, self.coordinateOriginalPoint.y-yAxisLength);
+        yMarkTitles = CalculateValuesBetweenMinAndMax(minY, maxY, yMarksCount);
+        correctionY = maxY;
+    }
 }
 
-- (void)manageAllLayersOrder
-{
+- (void)createChartLayer{
+}
 
+- (void)createCoordinateLayer{
+}
+
+- (void)manageAllLayersOrder{
 }
 
 @end
