@@ -71,7 +71,7 @@ static float pieRadius = 150.0;
 
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius isHalfAngle:(BOOL)isHalf;
-- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c withRadius:(CGFloat)r startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t;
+- (CGMutablePathRef)newPiePathWithCenter:(CGPoint)c withRadius:(CGFloat)r startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t;
 - (void)closeAllPieDataIsOpenedAsNO:(int)openedPieNum;
 - (void)createIndicators:(int)num;
 - (void)createShadow:(BOOL)opened openedPieNum:(int)i;
@@ -109,7 +109,7 @@ static float pieRadius = 150.0;
 {
     NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
-    NSMutableArray* _names = [[NSMutableArray alloc] init];
+    NSMutableArray* _names;
     NSMutableArray* _startAngles = [[NSMutableArray alloc] init];
     
     NSArray *values = [dict allValues];
@@ -221,7 +221,7 @@ static float pieRadius = 150.0;
         if (pie.isOpened) {
             transform = CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
         }
-        CGMutablePathRef path = [self createPiePathWithCenter:center 
+        CGMutablePathRef path = [self newPiePathWithCenter:center 
                                                    withRadius:pieRadius 
                                                    startAngle:pie.startAngle 
                                                     withAngle:2.0*M_PI*pie.percent 
@@ -259,7 +259,7 @@ static float pieRadius = 150.0;
         //draw opened sector shadow
         WSPieData *pie = [self.pies objectAtIndex:i];
         CGAffineTransform transform =  CGAffineTransformMakeTranslation(pie.openedPoint.x-self.center.x,pie.openedPoint.y-self.center.y);
-        CGMutablePathRef sector = [self createPiePathWithCenter:self.center 
+        CGMutablePathRef sector = [self newPiePathWithCenter:self.center 
                                                      withRadius:pieRadius
                                                      startAngle:pie.startAngle 
                                                       withAngle:2.0*M_PI*pie.percent 
@@ -267,7 +267,7 @@ static float pieRadius = 150.0;
         CGContextAddPath(context, sector);
         CGPathRelease(sector);
         CGAffineTransform transform2 =  CGAffineTransformMakeTranslation(0.0, 0.0);
-        CGMutablePathRef sector2 = [self createPiePathWithCenter:self.center 
+        CGMutablePathRef sector2 = [self newPiePathWithCenter:self.center 
                                                       withRadius:pieRadius
                                                       startAngle:pie.startAngle+2.0*M_PI*pie.percent
                                                        withAngle:2.0*M_PI*(1.0f-pie.percent)
@@ -288,7 +288,7 @@ static float pieRadius = 150.0;
 }
 
 // create the sector path
-- (CGMutablePathRef)createPiePathWithCenter:(CGPoint)c withRadius:(CGFloat)r startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t
+- (CGMutablePathRef)newPiePathWithCenter:(CGPoint)c withRadius:(CGFloat)r startAngle:(CGFloat)sa withAngle:(CGFloat)pa transform:(CGAffineTransform)t
 {
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, &t, c.x, c.y);
@@ -340,7 +340,7 @@ static float pieRadius = 150.0;
     
     CGPoint p1 = pie.indicatorPoint;
     CGPoint p2 = [self calculateOpenedPoint:num withRadius:(INDICATOR_LENGTH+INDICATOR_RADIUS) isHalfAngle:YES];
-    CGPoint p3 = p2;
+    CGPoint p3;
     if (p1.x>self.center.x) {
         p3 = CGPointMake(p2.x+INDICATOR_H_LENGTH, p2.y);
         [info drawAtPoint:CGPointMake(p2.x, p2.y-20.0) withFont:helveticated];
