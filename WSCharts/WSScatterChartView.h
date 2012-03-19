@@ -21,12 +21,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "WSCoordinateLayer.h"
-#import "WSLegendLayer.h"
-#import "WSCoordinateLayer.h"
-#import "WSGlobalCore.h"
-#import "WSChartObject.h"
 #import "WSBaseChartView.h"
 
-@interface WSScatterChartView : WSBaseChartView
+@interface WSScatterChartView : WSBaseChartView <WSBaseChartDrawing>
 @end

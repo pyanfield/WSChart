@@ -22,5 +22,5 @@ SOFTWARE.
 
 #import <UIKit/UIKit.h>
 #import "WSBaseChartView.h"
-@interface WSLineChartView : WSBaseChartView
+@interface WSLineChartView : WSBaseChartView <WSBaseChartDrawing>
 @end

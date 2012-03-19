@@ -250,15 +250,6 @@
     }
 }
 
-- (void)createChartLayer{
-}
-
-- (void)createCoordinateLayer{
-}
-
-- (void)manageAllLayersOrder{
-}
-
 @end
 
 

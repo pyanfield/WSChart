@@ -27,7 +27,27 @@
 #import "WSGlobalCore.h"
 #import "WSChartObject.h"
 
-@interface WSBaseChartView : UIView
+@protocol WSBaseChartDrawing <NSObject>
+
+@optional
+/*
+ Create Chart Layer for the view. Then add it to self.chartLayer.
+ */
+- (void)createChartLayer;
+/*
+ Create the coordinate layer and add it to self.xyAxesLayer
+ */
+- (void)createCoordinateLayer;
+/*
+ Manage all layers order.
+ */
+- (void)manageAllLayersOrder;
+
+@end
+
+
+
+@interface WSBaseChartView : UIView <WSBaseChartDrawing>
 {
     @protected
     NSArray *datas;
@@ -77,17 +97,6 @@
 
 
 - (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
-/*
- Create Chart Layer for the view. Then add it to self.chartLayer.
- */
-- (void)createChartLayer;
-/*
- Create the coordinate layer and add it to self.xyAxesLayer
- */
-- (void)createCoordinateLayer;
-/*
- Manage all layers order.
- */
-- (void)manageAllLayersOrder;
+
 
 @end
