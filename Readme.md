@@ -40,7 +40,7 @@ History
 
 TODO List
 ----------------------- 
-* Treemap : waiting.
+* Combo Chart : waiting.
 
 License
 ------------------------

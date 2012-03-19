@@ -7,34 +7,37 @@
 //
 
 #import "ViewController.h"
-//#import "WSPieChartView.h"
-//#import "WSPieChartWithMotionView.h"
+#import "WSPieChartView.h"
+#import "WSPieChartWithMotionView.h"
 #import "WSColumnChartView.h"
 #import "WSLineChartView.h"
 #import "WSAreaChartView.h"
 #import "WSScatterChartView.h"
 #import "WSChartObject.h"
+#import "WSComboChartView.h"
 
 @interface ViewController()
 
-//@property (nonatomic, strong) NSMutableDictionary *pieData;
-//@property (nonatomic, strong) NSMutableDictionary *pieData2;
-//@property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
+@property (nonatomic, strong) NSMutableDictionary *pieData;
+@property (nonatomic, strong) NSMutableDictionary *pieData2;
+@property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
 @property (nonatomic, strong) WSColumnChartView *columnChart;
 @property (nonatomic, strong) WSLineChartView *lineChart;
 @property (nonatomic, strong) WSAreaChartView *areaChart;
 @property (nonatomic, strong) WSScatterChartView *scatterChart;
+@property (nonatomic, strong) WSComboChartView *comboChart;
 @property (nonatomic) BOOL flag;
 
 @end
 
 @implementation ViewController
 
-//@synthesize pieData,pieData2,pieChart;
+@synthesize pieData,pieData2,pieChart;
 @synthesize areaChart;
 @synthesize lineChart;
 @synthesize columnChart;
 @synthesize scatterChart;
+@synthesize comboChart;
 
 @synthesize flag;
 
@@ -71,8 +74,8 @@
     
     pieData2 = [[NSMutableDictionary alloc] init];
     pieData2 = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:15],@"test5",[[NSNumber alloc] initWithFloat:80],@"test3",[[NSNumber alloc] initWithFloat:5],@"test2",[[NSNumber alloc] initWithFloat:5],@"test1",[[NSNumber alloc] initWithFloat:5],@"test4",[[NSNumber alloc] initWithFloat:5],@"test6",nil];
-     */
      
+     */
     /*
     // demo data for WSPieChartView
     WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
@@ -203,8 +206,8 @@
     areaChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:areaChart];
      */
-    
-    
+    /*
+    //demo code for scatter chart
     scatterChart  = [[WSScatterChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     for (int i=0; i<5; i++) {
@@ -241,6 +244,51 @@
     [scatterChart drawChart:arr withColor:colorDict];
     scatterChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:scatterChart];
+     */
+    
+    comboChart = [[WSComboChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 900.0, 400.0)];
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
+    for (int i=0; i<5; i++) {
+        WSChartObject *lfcObj = [[WSChartObject alloc] init];
+        lfcObj.name = @"Liverpool";
+        lfcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        lfcObj.yValue = arc4random() % 400;
+        WSChartObject *chObj = [[WSChartObject alloc] init];
+        chObj.name = @"Chelsea";
+        chObj.xValue = [NSString stringWithFormat:@"%d",i];
+        chObj.yValue = (int)(arc4random() % 400) - 140;
+        WSChartObject *muObj = [[WSChartObject alloc] init];
+        muObj.name = @"MU";
+        muObj.xValue = [NSString stringWithFormat:@"%d",i];
+        muObj.yValue = (int)(arc4random() % 200) - 30;
+        WSChartObject *mcObj = [[WSChartObject alloc] init];
+        mcObj.name = @"ManCity";
+        mcObj.xValue = [NSString stringWithFormat:@"%d",i];
+        mcObj.yValue = (int)(arc4random() % 100) - 150;
+        
+        WSChartObject *avgObj = [[WSChartObject alloc] init];
+        avgObj.name = @"Average";
+        avgObj.xValue = [NSString stringWithFormat:@"%d",i];
+        avgObj.yValue = (lfcObj.yValue + chObj.yValue + muObj.yValue + muObj.yValue)/4.0;
+        
+        NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys:lfcObj,@"Liverpool",
+                              muObj,@"MU",
+                              chObj,@"Chelsea",
+                              mcObj,@"ManCity",
+                              avgObj,@"Average",nil];
+        [arr addObject:data];
+    }
+    NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
+                               [UIColor purpleColor],@"MU",
+                               [UIColor greenColor],@"Chelsea",
+                               [UIColor orangeColor],@"ManCity",
+                               [UIColor blueColor],@"Average", nil];
+    comboChart.rowWidth = 20.0;
+    comboChart.title = @"Pyanfield's Combo Chart";
+    comboChart.showZeroValueOnYAxis = YES;
+    [comboChart drawChart:arr withColor:colorDict];
+    comboChart.backgroundColor = [UIColor blackColor];
+    [self.view addSubview:comboChart];
 }
 
 - (IBAction)switchData:(id)sender {

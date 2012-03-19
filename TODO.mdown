@@ -7,5 +7,5 @@ TODO
 * Area Chart : 2012.3.8
 * Bar Chart
 * Scatter Chart : 2012.3.15
-* Combo Chart
-* Treemap : ongoing
+* Combo Chart : ongoing
+* Treemap : 
