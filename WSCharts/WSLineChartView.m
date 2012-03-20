@@ -21,51 +21,7 @@
  */
 
 #import "WSLineChartView.h"
-
-#pragma mark - WSLineLayer
-
-@interface WSLineLayer:CAShapeLayer
-
-@property (nonatomic, strong) NSArray* points;
-@property (nonatomic) CGFloat rowWidth;
-@property (nonatomic, strong) UIColor *color;
-
-@end
-
-@implementation WSLineLayer
-
-@synthesize points = _points;
-@synthesize rowWidth = _rowWidth;
-@synthesize color = _color;
-
-
-- (id)init
-{
-    self = [super init];
-    return self;
-}
-
-- (void)drawInContext:(CGContextRef)ctx
-{   
-    size_t count = [self.points count];
-    CGPoint p[count];
-    for (int i=0; i<count; i++) {
-        CGPoint point = [[self.points objectAtIndex:i] CGPointValue];
-        p[i] = point;
-    }
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddLines(path, NULL, p, count);
-    CGContextSetStrokeColorWithColor(ctx, self.color.CGColor);
-    CGContextSetLineWidth(ctx, 2.0);
-    CGContextAddPath(ctx, path);
-    CGContextDrawPath(ctx, kCGPathStroke);
-    CGPathRelease(path);
-}
-
-@end
-
-
-#pragma mark - WSLineChartView
+#import "WSLineLayer.h"
 
 @implementation WSLineChartView
 

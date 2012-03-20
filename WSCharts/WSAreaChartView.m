@@ -21,58 +21,8 @@
  */
 
 #import "WSAreaChartView.h"
+#import "WSAreaLayer.h"
 
-#pragma mark - WSAreaLayer
-
-@interface WSAreaLayer:CAShapeLayer
-
-@property (nonatomic, strong) NSArray* points;
-@property (nonatomic) CGFloat rowWidth;
-@property (nonatomic, strong) UIColor *color;
-@property (nonatomic) CGPoint originalPoint;
-
-@end
-
-@implementation WSAreaLayer
-
-@synthesize points = _points;
-@synthesize rowWidth = _rowWidth;
-@synthesize color = _color;
-@synthesize originalPoint = _originalPoint;
-
-- (id)init
-{
-    self = [super init];
-    return self;
-}
-
-- (void)drawInContext:(CGContextRef)ctx
-{   
-    size_t count = [self.points count];
-    CGPoint p[count];
-    for (int i=0; i<count; i++) {
-        CGPoint point = [[self.points objectAtIndex:i] CGPointValue];
-        p[i] = point;
-    }
-    CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddLines(path, NULL, p, count);
-    CGPoint point = [[self.points lastObject] CGPointValue];
-    CGPathAddLineToPoint(path, NULL, point.x, self.originalPoint.y);
-    CGPathAddLineToPoint(path, NULL, self.originalPoint.x, self.originalPoint.y);
-    CGPathCloseSubpath(path);
-    CGContextSetStrokeColorWithColor(ctx, self.color.CGColor);
-    CGContextSetLineWidth(ctx, 2.0);
-    UIColor *fillColor = CreateAlphaColor(self.color, 0.3);
-    CGContextSetFillColorWithColor(ctx, fillColor.CGColor);
-    CGContextAddPath(ctx, path);
-    CGContextDrawPath(ctx, kCGPathFillStroke);
-    CGPathRelease(path);
-}
-
-@end
-
-
-#pragma mark - WSAreaChartView
 
 @implementation WSAreaChartView
 

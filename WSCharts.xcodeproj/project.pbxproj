@@ -23,6 +23,10 @@
 		9026093514E29B13007779D9 /* WSPieChartWithMotionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9026093414E29B13007779D9 /* WSPieChartWithMotionView.m */; };
 		902D3212150749E000D9CA06 /* WSAreaChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D3211150749E000D9CA06 /* WSAreaChartView.m */; };
 		902FF3C714FE203700A5DD5A /* WSLegendLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 902FF3C614FE203600A5DD5A /* WSLegendLayer.m */; };
+		9034049615187F950080CD54 /* WSLineLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9034049515187F950080CD54 /* WSLineLayer.m */; };
+		90340499151880880080CD54 /* WSAreaLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 90340498151880880080CD54 /* WSAreaLayer.m */; };
+		9034049C151881520080CD54 /* WSScatterLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9034049B151881520080CD54 /* WSScatterLayer.m */; };
+		9034049F151882B20080CD54 /* WSColumnLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9034049E151882B20080CD54 /* WSColumnLayer.m */; };
 		9044CA01151761C4005E2547 /* WSComboChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9044CA00151761C4005E2547 /* WSComboChartView.m */; };
 		90653E2D15089E2C00ECE29D /* WSBaseChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90653E2C15089E2C00ECE29D /* WSBaseChartView.m */; };
 		906F683E14E0157E00E0D9CF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 906F683C14E0157E00E0D9CF /* LICENSE */; };
@@ -62,6 +66,14 @@
 		902D3211150749E000D9CA06 /* WSAreaChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSAreaChartView.m; sourceTree = "<group>"; };
 		902FF3C514FE203600A5DD5A /* WSLegendLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSLegendLayer.h; sourceTree = "<group>"; };
 		902FF3C614FE203600A5DD5A /* WSLegendLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSLegendLayer.m; sourceTree = "<group>"; };
+		9034049415187F950080CD54 /* WSLineLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSLineLayer.h; sourceTree = "<group>"; };
+		9034049515187F950080CD54 /* WSLineLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSLineLayer.m; sourceTree = "<group>"; };
+		90340497151880880080CD54 /* WSAreaLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSAreaLayer.h; sourceTree = "<group>"; };
+		90340498151880880080CD54 /* WSAreaLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSAreaLayer.m; sourceTree = "<group>"; };
+		9034049A151881520080CD54 /* WSScatterLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSScatterLayer.h; sourceTree = "<group>"; };
+		9034049B151881520080CD54 /* WSScatterLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSScatterLayer.m; sourceTree = "<group>"; };
+		9034049D151882B20080CD54 /* WSColumnLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSColumnLayer.h; sourceTree = "<group>"; };
+		9034049E151882B20080CD54 /* WSColumnLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSColumnLayer.m; sourceTree = "<group>"; };
 		9044C9FF151761C4005E2547 /* WSComboChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSComboChartView.h; sourceTree = "<group>"; };
 		9044CA00151761C4005E2547 /* WSComboChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSComboChartView.m; sourceTree = "<group>"; };
 		90653E2B15089E2C00ECE29D /* WSBaseChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSBaseChartView.h; sourceTree = "<group>"; };
@@ -184,6 +196,25 @@
 			name = ColumnChart;
 			sourceTree = "<group>";
 		};
+		9034049215187F4B0080CD54 /* Chart Layers */ = {
+			isa = PBXGroup;
+			children = (
+				902FF3C514FE203600A5DD5A /* WSLegendLayer.h */,
+				902FF3C614FE203600A5DD5A /* WSLegendLayer.m */,
+				9005531615049FDF00BC7CD4 /* WSCoordinateLayer.h */,
+				9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */,
+				9034049415187F950080CD54 /* WSLineLayer.h */,
+				9034049515187F950080CD54 /* WSLineLayer.m */,
+				90340497151880880080CD54 /* WSAreaLayer.h */,
+				90340498151880880080CD54 /* WSAreaLayer.m */,
+				9034049A151881520080CD54 /* WSScatterLayer.h */,
+				9034049B151881520080CD54 /* WSScatterLayer.m */,
+				9034049D151882B20080CD54 /* WSColumnLayer.h */,
+				9034049E151882B20080CD54 /* WSColumnLayer.m */,
+			);
+			name = "Chart Layers";
+			sourceTree = "<group>";
+		};
 		9044C9FD1517619E005E2547 /* Combo Chart */ = {
 			isa = PBXGroup;
 			children = (
@@ -196,10 +227,6 @@
 		9062D4331504B2FC0000809F /* Global */ = {
 			isa = PBXGroup;
 			children = (
-				902FF3C514FE203600A5DD5A /* WSLegendLayer.h */,
-				902FF3C614FE203600A5DD5A /* WSLegendLayer.m */,
-				9005531615049FDF00BC7CD4 /* WSCoordinateLayer.h */,
-				9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */,
 				900553201504ADD800BC7CD4 /* WSGlobalCore.h */,
 				900553211504ADD800BC7CD4 /* WSGlobalCore.m */,
 				90653E2B15089E2C00ECE29D /* WSBaseChartView.h */,
@@ -232,6 +259,7 @@
 		90CAF43A14DA7B6C00928735 /* charts */ = {
 			isa = PBXGroup;
 			children = (
+				9034049215187F4B0080CD54 /* Chart Layers */,
 				9044C9FD1517619E005E2547 /* Combo Chart */,
 				90936B621509E3AC0021AF14 /* Scatter Chart */,
 				902D320E1507494E00D9CA06 /* Area Chart */,
@@ -324,6 +352,10 @@
 				90936B601509E3A80021AF14 /* WSScatterChartView.m in Sources */,
 				907C7AE0150F3DDB00656860 /* WSChartObject.m in Sources */,
 				9044CA01151761C4005E2547 /* WSComboChartView.m in Sources */,
+				9034049615187F950080CD54 /* WSLineLayer.m in Sources */,
+				90340499151880880080CD54 /* WSAreaLayer.m in Sources */,
+				9034049C151881520080CD54 /* WSScatterLayer.m in Sources */,
+				9034049F151882B20080CD54 /* WSColumnLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

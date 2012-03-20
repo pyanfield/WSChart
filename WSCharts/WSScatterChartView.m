@@ -21,73 +21,7 @@
  */
 
 #import "WSScatterChartView.h"
-
-#define RADIUS 5.0
-
-#pragma mark - WSScatterLayer
-
-@interface WSScatterLayer : CAShapeLayer
-
-@property (nonatomic, strong) UIColor *color;
-@property (nonatomic, strong) NSMutableArray *points;
-@property (nonatomic, strong) NSMutableArray *radiusArr;
-/*
- Can set the circle's radius.
- */
-@property (nonatomic) BOOL enableChangeRadius;
-
-@end
-
-
-
-@implementation WSScatterLayer
-
-@synthesize color = _color;
-@synthesize points = _points;
-@synthesize radiusArr = _radiusArr;
-@synthesize enableChangeRadius = _enableChangeRadius;
-
-- (id)init
-{
-    return [super init];
-}
-
-- (void)drawInContext:(CGContextRef)ctx
-{
-    int count = [self.points count];
-    if (self.enableChangeRadius) {
-        for (int i=0; i<count; i++) {
-            CGPoint point = [[self.points objectAtIndex:i] CGPointValue];
-            CGMutablePathRef path = CGPathCreateMutable();
-            CGFloat r = [[self.radiusArr objectAtIndex:i] floatValue];
-            CGRect rect = CGRectMake(point.x-r, point.y-r, 2*r, 2*r);
-            CGPathAddEllipseInRect(path, NULL, rect);
-            UIColor *fillColor = CreateAlphaColor(self.color, 0.5);
-            CGContextSetFillColorWithColor(ctx, fillColor.CGColor);
-            CGContextSetLineWidth(ctx, 2.0);
-            CGContextAddPath(ctx, path);
-            CGContextDrawPath(ctx, kCGPathFill);
-            CGPathRelease(path);
-        }
-    }else{
-        for (int i=0; i<count; i++) {
-            CGPoint point = [[self.points objectAtIndex:i] CGPointValue];
-            CGMutablePathRef path = CGPathCreateMutable();
-            CGRect rect = CGRectMake(point.x-RADIUS, point.y-RADIUS, 2*RADIUS, 2*RADIUS);
-            CGPathAddEllipseInRect(path, NULL, rect);
-            UIColor *fillColor = CreateAlphaColor(self.color, 0.5);
-            CGContextSetFillColorWithColor(ctx, fillColor.CGColor);
-            CGContextSetLineWidth(ctx, 2.0);
-            CGContextAddPath(ctx, path);
-            CGContextDrawPath(ctx, kCGPathFill);
-            CGPathRelease(path);
-        }
-    }
-}
-
-@end
-
-#pragma mark - WSScatterChartView
+#import "WSScatterLayer.h"
 
 @implementation WSScatterChartView
 
@@ -139,7 +73,8 @@
     xyAxesLayer.xAxisLength = xAxisLength;
     xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
     xyAxesLayer.xMarkTitlePosition = WSAtPoint;
-    
+    xyAxesLayer.xAxisName = self.xAxisName;
+    xyAxesLayer.yAxisName = self.yAxisName;
     xyAxesLayer.showBorder = YES;
     [xyAxesLayer setNeedsDisplay];
 }
