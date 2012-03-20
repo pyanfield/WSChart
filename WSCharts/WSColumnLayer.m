@@ -29,10 +29,16 @@
 @synthesize yValue = _yValue;
 @synthesize columnWidth = _columnWidth;
 @synthesize color = _color;
+@synthesize visualAngle = _visualAngle;
+@synthesize visualDepth = _visualDepth;
 
 - (id)init
 {
     self = [super init];
+    if (self) {
+        self.visualDepth = DISTANCE_DEFAULT;
+        self.visualAngle = ANGLE_DEFAULT;
+    }
     return self;
 }
 
@@ -42,17 +48,17 @@
     CGPoint topLeftFront ,topLeftBack,topRightFront,topRightBack , bottomRightBack ,bottomRightFront;
     if (self.yValue>=0.0) {
         topLeftFront = CGPointMake(self.xStartPoint.x, self.xStartPoint.y-self.yValue);
-        topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT,DISTANCE_DEFAULT);
+        topLeftBack = CreateEndPoint(topLeftFront, self.visualAngle,self.visualDepth);
         topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y-self.yValue);
-        topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        topRightBack = CreateEndPoint(topRightFront, self.visualAngle, self.visualDepth);
         bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y+self.yValue);
         bottomRightFront = CGPointMake(topRightFront.x, self.xStartPoint.y);
     }else
     {
         topLeftFront = self.xStartPoint;
-        topLeftBack = CreateEndPoint(topLeftFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        topLeftBack = CreateEndPoint(topLeftFront, self.visualAngle, self.visualDepth);
         topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y);
-        topRightBack = CreateEndPoint(topRightFront, ANGLE_DEFAULT, DISTANCE_DEFAULT);
+        topRightBack = CreateEndPoint(topRightFront, self.visualAngle, self.visualDepth);
         bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y-self.yValue);
         bottomRightFront = CGPointMake(topRightFront.x, topLeftFront.y-self.yValue);
     }

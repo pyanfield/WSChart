@@ -31,6 +31,8 @@
 @property (nonatomic) CGFloat yValue;
 @property (nonatomic) CGFloat columnWidth;
 @property (nonatomic, strong) UIColor *color;
+@property (nonatomic) CGFloat visualAngle;
+@property (nonatomic) CGFloat visualDepth;
 
 @end
 

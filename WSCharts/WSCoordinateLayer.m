@@ -22,7 +22,6 @@
 
 #import "WSCoordinateLayer.h"
 #import "WSGlobalCore.h"
-#pragma mark - WSCoordinateLayer
 
 @implementation WSCoordinateLayer
 
@@ -31,8 +30,9 @@
 @synthesize xAxisLength = _xAxisLength;
 @synthesize xMarkTitles = _xMarkTitles;
 @synthesize xMarkDistance = _xMarkDistance;
-@synthesize yMarkTitles = _yMarkTitlest;
+@synthesize yMarkTitles = _yMarkTitles;
 @synthesize yMarksCount = _yMarksCount;
+@synthesize xMarksCount = _xMarksCount;
 @synthesize show3DXAxisSubline = _show3DXAxisSubline;
 @synthesize zeroPoint = _zeroPoin;
 @synthesize sublineColor = _sublineColor;
@@ -120,8 +120,8 @@
     }
     
     // draw x axis subline
-    if (self.showXAxisSubline) {
-        for (int i=0; i<[self.yMarkTitles count]; i++) {
+    if (self.showYAxisSubline) {
+        for (int i=0; i<self.yMarksCount; i++) {
             CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-yMarkLength*i);
             if (self.zeroPoint.y != p1.y) {
                 CreateLineWithLengthFromPoint(ctx, YES, p1, self.xAxisLength, YES, self.sublineColor);
@@ -130,8 +130,8 @@
         }
     }
     // draw y axis subline
-    if (self.showYAxisSubline) {
-        for (int i=0; i<[self.xMarkTitles count]; i++) {
+    if (self.showXAxisSubline) {
+        for (int i=0; i<self.xMarksCount; i++) {
             CGPoint p = CGPointMake(self.xMarkDistance*(i+1)+self.originalPoint.x, self.originalPoint.y);
             CreateLineWithLengthFromPoint(ctx, NO, p, self.yAxisLength, YES, self.sublineColor);
         }

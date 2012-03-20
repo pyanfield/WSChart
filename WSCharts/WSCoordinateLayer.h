@@ -37,6 +37,7 @@ typedef enum{
 @property (nonatomic,strong) NSMutableArray *yMarkTitles;
 @property (nonatomic) CGFloat xMarkDistance;
 @property (nonatomic) int yMarksCount;
+@property (nonatomic) int xMarksCount;
 // if we should display the subline in coordinate
 @property (nonatomic) BOOL show3DXAxisSubline;
 @property (nonatomic, strong) UIColor *sublineColor;
