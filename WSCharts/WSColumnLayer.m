@@ -74,34 +74,35 @@
     CGContextDrawPath(ctx, kCGPathFill);
     CGPathRelease(path);
     
-    
-    // top side
-    CGMutablePathRef topPath = CGPathCreateMutable();
-    CGPathMoveToPoint(topPath, NULL, topLeftFront.x,topLeftFront.y);
-    CGPathAddLineToPoint(topPath, NULL, topLeftBack.x,topLeftBack.y);
-    CGPathAddLineToPoint(topPath, NULL, topRightBack.x, topRightBack.y);
-    CGPathAddLineToPoint(topPath, NULL,topRightFront.x,topRightFront.y);
-    CGPathCloseSubpath(topPath);
-    UIColor *brightColor = [colors objectForKey:@"brightColor"];
-    CGContextSetFillColorWithColor(ctx, brightColor.CGColor);
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextAddPath(ctx, topPath);
-    CGContextDrawPath(ctx, kCGPathFill);
-    CGPathRelease(topPath);
-    
-    // right side
-    CGMutablePathRef rightPath = CGPathCreateMutable();
-    CGPathMoveToPoint(rightPath, NULL, topRightBack.x,topRightBack.y);
-    CGPathAddLineToPoint(rightPath, NULL, bottomRightBack.x, bottomRightBack.y);
-    CGPathAddLineToPoint(rightPath, NULL, bottomRightFront.x, bottomRightFront.y);
-    CGPathAddLineToPoint(rightPath, NULL, topRightFront.x, topRightFront.y);
-    CGPathCloseSubpath(rightPath);
-    UIColor *darkColor = [colors objectForKey:@"darkColor"];
-    CGContextSetFillColorWithColor(ctx, darkColor.CGColor);
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextAddPath(ctx, rightPath);
-    CGContextDrawPath(ctx, kCGPathFill);
-    CGPathRelease(rightPath);
+    if (self.visualDepth > 0.0) {
+        // top side
+        CGMutablePathRef topPath = CGPathCreateMutable();
+        CGPathMoveToPoint(topPath, NULL, topLeftFront.x,topLeftFront.y);
+        CGPathAddLineToPoint(topPath, NULL, topLeftBack.x,topLeftBack.y);
+        CGPathAddLineToPoint(topPath, NULL, topRightBack.x, topRightBack.y);
+        CGPathAddLineToPoint(topPath, NULL,topRightFront.x,topRightFront.y);
+        CGPathCloseSubpath(topPath);
+        UIColor *brightColor = [colors objectForKey:@"brightColor"];
+        CGContextSetFillColorWithColor(ctx, brightColor.CGColor);
+        CGContextSetLineWidth(ctx, 1.0);
+        CGContextAddPath(ctx, topPath);
+        CGContextDrawPath(ctx, kCGPathFill);
+        CGPathRelease(topPath);
+        
+        // right side
+        CGMutablePathRef rightPath = CGPathCreateMutable();
+        CGPathMoveToPoint(rightPath, NULL, topRightBack.x,topRightBack.y);
+        CGPathAddLineToPoint(rightPath, NULL, bottomRightBack.x, bottomRightBack.y);
+        CGPathAddLineToPoint(rightPath, NULL, bottomRightFront.x, bottomRightFront.y);
+        CGPathAddLineToPoint(rightPath, NULL, topRightFront.x, topRightFront.y);
+        CGPathCloseSubpath(rightPath);
+        UIColor *darkColor = [colors objectForKey:@"darkColor"];
+        CGContextSetFillColorWithColor(ctx, darkColor.CGColor);
+        CGContextSetLineWidth(ctx, 1.0);
+        CGContextAddPath(ctx, rightPath);
+        CGContextDrawPath(ctx, kCGPathFill);
+        CGPathRelease(rightPath);
+    }
 }
 
 @end
