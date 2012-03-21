@@ -284,8 +284,10 @@
                                [UIColor orangeColor],@"ManCity",
                                [UIColor blueColor],@"Average", nil];
     comboChart.rowWidth = 20.0;
+    comboChart.rowDistance = 6.0;
     comboChart.title = @"Pyanfield's Combo Chart";
     comboChart.showZeroValueOnYAxis = YES;
+    comboChart.lineKeyName = @"Average";
     [comboChart drawChart:arr withColor:colorDict];
     comboChart.backgroundColor = [UIColor blackColor];
     [self.view addSubview:comboChart];

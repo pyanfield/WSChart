@@ -121,7 +121,7 @@
     
     // draw x axis subline
     if (self.showYAxisSubline) {
-        for (int i=0; i<self.yMarksCount; i++) {
+        for (int i=0; i<=self.yMarksCount; i++) {
             CGPoint p1 = CGPointMake(self.originalPoint.x, self.originalPoint.y-yMarkLength*i);
             if (self.zeroPoint.y != p1.y) {
                 CreateLineWithLengthFromPoint(ctx, YES, p1, self.xAxisLength, YES, self.sublineColor);
