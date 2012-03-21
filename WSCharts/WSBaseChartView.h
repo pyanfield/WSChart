@@ -88,6 +88,7 @@
  In scatter chart view, please don't set rowWidth.
  */
 @property (nonatomic) CGFloat rowWidth;
+@property (nonatomic) CGFloat rowDistance;
 //show zero value on y axis
 @property (nonatomic) BOOL showZeroValueOnYAxis;
 //show zero value on x axis. it is available when you don't set rowWidth.

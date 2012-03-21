@@ -63,6 +63,7 @@
 @synthesize yAxisName = _yAxisName;
 @synthesize title = _title;
 @synthesize rowWidth = _rowWidth;
+@synthesize rowDistance = _rowDistance;
 @synthesize showZeroValueOnYAxis = _showZeroValueOnYAxis;
 @synthesize showZeroValueOnXAxis = _showZeroValueOnXAxis;
 
@@ -80,6 +81,7 @@
         self.coordinateOriginalPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
         zeroPoint = CGPointMake(frame.origin.x + COORDINATE_LEFT_GAP, frame.size.height - COORDINATE_BOTTOM_GAP);
         self.rowWidth = 0.0;
+        self.rowDistance = 0.0;
         chartLayer = [CALayer layer];
         xyAxesLayer = [[WSCoordinateLayer alloc] init];
         titleLayer = [CATextLayer layer];
