@@ -208,8 +208,8 @@
         NSDictionary *data = [datas objectAtIndex:i];
         [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
             WSChartObject *chartObj = (WSChartObject*)obj;
-            self.maxYValue = self.maxYValue > chartObj.yValue ? self.maxYValue : chartObj.yValue;
-            self.minYValue = self.minYValue < chartObj.yValue ? self.minYValue : chartObj.yValue;
+            self.maxYValue = self.maxYValue > [chartObj.yValue floatValue] ? self.maxYValue : [chartObj.yValue floatValue];
+            self.minYValue = self.minYValue < [chartObj.yValue floatValue] ? self.minYValue : [chartObj.yValue floatValue];
         }];
     }
     //store the marks' value that displayed on y axis

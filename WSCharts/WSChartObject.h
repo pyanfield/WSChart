@@ -27,6 +27,6 @@
 @property (nonatomic, strong) NSString *name;
 //@property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) id xValue;
-@property (nonatomic) CGFloat yValue;
+@property (nonatomic, strong) id yValue;
 
 @end

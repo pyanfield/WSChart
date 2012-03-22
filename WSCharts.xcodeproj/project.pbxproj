@@ -10,6 +10,9 @@
 		90055310150495BA00BC7CD4 /* WSLineChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9005530F150495BA00BC7CD4 /* WSLineChartView.m */; };
 		9005531815049FDF00BC7CD4 /* WSCoordinateLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */; };
 		900553221504ADD800BC7CD4 /* WSGlobalCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 900553211504ADD800BC7CD4 /* WSGlobalCore.m */; };
+		9017173F1519BA8C00EEF1FC /* WSBarChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9017173E1519BA8C00EEF1FC /* WSBarChartView.m */; };
+		901717421519BB7B00EEF1FC /* WSBarLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 901717411519BB7B00EEF1FC /* WSBarLayer.m */; };
+		90199477151B0B7900B3B838 /* WSTopLeftCoordinateLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 90199476151B0B7900B3B838 /* WSTopLeftCoordinateLayer.m */; };
 		901EAE6614DA1EE7001BD2D0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE6514DA1EE7001BD2D0 /* UIKit.framework */; };
 		901EAE6814DA1EE7001BD2D0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE6714DA1EE7001BD2D0 /* Foundation.framework */; };
 		901EAE6A14DA1EE7001BD2D0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE6914DA1EE7001BD2D0 /* CoreGraphics.framework */; };
@@ -44,6 +47,12 @@
 		9005531715049FDF00BC7CD4 /* WSCoordinateLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSCoordinateLayer.m; sourceTree = "<group>"; };
 		900553201504ADD800BC7CD4 /* WSGlobalCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSGlobalCore.h; sourceTree = "<group>"; };
 		900553211504ADD800BC7CD4 /* WSGlobalCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSGlobalCore.m; sourceTree = "<group>"; };
+		9017173D1519BA8C00EEF1FC /* WSBarChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSBarChartView.h; sourceTree = "<group>"; };
+		9017173E1519BA8C00EEF1FC /* WSBarChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSBarChartView.m; sourceTree = "<group>"; };
+		901717401519BB7B00EEF1FC /* WSBarLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSBarLayer.h; sourceTree = "<group>"; };
+		901717411519BB7B00EEF1FC /* WSBarLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSBarLayer.m; sourceTree = "<group>"; };
+		90199475151B0B7900B3B838 /* WSTopLeftCoordinateLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSTopLeftCoordinateLayer.h; sourceTree = "<group>"; };
+		90199476151B0B7900B3B838 /* WSTopLeftCoordinateLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSTopLeftCoordinateLayer.m; sourceTree = "<group>"; };
 		901EAE6114DA1EE7001BD2D0 /* WSCharts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WSCharts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		901EAE6514DA1EE7001BD2D0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		901EAE6714DA1EE7001BD2D0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -111,6 +120,15 @@
 				9005530F150495BA00BC7CD4 /* WSLineChartView.m */,
 			);
 			name = LineChart;
+			sourceTree = "<group>";
+		};
+		9017173B1519B9EF00EEF1FC /* Bar Chart */ = {
+			isa = PBXGroup;
+			children = (
+				9017173D1519BA8C00EEF1FC /* WSBarChartView.h */,
+				9017173E1519BA8C00EEF1FC /* WSBarChartView.m */,
+			);
+			name = "Bar Chart";
 			sourceTree = "<group>";
 		};
 		901EAE5614DA1EE7001BD2D0 = {
@@ -211,6 +229,10 @@
 				9034049B151881520080CD54 /* WSScatterLayer.m */,
 				9034049D151882B20080CD54 /* WSColumnLayer.h */,
 				9034049E151882B20080CD54 /* WSColumnLayer.m */,
+				901717401519BB7B00EEF1FC /* WSBarLayer.h */,
+				901717411519BB7B00EEF1FC /* WSBarLayer.m */,
+				90199475151B0B7900B3B838 /* WSTopLeftCoordinateLayer.h */,
+				90199476151B0B7900B3B838 /* WSTopLeftCoordinateLayer.m */,
 			);
 			name = "Chart Layers";
 			sourceTree = "<group>";
@@ -259,6 +281,7 @@
 		90CAF43A14DA7B6C00928735 /* charts */ = {
 			isa = PBXGroup;
 			children = (
+				9017173B1519B9EF00EEF1FC /* Bar Chart */,
 				9034049215187F4B0080CD54 /* Chart Layers */,
 				9044C9FD1517619E005E2547 /* Combo Chart */,
 				90936B621509E3AC0021AF14 /* Scatter Chart */,
@@ -356,6 +379,9 @@
 				90340499151880880080CD54 /* WSAreaLayer.m in Sources */,
 				9034049C151881520080CD54 /* WSScatterLayer.m in Sources */,
 				9034049F151882B20080CD54 /* WSColumnLayer.m in Sources */,
+				9017173F1519BA8C00EEF1FC /* WSBarChartView.m in Sources */,
+				901717421519BB7B00EEF1FC /* WSBarLayer.m in Sources */,
+				90199477151B0B7900B3B838 /* WSTopLeftCoordinateLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

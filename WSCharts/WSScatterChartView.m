@@ -50,7 +50,7 @@
         for (int i=0; i<[datas count]; i++) {
             NSDictionary *data = [datas objectAtIndex:i];
             WSChartObject *chartObj = [data valueForKey:legendName];
-            CGFloat yValue = zeroPoint.y - (chartObj.yValue - correctionY) * propotionY;
+            CGFloat yValue = zeroPoint.y - ([chartObj.yValue floatValue] - correctionY) * propotionY;
             CGFloat xValue = zeroPoint.x + ([chartObj.xValue floatValue] - correctionX) * propotionX;
             CGPoint point = CGPointMake(xValue, yValue);
             [points addObject:[NSValue valueWithCGPoint:point]];

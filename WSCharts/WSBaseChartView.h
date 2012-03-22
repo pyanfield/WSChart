@@ -60,7 +60,11 @@
     WSCoordinateLayer *xyAxesLayer;
     CATextLayer *titleLayer;
     CALayer *legendLayer;
-    // mark's count that are on y axis
+    /*
+     TODO:yMarksCount and xMarksCount are equal to yMarkTitles' count.
+     It should be sections number on x and y axes.
+     yMarksCount = [yMarkTitles count];
+     */
     int yMarksCount;
     int xMarksCount;
     // the length of x and y axis

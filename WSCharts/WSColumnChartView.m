@@ -65,7 +65,7 @@
             WSColumnLayer *layer = [[WSColumnLayer alloc] init];
             WSChartObject *chartObj = obj;
             layer.color = [colorDict valueForKey:key];
-            layer.yValue = (chartObj.yValue-correctionY)*propotionY;
+            layer.yValue = ([chartObj.yValue floatValue]-correctionY)*propotionY;
             layer.columnWidth = self.rowWidth;
             layer.xStartPoint = CGPointMake(self.rowWidth*(flag+i*(length+1)+1)+zeroPoint.x, 
                                             zeroPoint.y);

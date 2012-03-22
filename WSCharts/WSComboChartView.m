@@ -71,13 +71,13 @@
         [data enumerateKeysAndObjectsUsingBlock:^(id key,id obj,BOOL *stop){
             WSChartObject *chartObj = obj;
             if ([chartObj.name isEqualToString:self.lineKeyName]) {
-                CGFloat yValue = zeroPoint.y - (chartObj.yValue-correctionY)*propotionY;
+                CGFloat yValue = zeroPoint.y - ([chartObj.yValue floatValue]-correctionY)*propotionY;
                 CGPoint point = CGPointMake(self.xMarksDistance*i+self.xMarksDistance*0.5+zeroPoint.x, yValue);
                 [points addObject:[NSValue valueWithCGPoint:point]];
             }else {
                 WSColumnLayer *layer = [[WSColumnLayer alloc] init];
                 layer.color = [colorDict valueForKey:key];
-                layer.yValue = (chartObj.yValue-correctionY)*propotionY;
+                layer.yValue = ([chartObj.yValue floatValue]-correctionY)*propotionY;
                 layer.columnWidth = self.rowWidth;
                 layer.visualDepth = 0.0;
                 layer.xStartPoint = CGPointMake(zeroPoint.x+self.xMarksDistance*i+flag*self.rowWidth+(flag+1)*self.rowDistance, 
