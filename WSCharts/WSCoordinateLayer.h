@@ -25,7 +25,19 @@
 typedef enum{
     WSAtPoint,
     WSAtSection,
-} WSXMarkTitlePosition;
+} WSMarkTitlePosition;
+
+/*
+ The original point is at Bottom Left of the coordinator. like below.
+    A
+    |
+    |
+    |
+    |
+    o -------->
+(0,0) 
+ 
+ */
 
 @interface WSCoordinateLayer : CAShapeLayer
 
@@ -46,7 +58,8 @@ typedef enum{
 @property (nonatomic) CGFloat sublineDistance;
 @property (nonatomic) BOOL showXAxisSubline;
 @property (nonatomic) BOOL showYAxisSubline;
-@property (nonatomic) WSXMarkTitlePosition xMarkTitlePosition;
+@property (nonatomic) WSMarkTitlePosition xMarkTitlePosition;
+@property (nonatomic) WSMarkTitlePosition yMarkTitlePosition;
 @property (nonatomic) BOOL showBottomLeftBorder;
 @property (nonatomic) BOOL showTopRightBorder;
 @property (nonatomic) BOOL showBorder;

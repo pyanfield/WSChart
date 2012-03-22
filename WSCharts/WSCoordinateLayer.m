@@ -42,6 +42,7 @@
 @synthesize showXAxisSubline = _showXAxisSubline;
 @synthesize showYAxisSubline = _showYAxisSubline;
 @synthesize xMarkTitlePosition = _xMarkTitlePosition;
+@synthesize yMarkTitlePosition = _yMarkTitlePosition;
 @synthesize showBorder = _showBorder;
 @synthesize showTopRightBorder = _showTopRightBorder;
 @synthesize showBottomLeftBorder = _showBottomLeftBorder;
@@ -64,6 +65,7 @@
         self.showBottomLeftBorder = NO;
         self.showTopRightBorder = NO;
         self.xMarkTitlePosition = WSAtSection;
+        self.yMarkTitlePosition = WSAtPoint;
     }
     return self;
 }
@@ -107,8 +109,12 @@
             }else {
                 mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
             }
+            if (self.yMarkTitlePosition == WSAtPoint) {
+                CreateTextAtPoint(ctx, mark, p1, self.axisColor, WSLeft);
+            }else {
+                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x, p1.y-yMarkLength/2), self.axisColor, WSLeft);
+            }
             
-            CreateTextAtPoint(ctx, mark, p1, self.axisColor, WSLeft);
             CreateLineWithLengthFromPoint(ctx, YES, p1, 6.0, NO, self.axisColor);
         }
         //draw x axis mark and title
