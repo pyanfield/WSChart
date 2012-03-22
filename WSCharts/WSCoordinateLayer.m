@@ -99,9 +99,15 @@
         CGPoint xStattPoint = CGPointMake(self.originalPoint.x, self.zeroPoint.y);
         CreateLineWithLengthFromPoint(ctx, YES, xStattPoint, self.xAxisLength, NO, self.axisColor);
         //draw y axis mark's title
-        for (int i=0; i<=self.yMarksCount; i++) {
+        for (int i=0; i<[self.yMarkTitles count]; i++) {
             CGPoint p1 = CGPointMake(self.originalPoint.x-6.0, self.originalPoint.y-yMarkLength*i);
-            NSString *mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
+            NSString *mark;
+            if ([[self.yMarkTitles objectAtIndex:i] isKindOfClass:[NSString class]]) {
+                mark = [NSString stringWithFormat:@"%@",[self.yMarkTitles objectAtIndex:i]];
+            }else {
+                mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
+            }
+            
             CreateTextAtPoint(ctx, mark, p1, self.axisColor, WSLeft);
             CreateLineWithLengthFromPoint(ctx, YES, p1, 6.0, NO, self.axisColor);
         }
@@ -110,7 +116,13 @@
             CGPoint p1 = CGPointMake(self.xMarkDistance*i+self.originalPoint.x, self.originalPoint.y);
             CGPoint p2 = CGPointMake(p1.x, p1.y+4.0);
             CreateLinePointToPoint(ctx, p1, p2, NO, self.axisColor);
-            NSString *mark = [NSString stringWithFormat:@"%@",[self.xMarkTitles objectAtIndex:i]];
+            NSString *mark;
+            if ([[self.xMarkTitles objectAtIndex:i] isKindOfClass:[NSString class]]) {
+                mark = [NSString stringWithFormat:@"%@",[self.xMarkTitles objectAtIndex:i]];
+            }else {
+                mark = [NSString stringWithFormat:@"%.1f",[[self.xMarkTitles objectAtIndex:i] floatValue]];
+            }
+            
             if (self.xMarkTitlePosition == WSAtSection) {
                 CreateTextAtPoint(ctx, mark, CGPointMake(p1.x+self.xMarkDistance/2, p1.y), self.axisColor, WSTop);
             }else{

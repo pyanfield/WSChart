@@ -27,14 +27,14 @@
 @interface WSColumnChartView()
 
 @property (nonatomic, strong) WSCoordinateLayer *sublineLayer;
-@property (nonatomic) int columnNum;
+@property (nonatomic) int columnCount;
 
 @end
 
 @implementation WSColumnChartView
 
 @synthesize sublineLayer = _sublineLayer;
-@synthesize columnNum = _columnNum;
+@synthesize columnCount = _columnCount;
 
 
 - (id)initWithFrame:(CGRect)frame
@@ -51,7 +51,7 @@
 
 - (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict
 {
-    self.columnNum = [[arr objectAtIndex:0] count];
+    self.columnCount = [[arr objectAtIndex:0] count];
     [super drawChart:arr withColor:dict];
 }
 
@@ -80,7 +80,7 @@
 - (void)createCoordinateLayer
 {
     xyAxesLayer.yMarkTitles = yMarkTitles;
-    xyAxesLayer.xMarkDistance = self.rowWidth*(self.columnNum+2);
+    xyAxesLayer.xMarkDistance = self.rowWidth*(self.columnCount+2);
     xyAxesLayer.xMarkTitles = xMarkTitles;
     xyAxesLayer.zeroPoint = zeroPoint;
     xyAxesLayer.yMarksCount = yMarksCount;

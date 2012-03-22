@@ -47,26 +47,24 @@
     NSDictionary *colors = ConstructBrightAndDarkColors(self.color);
     CGPoint topLeftFront ,topLeftBack,topRightFront,topRightBack , bottomRightBack ,bottomRightFront;
     if (self.yValue>=0.0) {
-        topLeftFront = CGPointMake(self.xStartPoint.x, self.xStartPoint.y-self.yValue);
+        topLeftFront = CGPointMake(self.xStartPoint.x+(self.columnWidth >= 0.0 ? 0.0 : self.columnWidth), self.xStartPoint.y-self.yValue);
+        topRightFront = CGPointMake(self.xStartPoint.x+(self.columnWidth >= 0.0 ? self.columnWidth : 0.0), self.xStartPoint.y-self.yValue);
         topLeftBack = CreateEndPoint(topLeftFront, self.visualAngle,self.visualDepth);
-        topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y-self.yValue);
         topRightBack = CreateEndPoint(topRightFront, self.visualAngle, self.visualDepth);
         bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y+self.yValue);
         bottomRightFront = CGPointMake(topRightFront.x, self.xStartPoint.y);
-    }else
-    {
-        topLeftFront = self.xStartPoint;
+    }else{
+        topLeftFront = CGPointMake(self.xStartPoint.x+(self.columnWidth >= 0.0 ? 0.0 : self.columnWidth), self.xStartPoint.y);
+        topRightFront = CGPointMake(self.xStartPoint.x+(self.columnWidth >= 0.0 ? self.columnWidth : 0.0), self.xStartPoint.y);
         topLeftBack = CreateEndPoint(topLeftFront, self.visualAngle, self.visualDepth);
-        topRightFront = CGPointMake(self.xStartPoint.x+self.columnWidth, self.xStartPoint.y);
         topRightBack = CreateEndPoint(topRightFront, self.visualAngle, self.visualDepth);
         bottomRightBack = CGPointMake(topRightBack.x, topRightBack.y-self.yValue);
         bottomRightFront = CGPointMake(topRightFront.x, topLeftFront.y-self.yValue);
     }
     
-    
     // front side
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, CGRectMake(topLeftFront.x,topLeftFront.y, self.columnWidth,fabsf(self.yValue)));
+    CGPathAddRect(path, NULL, CGRectMake(topLeftFront.x,topLeftFront.y, fabsf(self.columnWidth),fabsf(self.yValue)));
     UIColor *normalColor = [colors objectForKey:@"normalColor"];
     CGContextSetFillColorWithColor(ctx, normalColor.CGColor);
     CGContextSetLineWidth(ctx, 1.0);
