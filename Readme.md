@@ -5,7 +5,7 @@ Read Me
 
 Charts' screenshots are under the folder /screenshots.
 
-I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, Line Chart, Comno Chart, Column Chart, Area Chart and Treemap.
+I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, Line Chart, Comno Chart, Column Chart, Area Chart.
 
 Usage
 ------------------
@@ -37,10 +37,11 @@ History
 * Line Chart : done
 * Area Chart : done
 * Scatter Chart : done
+* Combo Chart : done
 
 TODO List
 ----------------------- 
-* Combo Chart : waiting.
+* Bar Chart : waiting.
 
 License
 ------------------------
