@@ -67,7 +67,7 @@
             layer.color = [colorDict valueForKey:key];
             layer.yValue = ([chartObj.yValue floatValue]-correctionY)*propotionY;
             layer.columnWidth = self.rowWidth;
-            layer.xStartPoint = CGPointMake(self.rowWidth*(flag+i*(length+1)+1)+zeroPoint.x, 
+            layer.xStartPoint = CGPointMake(self.rowWidth*(self.columnCount+2)*i+self.rowWidth*(flag+1)+zeroPoint.x, 
                                             zeroPoint.y);
             layer.frame = self.bounds;
             [layer setNeedsDisplay];
