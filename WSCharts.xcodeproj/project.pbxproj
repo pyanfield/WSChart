@@ -20,7 +20,6 @@
 		901EAE7214DA1EE7001BD2D0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE7114DA1EE7001BD2D0 /* main.m */; };
 		901EAE7614DA1EE7001BD2D0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */; };
 		901EAE7914DA1EE7001BD2D0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE7814DA1EE7001BD2D0 /* ViewController.m */; };
-		901EAE7C14DA1EE7001BD2D0 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */; };
 		901EAE8314DA1F0A001BD2D0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */; };
 		901EAE8614DA2043001BD2D0 /* WSPieChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 901EAE8514DA2043001BD2D0 /* WSPieChartView.m */; };
 		9026093514E29B13007779D9 /* WSPieChartWithMotionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9026093414E29B13007779D9 /* WSPieChartWithMotionView.m */; };
@@ -30,6 +29,7 @@
 		90340499151880880080CD54 /* WSAreaLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 90340498151880880080CD54 /* WSAreaLayer.m */; };
 		9034049C151881520080CD54 /* WSScatterLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9034049B151881520080CD54 /* WSScatterLayer.m */; };
 		9034049F151882B20080CD54 /* WSColumnLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9034049E151882B20080CD54 /* WSColumnLayer.m */; };
+		903CCC71151C539D00588245 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 903CCC70151C539D00588245 /* ViewController.xib */; };
 		9044CA01151761C4005E2547 /* WSComboChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9044CA00151761C4005E2547 /* WSComboChartView.m */; };
 		90653E2D15089E2C00ECE29D /* WSBaseChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90653E2C15089E2C00ECE29D /* WSBaseChartView.m */; };
 		906F683E14E0157E00E0D9CF /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 906F683C14E0157E00E0D9CF /* LICENSE */; };
@@ -65,7 +65,6 @@
 		901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		901EAE7714DA1EE7001BD2D0 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		901EAE7814DA1EE7001BD2D0 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		901EAE7B14DA1EE7001BD2D0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		901EAE8214DA1F0A001BD2D0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		901EAE8414DA2043001BD2D0 /* WSPieChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSPieChartView.h; sourceTree = "<group>"; };
 		901EAE8514DA2043001BD2D0 /* WSPieChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSPieChartView.m; sourceTree = "<group>"; };
@@ -83,6 +82,7 @@
 		9034049B151881520080CD54 /* WSScatterLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSScatterLayer.m; sourceTree = "<group>"; };
 		9034049D151882B20080CD54 /* WSColumnLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSColumnLayer.h; sourceTree = "<group>"; };
 		9034049E151882B20080CD54 /* WSColumnLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSColumnLayer.m; sourceTree = "<group>"; };
+		903CCC70151C539D00588245 /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 		9044C9FF151761C4005E2547 /* WSComboChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSComboChartView.h; sourceTree = "<group>"; };
 		9044CA00151761C4005E2547 /* WSComboChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSComboChartView.m; sourceTree = "<group>"; };
 		90653E2B15089E2C00ECE29D /* WSBaseChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSBaseChartView.h; sourceTree = "<group>"; };
@@ -176,11 +176,11 @@
 			children = (
 				901EAE7414DA1EE7001BD2D0 /* AppDelegate.h */,
 				901EAE7514DA1EE7001BD2D0 /* AppDelegate.m */,
-				901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */,
 				901EAE6D14DA1EE7001BD2D0 /* WSCharts-Info.plist */,
 				901EAE6E14DA1EE7001BD2D0 /* InfoPlist.strings */,
 				901EAE7114DA1EE7001BD2D0 /* main.m */,
 				901EAE7314DA1EE7001BD2D0 /* WSCharts-Prefix.pch */,
+				903CCC70151C539D00588245 /* ViewController.xib */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -346,10 +346,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				901EAE7014DA1EE7001BD2D0 /* InfoPlist.strings in Resources */,
-				901EAE7C14DA1EE7001BD2D0 /* ViewController.xib in Resources */,
 				906F683E14E0157E00E0D9CF /* LICENSE in Resources */,
 				906F683F14E0157E00E0D9CF /* Readme.md in Resources */,
 				906F684114E0158A00E0D9CF /* TODO.mdown in Resources */,
+				903CCC71151C539D00588245 /* ViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,14 +394,6 @@
 				901EAE6F14DA1EE7001BD2D0 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		901EAE7A14DA1EE7001BD2D0 /* ViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				901EAE7B14DA1EE7001BD2D0 /* en */,
-			);
-			name = ViewController.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
