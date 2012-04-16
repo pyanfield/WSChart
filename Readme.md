@@ -4,7 +4,23 @@ Read Me
 **WSChart's target is using simple code to create charts.**
 
 Charts' screenshots are under the folder /screenshots.
+###Pie Chart
+![Pie Chart](http://i.minus.com/iblE84WEImIcUS.png)
+![Pie Chart](http://i.minus.com/iLvnInh4r7q1O.png)
+###Column Chart
 ![Column Chart](http://i.minus.com/ipVjBxeR2dJDd.png)
+![Column Chart](http://i.minus.com/ibgZJVlr64qc9s.png)
+![Column Chart](http://i.minus.com/izlQrLobMPr7v.png)
+###Line Chart
+![Line Chart](http://i.minus.com/iEEX70v8MCOBv.png)
+###Combo Chart
+![Combo Chart](http://i.minus.com/ibqTtx16VVzGxC.png)
+###Area Chart
+![Area Chart](http://i.minus.com/ibyiiZCMhgy187.png)
+###Scatter Chart
+![Scatter Chart](http://i.minus.com/in0540W63Bcf2.png)
+###Bar Chart
+![Bar Chart](http://i.minus.com/iwBNd7ttFdEQ6.png)
 
 I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, Line Chart, Comno Chart, Column Chart, Area Chart.
 
