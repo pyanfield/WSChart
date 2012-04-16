@@ -4,6 +4,7 @@ Read Me
 **WSChart's target is using simple code to create charts.**
 
 Charts' screenshots are under the folder /screenshots.
+![Column Chart](http://i.minus.com/ipVjBxeR2dJDd.png)
 
 I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, Line Chart, Comno Chart, Column Chart, Area Chart.
 
@@ -38,10 +39,11 @@ History
 * Area Chart : done
 * Scatter Chart : done
 * Combo Chart : done
+* Bar Chart : done
 
 TODO List
 ----------------------- 
-* Bar Chart : waiting.
+
 
 License
 ------------------------

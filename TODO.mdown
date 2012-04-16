@@ -5,6 +5,6 @@ TODO
 * Column Chart : ok - 2012.3.5
 * Line Chart : 2012.3.7
 * Area Chart : 2012.3.8
-* Bar Chart : ongoing
+* Bar Chart : 2012.3.23
 * Scatter Chart : 2012.3.15
 * Combo Chart : 2012.3.21 
