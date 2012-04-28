@@ -75,31 +75,31 @@ void CreateTextAtPoint(CGContextRef ctx,NSString *text,CGPoint p1,UIColor *color
     UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0];
     CGSize size = [text sizeWithFont:helveticated];
     switch (alignment) {
-        case WSTop:
+        case kWSTop:
             p1 = CGPointMake(p1.x-size.width/2, p1.y);
             break;
-        case WSLeft:
+        case kWSLeft:
             p1 = CGPointMake(p1.x-size.width, p1.y-size.height/2);
             break;
-        case WSRight:
+        case kWSRight:
             p1 = CGPointMake(p1.x, p1.y-size.height/2);
             break;
-        case WSBottom:
+        case kWSBottom:
             p1 = CGPointMake(p1.x-size.width/2, p1.y-size.height);
             break;
-        case WSTopRight:
+        case kWSTopRight:
             p1 = CGPointMake(p1.x-size.width, p1.y);
             break;
-        case WSBottomLeft:
+        case kWSBottomLeft:
             p1 = CGPointMake(p1.x, p1.y-size.height);
             break;
-        case WSBottomRight:
+        case kWSBottomRight:
             p1 = CGPointMake(p1.x-size.width, p1.y-size.height);
             break;
-        case WSCenter:
+        case kWSCenter:
             p1 = CGPointMake(p1.x-size.width/2, p1.y-size.height/2);
             break;
-        case WSTopLeft:
+        case kWSTopLeft:
             break;
         default:
             break;

@@ -64,8 +64,8 @@
         self.showBorder = NO;
         self.showBottomLeftBorder = NO;
         self.showTopRightBorder = NO;
-        self.xMarkTitlePosition = WSAtSection;
-        self.yMarkTitlePosition = WSAtPoint;
+        self.xMarkTitlePosition = kWSAtSection;
+        self.yMarkTitlePosition = kWSAtPoint;
     }
     return self;
 }
@@ -109,10 +109,10 @@
             }else {
                 mark = [NSString stringWithFormat:@"%.1f ",[[self.yMarkTitles objectAtIndex:i] floatValue]];
             }
-            if (self.yMarkTitlePosition == WSAtPoint) {
-                CreateTextAtPoint(ctx, mark, p1, self.axisColor, WSLeft);
+            if (self.yMarkTitlePosition == kWSAtPoint) {
+                CreateTextAtPoint(ctx, mark, p1, self.axisColor, kWSLeft);
             }else {
-                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x, p1.y-yMarkLength/2), self.axisColor, WSLeft);
+                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x, p1.y-yMarkLength/2), self.axisColor, kWSLeft);
             }
             
             CreateLineWithLengthFromPoint(ctx, YES, p1, 6.0, NO, self.axisColor);
@@ -129,10 +129,10 @@
                 mark = [NSString stringWithFormat:@"%.1f",[[self.xMarkTitles objectAtIndex:i] floatValue]];
             }
             
-            if (self.xMarkTitlePosition == WSAtSection) {
-                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x+self.xMarkDistance/2, p1.y), self.axisColor, WSTop);
+            if (self.xMarkTitlePosition == kWSAtSection) {
+                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x+self.xMarkDistance/2, p1.y), self.axisColor, kWSTop);
             }else{
-                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x, p1.y+2), self.axisColor, WSTop);
+                CreateTextAtPoint(ctx, mark, CGPointMake(p1.x, p1.y+2), self.axisColor, kWSTop);
             }
         }
     }
@@ -168,10 +168,10 @@
     
     // draw xy axes's name
     if (self.xAxisName != nil || ![self.xAxisName isEqualToString:@""]) {
-        CreateTextAtPoint(ctx, self.xAxisName, CGPointMake(self.originalPoint.x+self.xAxisLength, self.zeroPoint.y), self.axisColor, WSRight);
+        CreateTextAtPoint(ctx, self.xAxisName, CGPointMake(self.originalPoint.x+self.xAxisLength, self.zeroPoint.y), self.axisColor, kWSRight);
     }
     if (self.yAxisName != nil || ![self.yAxisName isEqualToString:@""]) {
-        CreateTextAtPoint(ctx, self.yAxisName, CGPointMake(self.zeroPoint.x, self.originalPoint.y-self.yAxisLength), self.axisColor, WSBottom);
+        CreateTextAtPoint(ctx, self.yAxisName, CGPointMake(self.zeroPoint.x, self.originalPoint.y-self.yAxisLength), self.axisColor, kWSBottom);
     }
     
 }

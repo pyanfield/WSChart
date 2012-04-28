@@ -71,7 +71,7 @@
     xyAxesLayer.yAxisLength = yAxisLength;
     xyAxesLayer.xAxisLength = self.rowWidth*xMarksCount;
     xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
-    xyAxesLayer.xMarkTitlePosition = WSAtPoint;
+    xyAxesLayer.xMarkTitlePosition = kWSAtPoint;
     [xyAxesLayer setNeedsDisplay];
 }
 

@@ -23,8 +23,8 @@
 #import <QuartzCore/QuartzCore.h>
 
 typedef enum{
-    WSAtPoint,
-    WSAtSection,
+    kWSAtPoint,
+    kWSAtSection,
 } WSMarkTitlePosition;
 
 /*

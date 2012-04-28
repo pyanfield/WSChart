@@ -29,23 +29,7 @@ Usage
 Adding WSChart to your project by:
 #### First : Add "charts" folder to your project.
 #### Second : Add QuartzCore framework to your project.
-
-#### Third: Add usage in your code as following sample:
-    
-    //demo code of pie chart as below
-    //other charts' demo code you can find in the ViewController.m file
-	NSMutableDictionary *pieData = [[NSMutableDictionary alloc] init];
-    NSMutableArray *colors = [[NSMutableArray alloc] init];
-    pieData = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:20],@"test1",[[NSNumber alloc] initWithFloat:34],@"test2",[[NSNumber alloc] initWithFloat:55],@"test3",[[NSNumber alloc] initWithFloat:12],@"test4",[[NSNumber alloc] initWithFloat:78],@"test5",[[NSNumber alloc] initWithFloat:110],@"test6",nil];
-    colors = [[NSMutableArray alloc] initWithObjects:[UIColor purpleColor],[UIColor blueColor],[UIColor greenColor],[UIColor redColor],[UIColor yellowColor],[UIColor brownColor], nil]; 
-    
-    WSPieChartView *pieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 10.0, 500.0, 500.0)];
-    pieChart.data = pieData;
-    pieChart.colors = colors;
-    pieChart.touchEnabled = YES;
-    pieChart.showIndicator = YES;            //pieChart.openEnabled = YES;
-    [self.view addSubview:pieChart];
-
+#### Third: Check the demo code in the "ViewController" file to learn how to use it.
 
 History
 ----------------------- 
@@ -58,7 +42,8 @@ History
 * Bar Chart : done
 
 TODO List
------------------------ 
+-----------------------
+* Add "Switch data" function to charts (Only WSPieChartWithMotion supports data updated). 
 
 
 License

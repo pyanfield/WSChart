@@ -72,7 +72,7 @@
     xyAxesLayer.yAxisLength = yAxisLength;
     xyAxesLayer.xAxisLength = xAxisLength;
     xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
-    xyAxesLayer.xMarkTitlePosition = WSAtPoint;
+    xyAxesLayer.xMarkTitlePosition = kWSAtPoint;
     xyAxesLayer.xAxisName = self.xAxisName;
     xyAxesLayer.yAxisName = self.yAxisName;
     xyAxesLayer.showBorder = YES;

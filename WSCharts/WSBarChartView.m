@@ -89,8 +89,8 @@
     xyAxesLayer.yMarksCount = yMarksCount;
     xyAxesLayer.yAxisLength = self.yMarksDistance*yMarksCount;
     xyAxesLayer.xAxisLength = xAxisLength;
-    xyAxesLayer.yMarkTitlePosition = WSAtSection;
-    xyAxesLayer.xMarkTitlePosition = WSAtPoint;
+    xyAxesLayer.yMarkTitlePosition = kWSAtSection;
+    xyAxesLayer.xMarkTitlePosition = kWSAtPoint;
     //xyAxesLayer.showBorder = YES;
     xyAxesLayer.originalPoint = self.coordinateOriginalPoint;
     [xyAxesLayer setNeedsDisplay];

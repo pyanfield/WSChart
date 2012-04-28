@@ -23,15 +23,15 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-    WSTopLeft,
-    WSTopRight,
-    WSBottomLeft,
-    WSBottomRight,
-    WSRight,
-    WSLeft,
-    WSTop,
-    WSBottom,
-    WSCenter,
+    kWSTopLeft,
+    kWSTopRight,
+    kWSBottomLeft,
+    kWSBottomRight,
+    kWSRight,
+    kWSLeft,
+    kWSTop,
+    kWSBottom,
+    kWSCenter,
 } WSAliment;
 
 
