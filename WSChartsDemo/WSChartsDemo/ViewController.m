@@ -1,9 +1,9 @@
 //
 //  ViewController.m
-//  WSCharts
+//  WSChartsDemo
 //
-//  Created by han pyanfield on 12-2-2.
-//  Copyright (c) 2012年 pyanfield. All rights reserved.
+//  Created by Weishuai Han on 2/28/13.
+//  Copyright (c) 2013 pyanfield. All rights reserved.
 //
 
 #import "ViewController.h"
@@ -17,24 +17,13 @@
 #import "WSComboChartView.h"
 #import "WSBarChartView.h"
 
-@interface ViewController()
+@interface ViewController ()
 
 @property (nonatomic, strong) NSMutableDictionary *pieData;
 @property (nonatomic, strong) NSMutableDictionary *pieData2;
 @property (nonatomic, strong) WSPieChartWithMotionView *pieChart;
 @property (nonatomic, strong) UIView *chartView;
 @property (nonatomic) BOOL flag;
-
-- (void)createPieChart;
-- (void)createColumnChart;
-- (void)createLineChart;
-- (void)createAreaChart;
-- (void)createBarChart;
-- (void)createScatterChart;
-- (void)createComboChart;
-
-- (NSMutableArray*)createDemoDatas:(int)count;
-- (NSDictionary*)createColorDict;
 
 @end
 
@@ -43,13 +32,12 @@
 @synthesize tabBar;
 @synthesize pieData,pieData2,pieChart;
 @synthesize chartView;
-
 @synthesize flag;
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
+    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - View lifecycle
@@ -90,7 +78,7 @@
     pieData = [[NSMutableDictionary alloc] init];
     NSMutableArray *colors = [[NSMutableArray alloc] init];
     pieData = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:20],@"test1",[[NSNumber alloc] initWithFloat:34],@"test2",[[NSNumber alloc] initWithFloat:55],@"test3",[[NSNumber alloc] initWithFloat:12],@"test4",[[NSNumber alloc] initWithFloat:78],@"test5",[[NSNumber alloc] initWithFloat:110],@"test6",nil];
-    colors = [[NSMutableArray alloc] initWithObjects:[UIColor purpleColor],[UIColor blueColor],[UIColor greenColor],[UIColor redColor],[UIColor yellowColor],[UIColor brownColor], nil]; 
+    colors = [[NSMutableArray alloc] initWithObjects:[UIColor purpleColor],[UIColor blueColor],[UIColor greenColor],[UIColor redColor],[UIColor yellowColor],[UIColor brownColor], nil];
     
     pieChart = [[WSPieChartWithMotionView alloc] initWithFrame:CGRectMake(10.0, 50.0, 600.0, 600.0)];
     pieChart.data = pieData;
@@ -110,7 +98,7 @@
 {
     WSAreaChartView *areaChart  = [[WSAreaChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 800.0, 400.0)];
     NSMutableArray *arr = [self createDemoDatas:30];
-    NSDictionary *colorDict = [self createColorDict];    
+    NSDictionary *colorDict = [self createColorDict];
     areaChart.rowWidth = 20.0;
     areaChart.title = @"Pyanfield's Area Chart";
     areaChart.showZeroValueOnYAxis = YES;
@@ -178,7 +166,7 @@
     WSLineChartView *lineChart = [[WSLineChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 800.0, 400.0)];
     NSMutableArray *arr = [self createDemoDatas:30];
     NSDictionary *colorDict = [self createColorDict];
-
+    
     lineChart.xAxisName = @"Year";
     lineChart.rowWidth = 20.0;
     lineChart.title = @"Pyanfield's Line Chart";
@@ -283,4 +271,6 @@
     [self setSwitchBtn:nil];
     [super viewDidUnload];
 }
+
+
 @end

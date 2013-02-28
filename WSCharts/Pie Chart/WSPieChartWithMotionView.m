@@ -331,7 +331,6 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
                 usleep(5000);
             }
         });
-        dispatch_release(drawQueue);
     }
 }
 

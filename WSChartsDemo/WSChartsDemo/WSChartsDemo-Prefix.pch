@@ -1,5 +1,5 @@
 //
-// Prefix header for all source files of the 'WSCharts' target in the 'WSCharts' project
+// Prefix header for all source files of the 'WSChartsDemo' target in the 'WSChartsDemo' project
 //
 
 #import <Availability.h>

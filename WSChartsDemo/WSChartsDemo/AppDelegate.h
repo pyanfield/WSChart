@@ -1,9 +1,9 @@
 //
 //  AppDelegate.h
-//  WSCharts
+//  WSChartsDemo
 //
-//  Created by han pyanfield on 12-2-2.
-//  Copyright (c) 2012年 pyanfield. All rights reserved.
+//  Created by Weishuai Han on 2/28/13.
+//  Copyright (c) 2013 pyanfield. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
