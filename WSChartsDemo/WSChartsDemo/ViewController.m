@@ -171,6 +171,8 @@
     lineChart.rowWidth = 20.0;
     lineChart.title = @"Pyanfield's Line Chart";
     lineChart.showZeroValueOnYAxis = YES;
+    //lineChart.titleFrame = CGRectMake(0.0, 0.0, 400, 50);
+    //lineChart.legendFrame = CGRectMake(0.0, 0.0, 400, 400);
     [lineChart drawChart:arr withColor:colorDict];
     lineChart.backgroundColor = [UIColor blackColor];
     [self.chartView addSubview:lineChart];

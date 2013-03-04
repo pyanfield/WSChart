@@ -67,6 +67,8 @@
 @synthesize rowDistance = _rowDistance;
 @synthesize showZeroValueOnYAxis = _showZeroValueOnYAxis;
 @synthesize showZeroValueOnXAxis = _showZeroValueOnXAxis;
+@synthesize titleFrame = _titleFrame;
+@synthesize legendFrame = _legendFrame;
 
 
 - (id)initWithFrame:(CGRect)frame
@@ -98,6 +100,8 @@
         self.showZeroValueOnXAxis = NO;
         self.xAxisName = @"";
         self.yAxisName = @"";
+        _titleFrame = CGRectZero;
+        _legendFrame = CGRectZero;
     }
     return self;
 }
@@ -121,7 +125,11 @@
     titleLayer.fontSize = TITLE_FONT_SIZE;
     UIFont *helveticated = [UIFont fontWithName:@"HelveticaNeue-Bold" size:TITLE_FONT_SIZE];
     CGSize size = [self.title sizeWithFont:helveticated];
-    titleLayer.frame = CGRectMake(COORDINATE_LEFT_GAP/2, COORDINATE_TOP_GAP/2, size.width, size.height);
+    if (CGRectEqualToRect(self.titleFrame, CGRectZero)) {
+        titleLayer.frame = CGRectMake(COORDINATE_LEFT_GAP/2, COORDINATE_TOP_GAP/2, size.width, size.height);
+    }else{
+        titleLayer.frame = self.titleFrame;
+    }
     
     // add the lengedn layer
     __block int flag = 0;
@@ -134,8 +142,12 @@
         flag++;
         legendWidth = legendWidth > layer.frame.size.width ? legendWidth : layer.frame.size.width;
     }];
-    legendLayer.frame = CGRectMake(self.bounds.size.width - legendWidth - COORDINATE_LEFT_GAP, 20.0, legendWidth, self.frame.size.height);
-    
+    if (CGRectEqualToRect(self.legendFrame, CGRectZero)) {
+        legendLayer.frame = CGRectMake(self.bounds.size.width - legendWidth - COORDINATE_LEFT_GAP, 20.0, legendWidth, self.frame.size.height);
+    }else{
+        legendLayer.frame = self.legendFrame;
+    }
+   
     // carefully about the adding order
     [self manageAllLayersOrder];
 }

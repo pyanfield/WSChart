@@ -100,6 +100,10 @@
 @property (nonatomic) BOOL showZeroValueOnXAxis;
 //coordinate view's origianl point , that bottom left of that frame.
 @property (nonatomic) CGPoint coordinateOriginalPoint;
+// the chart's title's position and size
+@property (nonatomic) CGRect titleFrame;
+// the legend's frame
+@property (nonatomic) CGRect legendFrame;
 
 
 - (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
