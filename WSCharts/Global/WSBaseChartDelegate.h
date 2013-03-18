@@ -20,8 +20,28 @@
  SOFTWARE.
  */
 
-#import <UIKit/UIKit.h>
-#import "WSBaseChartView.h"
-@interface WSAreaChartView : WSBaseChartView
+#import <Foundation/Foundation.h>
+
+@protocol WSBaseChartDelegate <NSObject>
+
+@required
+/*
+ Will parse the datas with different colors and draw the chart
+ */
+- (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
+
+@optional
+/*
+ Create Chart Layer for the view. Then add it to self.chartLayer.
+ */
+- (void)createChartLayer;
+/*
+ Create the coordinate layer and add it to self.xyAxesLayer
+ */
+- (void)createCoordinateLayer;
+/*
+ Manage all layers order.
+ */
+- (void)manageAllLayersOrder;
 
 @end

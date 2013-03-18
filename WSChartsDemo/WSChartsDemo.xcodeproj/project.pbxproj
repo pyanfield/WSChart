@@ -96,6 +96,7 @@
 		9491E9A616DF18070056787D /* WSPieChartWithMotionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSPieChartWithMotionView.m; sourceTree = "<group>"; };
 		9491E9A816DF18070056787D /* WSScatterChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSScatterChartView.h; sourceTree = "<group>"; };
 		9491E9A916DF18070056787D /* WSScatterChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSScatterChartView.m; sourceTree = "<group>"; };
+		9494560016F72A6E00C2BC21 /* WSBaseChartDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WSBaseChartDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,6 +255,7 @@
 				9491E99C16DF18070056787D /* WSChartObject.m */,
 				9491E99D16DF18070056787D /* WSGlobalCore.h */,
 				9491E99E16DF18070056787D /* WSGlobalCore.m */,
+				9494560016F72A6E00C2BC21 /* WSBaseChartDelegate.h */,
 			);
 			path = Global;
 			sourceTree = "<group>";
@@ -499,6 +501,7 @@
 				9491E97516DF07200056787D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

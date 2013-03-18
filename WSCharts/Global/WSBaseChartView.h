@@ -26,28 +26,9 @@
 #import "WSCoordinateLayer.h"
 #import "WSGlobalCore.h"
 #import "WSChartObject.h"
+#import "WSBaseChartDelegate.h"
 
-@protocol WSBaseChartDrawing <NSObject>
-
-@optional
-/*
- Create Chart Layer for the view. Then add it to self.chartLayer.
- */
-- (void)createChartLayer;
-/*
- Create the coordinate layer and add it to self.xyAxesLayer
- */
-- (void)createCoordinateLayer;
-/*
- Manage all layers order.
- */
-- (void)manageAllLayersOrder;
-
-@end
-
-
-
-@interface WSBaseChartView : UIView <WSBaseChartDrawing>
+@interface WSBaseChartView : UIView <WSBaseChartDelegate>
 {
     @protected
     NSArray *datas;
@@ -105,8 +86,6 @@
 // the legend's frame
 @property (nonatomic) CGRect legendFrame;
 
-
 - (void)drawChart:(NSArray*)arr withColor:(NSDictionary*)dict;
-
 
 @end

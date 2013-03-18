@@ -23,5 +23,5 @@
 #import <UIKit/UIKit.h>
 #import "WSBaseChartView.h"
 
-@interface WSColumnChartView : WSBaseChartView <WSBaseChartDrawing>
+@interface WSColumnChartView : WSBaseChartView
 @end

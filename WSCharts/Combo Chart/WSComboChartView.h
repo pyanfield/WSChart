@@ -24,7 +24,7 @@
 #import "WSBaseChartView.h"
 
 
-@interface WSComboChartView : WSBaseChartView <WSBaseChartDrawing> 
+@interface WSComboChartView : WSBaseChartView
 
 @property (nonatomic, strong) NSString *lineKeyName;
 
