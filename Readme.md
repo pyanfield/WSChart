@@ -27,9 +27,11 @@ I hope you can use this project to create Pie Chart, Bar Chart, Scatter Chart, L
 Usage
 ------------------
 Adding WSChart to your project by:
-#### First : Add "WSCharts" folder to your project.
-#### Second : Add QuartzCore framework to your project.
-#### Third: Check the demo code in the "ViewController" file to learn how to use it.
+#### 1 : Add "WSCharts" folder to your project.
+#### 2 : Add QuartzCore framework to your project.
+#### 3 : Check the demo code in the "ViewController" file to learn how to use it.
+
+#### NOTE : Only WSPieChartWithMotionView supports switch data. Using `- (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict` to render the data to chart view. And when you update the view with new data, just pass `arr` and `nil` to it again.
 
 History
 ----------------------- 
