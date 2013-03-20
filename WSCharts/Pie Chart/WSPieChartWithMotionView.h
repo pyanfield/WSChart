@@ -21,6 +21,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "WSBaseChartDelegate.h"
 /*
  The different with WSPieChartView are as below:
  1. moving drawing sector part from UIView to CALayer.
@@ -29,7 +30,7 @@
  4. removing indicator of pie data.
  */
 
-@interface WSPieChartWithMotionView : UIView
+@interface WSPieChartWithMotionView : UIView<WSBaseChartDelegate>
 
 @property (nonatomic) BOOL touchEnabled;
 @property (nonatomic) BOOL openEnabled;
@@ -43,12 +44,11 @@
  */
 @property (nonatomic) BOOL showShadow;
 @property (nonatomic) BOOL hasLegends;
-@property (nonatomic, strong) NSMutableDictionary *data;
-@property (nonatomic, strong) NSMutableArray *colors;
 
 /*
- Make sure the datas' titles must match with original datas.It can have different title order.
+ When you first time to draw the chart, you need to pass "arr" and "dict".
+ But if you just switch data to new one, just pass "arr" and keep dict as nil.
  */
-- (void)switchData:(NSMutableDictionary*)dict;
+- (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict;
 
 @end

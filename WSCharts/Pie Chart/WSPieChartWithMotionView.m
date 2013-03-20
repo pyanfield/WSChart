@@ -24,6 +24,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "WSLegendLayer.h"
 #import "WSGlobalCore.h"
+#import "WSChartObject.h"
 
 #define OPEN_GAP 15.0
 #define SHADOW_COLOR [UIColor colorWithWhite:.8f alpha:.5f]
@@ -64,7 +65,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic) CGFloat startAngle;
 @property (nonatomic) PieStatus pieStatus;
 @property (nonatomic) float percent;
-@property (nonatomic) int number;
+@property (nonatomic) CGFloat number;
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) CAShapeLayer *layer;
@@ -143,6 +144,7 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @property (nonatomic, strong) NSMutableArray *percents;
 @property (nonatomic, strong) CALayer *pieAreaLayer;
 @property (nonatomic, strong) CALayer *legendAreaLayer;
+@property (nonatomic) BOOL updateFlag;
 
 - (CGPoint)calculateOpenedPoint:(int)i withRadius:(float)radius;
 - (NSMutableArray*)calculateStartAngles;
@@ -162,13 +164,12 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
 @synthesize touchEnabled = _touchEnabled;
 @synthesize pies = _pies;
 @synthesize percents = _percents;
-@synthesize data = _data;
-@synthesize colors = _colors;
 @synthesize openEnabled = _openEnabled;
 @synthesize pieAreaLayer = _pieAreaLayer;
 @synthesize showShadow = _showShadow;
 @synthesize legendAreaLayer = _legendAreaLayer;
 @synthesize hasLegends = _hasLegends;
+@synthesize updateFlag = _updateFlag;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -177,92 +178,79 @@ static void CreateShadowWithContext(CGContextRef ctx, BOOL disable)
         _legends = [[NSMutableArray alloc] init];
         _percents = [[NSMutableArray alloc] init];
         _pieAreaLayer = [CALayer layer];
+        _updateFlag = NO;
         [self.layer addSublayer:_pieAreaLayer];
         self.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
 
-#pragma mark - WSPieChartWithMotionView's Property
-/*
- Import the datas, store them as WSPieItem Object.
- */
-- (void)setData:(NSMutableDictionary *)dict
-{
-    NSArray *values = [dict allValues];
-    NSArray *keys = [dict allKeys];
-    float total = 0;
-    int length = [values count];
-    for (int i=0; i<length; i++) {
-        total += [[values objectAtIndex:i] floatValue];
-    }
-    
-    for (int i=0; i < length; i++) {
-        float percent = [[values objectAtIndex:i] floatValue]/total;
-        [_percents addObject:[[NSNumber alloc] initWithFloat:percent]];
-    }
+#pragma mark - WSBaseChartDelegate
 
-    NSMutableArray* _startAngles = [self calculateStartAngles];
-    
-    //using the WSPieData to store the datas
-    for (int i = 0; i < length; i++) {
-        WSPieItem *pie = [[WSPieItem alloc] init];
-        pie.percent = [[_percents objectAtIndex:i] floatValue];
-        pie.title = [keys objectAtIndex:i];
-        pie.number = [[values objectAtIndex:i] floatValue];
-        pie.startAngle = [[_startAngles objectAtIndex:i] floatValue];
-        pie.pieStatus = Closed;
-        [self.pies addObject:pie];
-    }
-}
-/*
- Switch original data to new data. And update the pie figure.
- */
-- (void)switchData:(NSMutableDictionary *)dict
+- (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict
 {
-    NSMutableDictionary *data2 = [dict copy];
-    if ([self.pies count] != [data2 count]) {
+    // check if this is init chart or update chart data
+    if ([self.pies count] != 0 && dict == nil) {
+        self.updateFlag = YES;
+    }else if([self.pies count] == 0 && dict != nil){
+        self.updateFlag = NO;
+    }else{
+        NSLog(@"Invalide data source!");
+    }
+    int dataCount = [arr count];
+    
+    if (self.updateFlag && [self.pies count] != dataCount) {
         //the datas' count should be same as original datas.
         NSLog(@"The new datas' count shoule be same as original datas.");
         return;
     }
-    NSArray *keys = [data2 allKeys];
-    NSArray *values = [data2 allValues];
-    for (int i=0; i<[self.pies count]; i++) {
-        WSPieItem *pie = [self.pies objectAtIndex:i];
-        NSUInteger index = [keys indexOfObject:(id)pie.title];
-        if (index != NSNotFound) {
-            pie.number = [[values objectAtIndex:index] intValue];
-        }else{
-            // the data's name don't match, so return. can't use the transform.
-            NSLog(@"The datas' keys don't match with original datas. please make sure keys are matched.");
-            return;
+    
+    float total = 0.0;
+    NSMutableArray *titles = [[NSMutableArray alloc] init];
+    NSMutableArray *numbers = [[NSMutableArray alloc] init];
+    for (int i=0; i<dataCount; i++) {
+        WSChartObject *obj = [arr objectAtIndex:i];
+        total += obj.pieValue;
+        [titles addObject:obj.name];
+        [numbers addObject:[NSNumber numberWithFloat:obj.pieValue]];
+    }
+    if ([self.percents count]>0) {
+        [self.percents removeAllObjects];
+    }
+    for (int i=0; i < dataCount; i++) {
+        float percent = [[numbers objectAtIndex:i] floatValue]/total;
+        [_percents addObject:[[NSNumber alloc] initWithFloat:percent]];
+    }
+    NSLog(@">> WSChart: percents %@",self.percents);
+    
+    if (self.updateFlag) {
+        for (int i=0; i<dataCount; i++) {
+            WSPieItem *pie = [self.pies objectAtIndex:i];
+            NSUInteger index = [titles indexOfObject:(id)pie.title];
+            if (index != NSNotFound) {
+                pie.number = [[numbers objectAtIndex:index] floatValue];
+            }else{
+                // the data's name don't match, so return. can't use the transform.
+                NSLog(@"The datas' keys don't match with original datas. please make sure keys are matched.");
+                return;
+            }
         }
-    }
-    
-    //remove all percents data for store the new data.
-    [self.percents removeAllObjects];
-    float total = 0;
-    int length = [values count];
-    for (int i=0; i<length; i++) {
-        total += [[values objectAtIndex:i] floatValue];
-    }
-    for (int i=0; i < length; i++) {
-        WSPieItem *pie = [self.pies objectAtIndex:i];
-        float percent = pie.number/total;
-        [self.percents addObject:[[NSNumber alloc] initWithFloat:percent]];
-    }
-    
-    //transform 
-    [self closeAllPiesImmediately];
-    [self transformPies];
-}
-
-- (void)setColors:(NSMutableArray *)colors
-{
-    for (int i=0; i<[colors count]; i++) {
-        WSPieItem *pie = [self.pies objectAtIndex:i];
-        pie.color = [colors objectAtIndex:i];
+        //transform
+        [self closeAllPiesImmediately];
+        [self transformPies];
+    }else{
+        NSMutableArray* _startAngles = [self calculateStartAngles];
+        NSLog(@">> WSChart: startAngles %@",_startAngles);
+        for (int i=0; i<dataCount; i++) {
+            WSPieItem *pie = [[WSPieItem alloc] init];
+            pie.percent = [[_percents objectAtIndex:i] floatValue];
+            pie.title = [titles objectAtIndex:i];
+            pie.number = [[numbers objectAtIndex:i] floatValue];
+            pie.startAngle = [[_startAngles objectAtIndex:i] floatValue];
+            pie.pieStatus = Closed;
+            pie.color = [dict valueForKey:pie.title];
+            [self.pies addObject:pie];
+        }
     }
 }
 

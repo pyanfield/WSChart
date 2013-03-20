@@ -24,9 +24,14 @@
 
 @interface WSChartObject : NSObject
 
+// The legend name
 @property (nonatomic, strong) NSString *name;
-//@property (nonatomic, strong) UIColor *color;
+
+// For the charts that have Axises
 @property (nonatomic, strong) id xValue;
 @property (nonatomic, strong) id yValue;
+
+// For PieChart
+@property (nonatomic) CGFloat pieValue;
 
 @end

@@ -73,25 +73,24 @@
 
 - (void)createPieChart
 {
-    [switchBtn setHidden:false];
-    // demo data for WSPieChartWithMotionView
-    pieData = [[NSMutableDictionary alloc] init];
-    NSMutableArray *colors = [[NSMutableArray alloc] init];
-    pieData = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:20],@"test1",[[NSNumber alloc] initWithFloat:34],@"test2",[[NSNumber alloc] initWithFloat:55],@"test3",[[NSNumber alloc] initWithFloat:12],@"test4",[[NSNumber alloc] initWithFloat:78],@"test5",[[NSNumber alloc] initWithFloat:110],@"test6",nil];
-    colors = [[NSMutableArray alloc] initWithObjects:[UIColor purpleColor],[UIColor blueColor],[UIColor greenColor],[UIColor redColor],[UIColor yellowColor],[UIColor brownColor], nil];
+    NSMutableArray *arr = [self createPieData];
+    NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
+                               [UIColor purpleColor],@"MU",
+                               [UIColor greenColor],@"Chelsea",
+                               [UIColor orangeColor],@"ManCity",
+                               [UIColor yellowColor],@"RealMadri",
+                               [UIColor brownColor],@"Barcelona",
+                               [UIColor blueColor],@"ACMilan",nil];
     
+    [switchBtn setHidden:false];
     pieChart = [[WSPieChartWithMotionView alloc] initWithFrame:CGRectMake(10.0, 50.0, 600.0, 600.0)];
-    pieChart.data = pieData;
-    pieChart.colors = colors;
     pieChart.touchEnabled = YES;
     pieChart.openEnabled = YES;
     pieChart.showShadow = YES;
     pieChart.hasLegends = YES;
+    [pieChart drawChart:arr withColor:colorDict];
     pieChart.backgroundColor = [UIColor blackColor];
     [self.chartView addSubview:pieChart];
-    
-    pieData2 = [[NSMutableDictionary alloc] init];
-    pieData2 = [NSMutableDictionary dictionaryWithObjectsAndKeys:[[NSNumber alloc] initWithFloat:15],@"test5",[[NSNumber alloc] initWithFloat:80],@"test3",[[NSNumber alloc] initWithFloat:5],@"test2",[[NSNumber alloc] initWithFloat:5],@"test1",[[NSNumber alloc] initWithFloat:5],@"test4",[[NSNumber alloc] initWithFloat:5],@"test6",nil];
 }
 
 - (void)createAreaChart
@@ -243,6 +242,33 @@
     return arr;
 }
 
+- (NSMutableArray*)createPieData
+{
+    WSChartObject *lfcObj = [[WSChartObject alloc] init];
+    lfcObj.name = @"Liverpool";
+    lfcObj.pieValue = arc4random() % 500+10;
+    WSChartObject *chObj = [[WSChartObject alloc] init];
+    chObj.name = @"Chelsea";
+    chObj.pieValue = arc4random() % 500 + 140;
+    WSChartObject *muObj = [[WSChartObject alloc] init];
+    muObj.name = @"MU";
+    muObj.pieValue = arc4random() % 300 + 30;
+    WSChartObject *mcObj = [[WSChartObject alloc] init];
+    mcObj.name = @"ManCity";
+    mcObj.pieValue = arc4random() % 400 + 150;
+    WSChartObject *rmObj = [[WSChartObject alloc] init];
+    rmObj.name = @"RealMadri";
+    rmObj.pieValue = arc4random() % 400 + 50;
+    WSChartObject *bcObj = [[WSChartObject alloc] init];
+    bcObj.name = @"Barcelona";
+    bcObj.pieValue = arc4random() % 400 + 200;
+    WSChartObject *acObj = [[WSChartObject alloc] init];
+    acObj.name = @"ACMilan";
+    acObj.pieValue = arc4random() % 400 + 100;
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithObjects:lfcObj,chObj,muObj,mcObj,rmObj,bcObj,acObj, nil];
+    return arr;
+}
+
 - (NSDictionary*)createColorDict
 {
     NSDictionary *colorDict = [[NSDictionary alloc] initWithObjectsAndKeys:[UIColor redColor],@"Liverpool",
@@ -254,8 +280,7 @@
 }
 
 - (IBAction)switchData:(id)sender {
-    flag?[pieChart switchData:pieData]:[pieChart switchData:pieData2];
-    flag = !flag;
+    [pieChart drawChart:[self createPieData] withColor:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -25,8 +25,8 @@
 @implementation WSChartObject
 
 @synthesize name = _name;
-//@synthesize color = _color;
 @synthesize xValue = _xValue;
 @synthesize yValue = _yValue;
+@synthesize pieValue = _pieValue;
 
 @end
