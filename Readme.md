@@ -45,7 +45,7 @@ History
 
 TODO List
 -----------------------
-* Add "Switch data" function to charts (Only WSPieChartWithMotion supports data updated). 
+* Add "switch data" function to other charts (Only WSPieChartWithMotion supports data updated). 
 
 
 License
@@ -78,7 +78,7 @@ documentation in WSChart project is licensed as follows:
 
 Other
 ------------------------
-You can contact me with mail 'pyanfield at gmail.com', or follow @pyanfield on SinaWeibo.
+You can contact me with mail 'pyanfield at gmail.com', or follow [@pyanfield](http://weibo.com/pyanfield) on SinaWeibo and [@pyanfield](http://twitter.com/pyanfield) on Twitter.
 
 
 
