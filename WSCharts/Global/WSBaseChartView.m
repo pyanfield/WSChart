@@ -156,7 +156,7 @@
 {
     int length = [datas count];
     if (self.rowWidth > 0.0) {
-        //for line, area and column charts
+        //for line, area, combo and column charts
         NSString *oneName = [[colorDict allKeys] objectAtIndex:0];
         xMarkTitles = [[NSMutableArray alloc] init];
         for (int i=0; i<[datas count]; i++) {

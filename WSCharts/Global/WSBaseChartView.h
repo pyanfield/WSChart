@@ -69,7 +69,7 @@
  If rowWidth value > 0.0 , the x marks are same as WSChartObject's xValue.
  If not, will calculate the xMark automatically. The chart view will calculate the min and max x value that display on the x axis.
  Then create a array (xMarkTitles) to store all marks.
- For now,it means that rowWidth is used in area, line ,column charts.
+ For now,it means that rowWidth is used in area, line ,column and combo charts. And the value must be > 0
  In scatter chart view, please don't set rowWidth.
  */
 @property (nonatomic) CGFloat rowWidth;
