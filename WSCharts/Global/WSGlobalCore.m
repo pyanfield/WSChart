@@ -200,7 +200,9 @@ float CalculateAxisExtremePointValue(float value,BOOL max)
         if (value >= 0.0 && value < 100.0) return 0.0;
     }
     // value = fisrtStr*10^lastStr
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
     NSNumberFormatter *numFormatter  = [[NSNumberFormatter alloc] init];
+    [numFormatter setLocale:locale];
     [numFormatter setNumberStyle:NSNumberFormatterScientificStyle];
     NSString *numStr = [numFormatter stringFromNumber:[NSNumber numberWithFloat:value]];
     NSString *e = @"E";
