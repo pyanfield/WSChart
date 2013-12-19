@@ -21,13 +21,14 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "WSBaseChartDelegate.h"
 
-@interface WSPieChartView : UIView
+@interface WSPieChartView : UIView<WSBaseChartDelegate>
 
-@property (nonatomic) BOOL touchEnabled;
-@property (nonatomic) BOOL showIndicator;
-@property (nonatomic) BOOL openEnabled;
-@property (nonatomic, strong) NSMutableDictionary *data;
-@property (nonatomic, strong) NSMutableArray *colors;
+@property (nonatomic) BOOL enableTouch;
+@property (nonatomic) BOOL enableIndicator;
+@property (nonatomic) BOOL enableOpen;
+
+- (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict;
 
 @end

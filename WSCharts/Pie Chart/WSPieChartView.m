@@ -21,6 +21,7 @@
  */
 
 #import "WSPieChartView.h"
+#import "WSChartObject.h"
 #import <QuartzCore/QuartzCore.h>
 
 #define OPEN_GAP 15.0
@@ -80,13 +81,11 @@ static float pieRadius = 150.0;
 
 @implementation WSPieChartView
 @synthesize paths = _paths;
-@synthesize touchEnabled = _touchEnabled;
+@synthesize enableTouch = _enableTouch;
 @synthesize pies = _pies;
 @synthesize percents = _percents;
-@synthesize data = _data;
-@synthesize colors = _colors;
-@synthesize openEnabled = _openEnabled;
-@synthesize showIndicator = _showIndicator;
+@synthesize enableOpen = _enableOpen;
+@synthesize enableIndicator = _enableIndicator;
 @synthesize currentPressedNum = _currentPressedNum;
 @synthesize isOpened = _isOpened;
 @synthesize pieAreaLayer = _pieAreaLayer;
@@ -94,26 +93,40 @@ static float pieRadius = 150.0;
 - (id)initWithFrame:(CGRect)frame
 {
     if ((self=[super initWithFrame:frame])) {
+        _enableTouch = YES;
+        _enableIndicator = YES;
+        _enableOpen = NO;
         _pies = [[NSMutableArray alloc] init];
         _paths = [[NSMutableArray alloc] init];
         _percents = [[NSMutableArray alloc] init];
         self.clearsContextBeforeDrawing = YES;
         _pieAreaLayer = [CALayer layer];
         [self.layer addSublayer:_pieAreaLayer];
-        //self.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
 
-- (void)setData:(NSMutableDictionary *)dict
+- (void)drawChart:(NSArray *)arr withColor:(NSDictionary *)dict
 {
+    int dataCount = [arr count];
+    if (dataCount != [dict count] || dict == nil || arr == nil) {
+        NSLog(@"Invalid data");
+        return;
+    }
     NSMutableArray* _indicatorPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _openedPoints = [[NSMutableArray alloc] init];
     NSMutableArray* _names;
     NSMutableArray* _startAngles = [[NSMutableArray alloc] init];
     
-    NSArray *values = [dict allValues];
-    NSArray *keys = [dict allKeys];
+    NSMutableArray *values = [NSMutableArray new];
+    NSMutableArray *keys = [NSMutableArray new];
+    
+    for (WSChartObject *obj in arr) {
+        [values addObject:[NSNumber numberWithFloat:obj.pieValue]];
+        [keys addObject:obj.name];
+    }
+    
     float total = 0;
     int length = [values count];
     
@@ -153,41 +166,49 @@ static float pieRadius = 150.0;
         pie.number = [[values objectAtIndex:i] floatValue];
         pie.startAngle = [[_startAngles objectAtIndex:i] floatValue];
         pie.isOpened = NO;
+        pie.color = [dict valueForKey:pie.name];
         [self.pies addObject:pie];
     }
 }
 
-- (void)setColors:(NSMutableArray *)colors
+- (void)setEnableIndicator:(BOOL)enableIndicator
 {
-    for (int i=0; i<[colors count]; i++) {
-        WSPieData *pie = [self.pies objectAtIndex:i];
-        pie.color = [colors objectAtIndex:i];
+    _enableIndicator = enableIndicator;
+    if (_enableIndicator) {
+        _enableOpen = NO;
     }
 }
 
-- (void)setShowIndicator:(BOOL)showIndicator
+- (BOOL)enableIndicator
 {
-    _showIndicator = showIndicator;
-    if (_showIndicator) {
-        _openEnabled = NO;
+    return _enableIndicator;
+}
+
+- (void)setEnableOpen:(BOOL)enableOpen
+{
+    _enableOpen = enableOpen;
+    if (_enableOpen) {
+        _enableIndicator = NO;
     }
 }
 
-- (void)setOpenEnabled:(BOOL)openEnabled
+- (BOOL)enableOpen
 {
-    _openEnabled = openEnabled;
-    if (_openEnabled) {
-        _showIndicator = NO;
+    return _enableOpen;
+}
+
+- (void)setEnableTouch:(BOOL)enableTouch
+{
+    _enableTouch = enableTouch;
+    if (!_enableTouch) {
+        _enableIndicator = NO;
+        _enableOpen = NO;
     }
 }
 
-- (void)setTouchEnabled:(BOOL)touchEnabled
+- (BOOL)enableTouch
 {
-    _touchEnabled = touchEnabled;
-    if (_touchEnabled) {
-        _showIndicator = NO;
-        _openEnabled = NO;
-    }
+    return _enableTouch;
 }
 
 - (void)drawRect:(CGRect)rect
@@ -236,8 +257,12 @@ static float pieRadius = 150.0;
         CGPathRelease(path);
     }
     
-    if (self.showIndicator) {
+    if (self.enableIndicator && self.enableTouch) {
         [self createIndicators:self.currentPressedNum];
+    }else if(self.enableIndicator && !self.enableTouch){
+        for (int i=0 ; i<length ; i++) {
+            [self createIndicators:i];
+        }
     }
     CGContextEndTransparencyLayer(context);
     CGContextRestoreGState(context);
@@ -377,7 +402,7 @@ static float pieRadius = 150.0;
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (!self.touchEnabled) return;
+    if (!self.enableTouch) return;
     UITouch *t = [touches anyObject];
 	CGPoint point = [t locationInView:self];
     
@@ -385,7 +410,7 @@ static float pieRadius = 150.0;
         CGMutablePathRef path = (__bridge CGMutablePathRef)[self.paths objectAtIndex:i];
         WSPieData *pie = [self.pies objectAtIndex:i];
         if (CGPathContainsPoint(path, nil, point, nil)) {
-            if (self.openEnabled) {
+            if (self.enableOpen) {
                 pie.isOpened = !pie.isOpened;
                 self.isOpened = pie.isOpened?YES:NO;
                 [self closeAllPieDataIsOpenedAsNO:i];

@@ -91,6 +91,13 @@
     [pieChart drawChart:arr withColor:colorDict];
     pieChart.backgroundColor = [UIColor blackColor];
     [self.chartView addSubview:pieChart];
+    
+    // sample code with WSPieChartView
+//    WSPieChartView *simplePieChart = [[WSPieChartView alloc] initWithFrame:CGRectMake(10.0, 50.0, 600.0, 600.0)];
+//    simplePieChart.enableIndicator = YES;
+//    [simplePieChart drawChart:arr withColor:colorDict];
+//    simplePieChart.backgroundColor = [UIColor blackColor];
+//    [self.chartView addSubview:simplePieChart];
 }
 
 - (void)createAreaChart
