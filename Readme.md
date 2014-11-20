@@ -1,5 +1,6 @@
 Read Me
 =====================
+**WSChart has been discontinued, and is no longer being maintained. Sorry about that.**
 
 **WSChart's target is using simple code to create charts.**
 
